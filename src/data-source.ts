@@ -1,28 +1,50 @@
+export type DataSourceProcessor<T> = (data: T) => void;
+
 export class DataSource<TData> {
     protected data: TData;
-    protected renderedData: TData;
+    protected processedData: TData;
+    protected processors: DataSourceProcessor<TData>[] = [];
 
     constructor(data: TData) {
         this.data = data;
 
-        this.renderedData = this._cloneData();
+        this.processedData = this.cloneData();
     }
 
     public get(): TData {
-        return this.renderedData;
+        return this.processedData;
     }
 
     public set(data: TData) {
         this.data = data;
 
-        this._renderData();
+        this.processData();
     }
 
-    protected _renderData() {
-        this.renderedData = this._cloneData();
+    public addProcessor(newProcessor: DataSourceProcessor<TData>) {
+        if (this.processors.indexOf(newProcessor) === -1) {
+            this.processors.push(newProcessor);
+        }
+
+        this.processData();
     }
 
-    protected _cloneData(): TData {
+    public removeProcessor(oldProcessor: DataSourceProcessor<TData>) {
+        const originalProcessors = this.processors;
+        this.processors = [];
+
+        originalProcessors.forEach(processor => {
+            if (processor !== oldProcessor) {
+                this.processors.push(processor);
+            }
+        });
+
+        if (this.processors !== originalProcessors) {
+            this.processData();
+        }
+    }
+
+    protected cloneData(): TData {
         if (typeof this.data !== 'object' || this.data === null) {
             return this.data;
         } else if (Array.isArray(this.data)) {
@@ -30,5 +52,15 @@ export class DataSource<TData> {
         } else {
             return { ...(<any>this.data) };
         }
+    }
+
+    protected processData() {
+        const newData = this.cloneData();
+
+        this.processors.forEach(processor => {
+            processor(newData);
+        });
+
+        this.processedData = newData;
     }
 }
