@@ -19,5 +19,18 @@
     "bugs": {
         "url": "https://github.com/Colonise/DataSource/issues"
     },
-    "homepage": "https://github.com/Colonise/DataSource#readme"
+    "homepage": "https://github.com/Colonise/DataSource#readme",
+    "devDependencies": {
+        "@types/del": "3.0.1",
+        "@types/gulp": "4.0.5",
+        "alsatian": "^2.2.1",
+        "del": "^3.0.0",
+        "gulp": "^3.9.1",
+        "gulp-tslint": "^8.1.3",
+        "gulp-typescript": "^5.0.0-alpha.3",
+        "tsgulp": "^1.1.2",
+        "tslib": "^1.9.3",
+        "tslint": "^5.10.0",
+        "typescript": "^2.9.2"
+    }
 }
