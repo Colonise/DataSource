@@ -1,5 +1,6 @@
-import { Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
+import { Expect, IgnoreTest, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
 import { DataSource, DataSourceProcessor } from './data-source';
+import { PartialObserver } from './rx-subscribable';
 
 @TestFixture('DataSource')
 export class DataSourceTests {
@@ -89,5 +90,17 @@ export class DataSourceTests {
         Expect(spy)
             .toHaveBeenCalled()
             .exactly(1);
+    }
+
+    @IgnoreTest('TODO')
+    @Test('subscribe() should add a observer')
+    public subscribe1<T>(data: T, observer: PartialObserver<T>) {
+        /**/
+    }
+
+    @IgnoreTest('TODO')
+    @Test('unsubscribe() should remove a observer')
+    public unsubscribe1<T>(data: T, observer: PartialObserver<T>) {
+        /**/
     }
 }
