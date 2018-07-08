@@ -1,0 +1,23 @@
+{
+    "name": "colonise-datasource",
+    "version": "0.0.1",
+    "description": "Simple DataSource class in TypeScript",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Colonise/DataSource.git"
+    },
+    "keywords": [
+        "TypeSript",
+        "DataSource"
+    ],
+    "author": "Patrick Stanford",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Colonise/DataSource/issues"
+    },
+    "homepage": "https://github.com/Colonise/DataSource#readme"
+}
