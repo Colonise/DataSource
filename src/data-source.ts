@@ -1,9 +1,12 @@
+import { NextObserver, PartialObserver, Subscribable, Subscription, Unsubscribable } from './rx-subscribable';
+
 export type DataSourceProcessor<T> = (data: T) => void;
 
-export class DataSource<TData> {
+export class DataSource<TData> implements Subscribable<TData> {
     protected data: TData;
     protected processedData: TData;
     protected processors: DataSourceProcessor<TData>[] = [];
+    protected subscriptions: Subscription<TData>[] = [];
 
     constructor(data: TData) {
         this.data = data;
@@ -19,6 +22,40 @@ export class DataSource<TData> {
         this.data = data;
 
         this.processData();
+    }
+
+    public subscribe(
+        observerOrNext?: PartialObserver<TData> | ((value: TData) => void),
+        error?: (error: any) => void,
+        complete?: () => void
+    ): Unsubscribable {
+        const observer =
+            typeof observerOrNext === 'object'
+                ? observerOrNext
+                : <NextObserver<TData>>{
+                      next: observerOrNext,
+                      error,
+                      complete
+                  };
+
+        const subscriptionHolder = <{ subscription: Subscription<TData> }>{};
+
+        subscriptionHolder.subscription = new Subscription(observer, () =>
+            this.unsubscribe(subscriptionHolder.subscription)
+        );
+
+        return subscriptionHolder.subscription;
+    }
+
+    public unsubscribe(oldSubscription: Unsubscribable) {
+        const originalSubscriptions = this.subscriptions;
+        this.processors = [];
+
+        originalSubscriptions.forEach(subscription => {
+            if (subscription !== oldSubscription) {
+                this.subscriptions.push(subscription);
+            }
+        });
     }
 
     public addProcessor(newProcessor: DataSourceProcessor<TData>) {
@@ -62,5 +99,11 @@ export class DataSource<TData> {
         });
 
         this.processedData = newData;
+
+        this.subscriptions.forEach(subscription => {
+            if (subscription.observer.next) {
+                subscription.observer.next(this.processedData);
+            }
+        });
     }
 }
