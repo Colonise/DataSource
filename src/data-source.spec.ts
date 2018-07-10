@@ -49,8 +49,16 @@ export class DataSourceTests {
         Expect(get2).toEqual(data2);
     }
 
-    @TestCase({ a: 1 }, { a: 1, b: 2 }, (data: any) => (data.b = 2))
-    @TestCase([1], [1, 2], (data: any) => data.push(2))
+    @TestCase({ a: 1 }, { a: 1, b: 2 }, (data: any) => {
+        data.b = 2;
+
+        return data;
+    })
+    @TestCase([1], [1, 2], (data: any) => {
+        data.push(2);
+
+        return data;
+    })
     @Test('addProcessor() should add a processor')
     public addProcessor1<T>(data: T, expected: T, processor: DataSourceProcessor<any>) {
         const dataSource = new DataSource(data);
@@ -70,8 +78,16 @@ export class DataSourceTests {
             .exactly(1);
     }
 
-    @TestCase({ a: 1 }, (data: any) => (data.b = 2))
-    @TestCase([1], (data: any) => data.push(2))
+    @TestCase({ a: 1 }, (data: any) => {
+        data.b = 2;
+
+        return data;
+    })
+    @TestCase([1], (data: any) => {
+        data.push(2);
+
+        return data;
+    })
     @Test('removeProcessor() should remove a processor')
     public removeProcessor1<T>(data: T, processor: DataSourceProcessor<any>) {
         const dataSource = new DataSource(data);

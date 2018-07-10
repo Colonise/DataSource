@@ -16,6 +16,7 @@
         "object-literal-key-quotes": false,
         "prefer-for-of": false,
         "trailing-comma": false,
+        "unified-signatures": false,
         "whitespace": [
             true,
             "check-branch",

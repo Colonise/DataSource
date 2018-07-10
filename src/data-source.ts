@@ -1,6 +1,6 @@
 import { NextObserver, PartialObserver, Subscribable, Subscription, Unsubscribable } from './rx-subscribable';
 
-export type DataSourceProcessor<T> = (data: T) => void;
+export type DataSourceProcessor<TData> = (data: TData) => TData;
 
 export class DataSource<TData> implements Subscribable<TData> {
     protected data: TData;
@@ -21,7 +21,7 @@ export class DataSource<TData> implements Subscribable<TData> {
     public set(data: TData) {
         this.data = data;
 
-        this.processData();
+        return this.processData();
     }
 
     public subscribe(
@@ -70,7 +70,7 @@ export class DataSource<TData> implements Subscribable<TData> {
             this.processors.push(newProcessor);
         }
 
-        this.processData();
+        return this.processData();
     }
 
     public removeProcessor(oldProcessor: DataSourceProcessor<TData>) {
@@ -83,9 +83,7 @@ export class DataSource<TData> implements Subscribable<TData> {
             }
         });
 
-        if (this.processors !== originalProcessors) {
-            this.processData();
-        }
+        return this.processors !== originalProcessors ? this.processData() : this.processedData;
     }
 
     protected cloneData(): TData {
@@ -99,18 +97,20 @@ export class DataSource<TData> implements Subscribable<TData> {
     }
 
     protected processData() {
-        const newData = this.cloneData();
+        let data = this.cloneData();
 
         this.processors.forEach(processor => {
-            processor(newData);
+            data = processor(data);
         });
 
-        this.processedData = newData;
+        this.processedData = data;
 
         this.subscriptions.forEach(subscription => {
             if (subscription.observer.next) {
                 subscription.observer.next(this.processedData);
             }
         });
+
+        return this.processedData;
     }
 }
