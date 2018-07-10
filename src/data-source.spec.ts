@@ -1,4 +1,4 @@
-import { Expect, IgnoreTest, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
+import { createFunctionSpy, Expect, IgnoreTest, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
 import { DataSource, DataSourceProcessor } from './data-source';
 import { PartialObserver } from './rx-subscribable';
 
@@ -92,15 +92,60 @@ export class DataSourceTests {
             .exactly(1);
     }
 
-    @IgnoreTest('TODO')
-    @Test('subscribe() should add a observer')
-    public subscribe1<T>(data: T, observer: PartialObserver<T>) {
-        /**/
+    @TestCase(1, 2)
+    @TestCase(null, undefined)
+    @TestCase(true, false)
+    @TestCase('a', 'b')
+    @TestCase({}, {})
+    @TestCase([], [])
+    @Test('subscribe() should add an observer so it will be called with data changes')
+    public subscribe1<T>(data1: T, data2: T) {
+        const dataSource = new DataSource(data1);
+        const observerSpy = createFunctionSpy();
+        const subscription = dataSource.subscribe(observerSpy);
+
+        const get1 = dataSource.get();
+        dataSource.set(data2);
+        const get2 = dataSource.get();
+
+        Expect(subscription).toBeDefined();
+        Expect(observerSpy)
+            .toHaveBeenCalledWith(get1)
+            .exactly(1);
+        Expect(observerSpy)
+            .toHaveBeenCalledWith(get2)
+            .exactly(1);
+        Expect(observerSpy)
+            .toHaveBeenCalled()
+            .exactly(2);
     }
 
-    @IgnoreTest('TODO')
-    @Test('unsubscribe() should remove a observer')
-    public unsubscribe1<T>(data: T, observer: PartialObserver<T>) {
-        /**/
+    @TestCase(1, 2)
+    @TestCase(null, undefined)
+    @TestCase(true, false)
+    @TestCase('a', 'b')
+    @TestCase({}, {})
+    @TestCase([], [])
+    @Test('unsubscribe() should remove an observer so it will not be called with data changes')
+    public unsubscribe1<T>(data1: T, data2: T) {
+        const dataSource = new DataSource(data1);
+        const observerSpy = createFunctionSpy();
+        const subscription = dataSource.subscribe(observerSpy);
+        const unsubscribeSpy = SpyOn(dataSource, 'unsubscribe');
+
+        const get1 = dataSource.get();
+        dataSource.unsubscribe(subscription);
+        dataSource.set(data2);
+
+        Expect(subscription).toBeDefined();
+        Expect(observerSpy)
+            .toHaveBeenCalledWith(get1)
+            .exactly(1);
+        Expect(observerSpy)
+            .toHaveBeenCalled()
+            .exactly(1);
+        Expect(unsubscribeSpy)
+            .toHaveBeenCalledWith(subscription)
+            .exactly(1);
     }
 }

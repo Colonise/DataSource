@@ -25,7 +25,7 @@ export class DataSource<TData> implements Subscribable<TData> {
     }
 
     public subscribe(
-        observerOrNext?: PartialObserver<TData> | ((value: TData) => void),
+        observerOrNext: PartialObserver<TData> | ((value: TData) => void) | undefined,
         error?: (error: any) => void,
         complete?: () => void
     ): Unsubscribable {
@@ -44,12 +44,19 @@ export class DataSource<TData> implements Subscribable<TData> {
             this.unsubscribe(subscriptionHolder.subscription)
         );
 
+        // Call the observer's next once
+        if (subscriptionHolder.subscription.observer.next) {
+            subscriptionHolder.subscription.observer.next(this.processedData);
+        }
+
+        this.subscriptions.push(subscriptionHolder.subscription);
+
         return subscriptionHolder.subscription;
     }
 
     public unsubscribe(oldSubscription: Unsubscribable) {
         const originalSubscriptions = this.subscriptions;
-        this.processors = [];
+        this.subscriptions = [];
 
         originalSubscriptions.forEach(subscription => {
             if (subscription !== oldSubscription) {
