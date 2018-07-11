@@ -3,9 +3,21 @@ import { DataSource, DataSourceProcessor } from './data-source';
 export type ArrayDataSourceFilter<TData> = (value: TData, index: number, array: TData[]) => boolean;
 export type ArrayDataSourceSorter<TData> = (data1: TData, data2: TData) => 1 | 0 | -1;
 
+/**
+ * TODO
+ */
 export class ArrayDataSource<TData> extends DataSource<TData[]> {
     protected filterProcessor?: DataSourceProcessor<TData[]>;
     protected sortProcessor?: DataSourceProcessor<TData[]>;
+
+    /**
+     * TODO
+     *
+     * @param data TODO
+     */
+    public constructor(data: TData[]) {
+        super(data);
+    }
 
     /**
      * Filters the data by passing each entry to the supplied filter
