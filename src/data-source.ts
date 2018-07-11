@@ -2,28 +2,62 @@ import { NextObserver, PartialObserver, Subscribable, Subscription, Unsubscribab
 
 export type DataSourceProcessor<TData> = (data: TData) => TData;
 
+/**
+ * TODO
+ */
 export class DataSource<TData> implements Subscribable<TData> {
     protected data: TData;
     protected processedData: TData;
     protected processors: DataSourceProcessor<TData>[] = [];
     protected subscriptions: Subscription<TData>[] = [];
 
-    constructor(data: TData) {
+    /**
+     * TODO
+     *
+     * @param data TODO
+     */
+    public constructor(data: TData) {
         this.data = data;
 
         this.processedData = this.cloneData();
     }
 
+    /**
+     * Gets a processed version of the data
+     */
     public get(): TData {
         return this.processedData;
     }
 
+    /**
+     * Sets the current data
+     *
+     * @param data The new data to replace the current data with
+     */
     public set(data: TData) {
         this.data = data;
 
         return this.processData();
     }
 
+    /**
+     * Subscribes to change events of the data after processing.
+     *
+     * @param observer TODO
+     */
+    public subscribe(observer: PartialObserver<TData>): Unsubscribable;
+    /**
+     * Subscribes to change events of the data after processing.
+     *
+     * @param next TODO
+     * @param error TODO
+     * @param complete TODO
+     */
+    public subscribe(
+        next: ((value: TData) => void) | undefined,
+        error?: (error: any) => void,
+        complete?: () => void
+    ): Unsubscribable;
     public subscribe(
         observerOrNext: PartialObserver<TData> | ((value: TData) => void) | undefined,
         error?: (error: any) => void,
@@ -54,6 +88,12 @@ export class DataSource<TData> implements Subscribable<TData> {
         return subscriptionHolder.subscription;
     }
 
+    /**
+     * Unsubscribes the supplied subscription from change events of the data after processing.
+     *
+     * @param subscription TODO
+     */
+    public unsubscribe(subscription: Unsubscribable): void;
     public unsubscribe(oldSubscription: Unsubscribable) {
         const originalSubscriptions = this.subscriptions;
         this.subscriptions = [];
@@ -65,14 +105,25 @@ export class DataSource<TData> implements Subscribable<TData> {
         });
     }
 
-    public addProcessor(newProcessor: DataSourceProcessor<TData>) {
-        if (this.processors.indexOf(newProcessor) === -1) {
-            this.processors.push(newProcessor);
+    /**
+     * TODO
+     *
+     * @param processor TODO
+     */
+    public addProcessor(processor: DataSourceProcessor<TData>) {
+        if (this.processors.indexOf(processor) === -1) {
+            this.processors.push(processor);
         }
 
         return this.processData();
     }
 
+    /**
+     * TODO
+     *
+     * @param processor TODO
+     */
+    public removeProcessor(processor: DataSourceProcessor<TData>): TData;
     public removeProcessor(oldProcessor: DataSourceProcessor<TData>) {
         const originalProcessors = this.processors;
         this.processors = [];
