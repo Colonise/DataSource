@@ -19,11 +19,22 @@ export class ArrayDataSourceTests {
         Expect(dataSource instanceof ArrayDataSource).toBe(true);
     }
 
+    @TestCase([0, 1, 2, 3, 4, 5], [1, 2, 3, 4, 5])
+    @TestCase([0, '', undefined, null, false], [])
+    @Test('filter() should add a filter to the processors')
+    public filter1<T>(data: T[], expected: T[]) {
+        const dataSource = new ArrayDataSource(data);
+
+        const actual = dataSource.filter();
+
+        Expect(actual).toEqual(expected);
+    }
+
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 0 }, { a: 0 }], (data: { a: 1 | 0 }) => !data.a)
     @TestCase([1, 2, 3, 4, 5], [1, 3, 5], (data: number) => data % 2 !== 0)
     @TestCase([0, '', undefined, null, false], [], (data: any) => !!data)
-    @Test('filter() should add a filter to the processors')
-    public filter1<T>(data: T[], expected: T[], filter: ArrayDataSourceFilter<T>) {
+    @Test('filter(filter) should add a filter to the processors')
+    public filter2<T>(data: T[], expected: T[], filter: ArrayDataSourceFilter<T>) {
         const dataSource = new ArrayDataSource(data);
         const spyable = { filter };
         const filterSpy = SpyOn(spyable, 'filter');
@@ -36,24 +47,13 @@ export class ArrayDataSourceTests {
         Expect(actual).toEqual(expected);
     }
 
-    @TestCase([0, 1, 2, 3, 4, 5], [1, 2, 3, 4, 5])
-    @TestCase([0, '', undefined, null, false], [])
-    @Test('filterBy() should add a filter to the processors')
-    public filterBy1<T>(data: T[], expected: T[]) {
-        const dataSource = new ArrayDataSource(data);
-
-        const actual = dataSource.filterBy();
-
-        Expect(actual).toEqual(expected);
-    }
-
     @TestCase([[], [1], [2], [3], []], [[1], [2], [3]], 'length')
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 1 }, { a: 1 }, { a: 1 }], 'a')
     @Test('filterBy(property) should add a filter to the processors')
-    public filterBy2<T>(data: T[], expected: T[], property: keyof T) {
+    public filter3<T>(data: T[], expected: T[], property: keyof T) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual = dataSource.filterBy(property);
+        const actual = dataSource.filter(property);
 
         Expect(actual).toEqual(expected);
     }
@@ -61,10 +61,10 @@ export class ArrayDataSourceTests {
     @TestCase([[], [1], [2], [3], []], [[], []], 'length', 0)
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 0 }, { a: 0 }], 'a', 0)
     @Test('filterBy(property, value) should add a filter to the processors')
-    public filterBy3<T>(data: T[], expected: T[], property: keyof T, value: T[keyof T]) {
+    public filter4<T>(data: T[], expected: T[], property: keyof T, value: T[keyof T]) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual = dataSource.filterBy(property, value);
+        const actual = dataSource.filter(property, value);
 
         Expect(actual).toEqual(expected);
     }
@@ -82,14 +82,25 @@ export class ArrayDataSourceTests {
         Expect(actual2).toEqual(data);
     }
 
+    @TestCase(['a', 'e', 'b', 'd', 'c'], ['a', 'b', 'c', 'd', 'e'])
+    @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5])
+    @Test('sort() should add a sorter to the processors')
+    public sort1<T>(data: T[], expected: T[]) {
+        const dataSource = new ArrayDataSource(data);
+
+        const actual = dataSource.sort();
+
+        Expect(actual).toEqual(expected);
+    }
+
     @TestCase(
         ['a', 'e', 'b', 'd', 'c'],
         ['a', 'b', 'c', 'd', 'e'],
         (a: string, b: string) => (a === b ? 0 : a > b ? 1 : -1)
     )
     @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5], (a: number, b: number) => (a === b ? 0 : a > b ? 1 : -1))
-    @Test('sort() should add a sorter to the processors')
-    public sort1<T>(data: T[], expected: T[], sorter: ArrayDataSourceSorter<T>) {
+    @Test('sort(sorter) should add a sorter to the processors')
+    public sort2<T>(data: T[], expected: T[], sorter: ArrayDataSourceSorter<T>) {
         const dataSource = new ArrayDataSource(data);
         const spyable = { sorter };
         const sorterSpy = SpyOn(spyable, 'sorter');
@@ -102,24 +113,13 @@ export class ArrayDataSourceTests {
         Expect(actual).toEqual(expected);
     }
 
-    @TestCase(['a', 'e', 'b', 'd', 'c'], ['a', 'b', 'c', 'd', 'e'])
-    @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5])
-    @Test('sortBy() should add a sorter to the processors')
-    public sortBy2<T>(data: T[], expected: T[]) {
-        const dataSource = new ArrayDataSource(data);
-
-        const actual = dataSource.sortBy();
-
-        Expect(actual).toEqual(expected);
-    }
-
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }])
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }])
-    @Test('sortBy(property) should add a sorter to the processors')
-    public sortBy1<T>(data: T[], expected: T[], property: keyof T) {
+    @Test('sort(property) should add a sorter to the processors')
+    public sort3<T>(data: T[], expected: T[], property: keyof T) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual = dataSource.sortBy(property);
+        const actual = dataSource.sort(property);
 
         Expect(actual).toEqual(expected);
     }
