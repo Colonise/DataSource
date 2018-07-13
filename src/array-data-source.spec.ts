@@ -75,7 +75,7 @@ export class ArrayDataSourceTests {
     public removeFilter1<T>(data: T[], expectedFiltered: T[]) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual1 = dataSource.filter(dataItem => !!dataItem);
+        const actual1 = dataSource.filter(entry => !!entry);
         const actual2 = dataSource.removeFilter();
 
         Expect(actual1).toEqual(expectedFiltered);
