@@ -80,32 +80,45 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     }
 
     /**
-     * Sorts the data by comparing each entry
-     *
-     * Essentially:
-     * (entryA, entryB) => entryA === entryB ? 0 : entryA > entryB ? 1 : -1;
+     * Sorts the data by comparing each entry.
      */
     public sort(): TEntry[];
     /**
-     * Sorts the data using the supplied sorter to compare each entry
+     * Sorts the data using the supplied sorter to compare each entry.
      *
      * @param sorter The function to sort the data by
      */
     public sort(sorter: ArrayDataSourceSorter<TEntry>): TEntry[];
     /**
-     * Sorts the data by comparing the property of each entry
+     * Sorts the data using the supplied sorters to compare each entry.
      *
-     * Essentially:
-     * (entryA, entryB) => entryA[property] === entryB[property] ? 0 : entryA[property] > entryB[property] ? 1 : -1;
+     * @param sorter The function to sort the data by
+     */
+    public sort(...sorters: ArrayDataSourceSorter<TEntry>[]): TEntry[];
+    /**
+     * Sorts the data by comparing the property of each entry.
      *
      * @param property The property to sort the data by
      */
     public sort<TKey extends keyof TEntry>(property: TKey): TEntry[];
-    public sort<TKey extends keyof TEntry>(sorterOrProperty?: ArrayDataSourceSorter<TEntry> | TKey): TEntry[] {
-        let sorter: ArrayDataSourceSorter<TEntry>;
+    /**
+     * Sorts the data by comparing the properties of each entry.
+     *
+     * @param property The property to sort the data by
+     */
+    public sort<TKey extends keyof TEntry>(...properties: TKey[]): TEntry[];
+    /**
+     * Sorts the data using the supplied sorters and by comparing the properties of each entry.
+     *
+     * @param property The property to sort the data by
+     */
+    public sort<TKey extends keyof TEntry>(...sortersAndProperties: (ArrayDataSourceSorter<TEntry> | TKey)[]): TEntry[];
+    public sort<TKey extends keyof TEntry>(): TEntry[] {
+        const sortersAndProperties: TypedArguments<ArrayDataSourceSorter<TEntry> | TKey> = arguments;
+        const sorters: ArrayDataSourceSorter<TEntry>[] = [];
 
-        if (sorterOrProperty == null) {
-            sorter = (entryA, entryB) => {
+        if (sortersAndProperties.length === 0) {
+            sorters.push((entryA, entryB) => {
                 if (entryA === entryB) {
                     return 0;
                 } else if (entryA > entryB) {
@@ -113,26 +126,44 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
                 } else {
                     return -1;
                 }
-            };
-        } else if (typeof sorterOrProperty === 'function') {
-            sorter = sorterOrProperty;
+            });
         } else {
-            sorter = (entryA, entryB) => {
-                if (entryA == null && entryB == null) {
-                    return 0;
-                } else if (entryA == null) {
-                    return -1;
-                } else if (entryB == null) {
-                    return 1;
-                } else if (entryA[sorterOrProperty] === entryB[sorterOrProperty]) {
-                    return 0;
-                } else if (entryA[sorterOrProperty] > entryB[sorterOrProperty]) {
-                    return 1;
+            for (let i = 0; i < sortersAndProperties.length; i++) {
+                const sorterOrProperty = sortersAndProperties[i];
+
+                if (typeof sorterOrProperty === 'function') {
+                    sorters.push(sorterOrProperty);
                 } else {
-                    return -1;
+                    sorters.push((entryA, entryB) => {
+                        if (entryA == null && entryB == null) {
+                            return 0;
+                        } else if (entryA == null) {
+                            return -1;
+                        } else if (entryB == null) {
+                            return 1;
+                        } else if (entryA[sorterOrProperty] === entryB[sorterOrProperty]) {
+                            return 0;
+                        } else if (entryA[sorterOrProperty] > entryB[sorterOrProperty]) {
+                            return 1;
+                        } else {
+                            return -1;
+                        }
+                    });
                 }
-            };
+            }
         }
+
+        const sorter: ArrayDataSourceSorter<TEntry> = (entryA, entryB) => {
+            for (let i = 0; i < sorters.length; i++) {
+                const sorterResult = sorters[i](entryA, entryB);
+
+                if (sorterResult) {
+                    return sorterResult;
+                }
+            }
+
+            return 0;
+        };
 
         this.sortProcessor = (data: TEntry[]) => data.sort(sorter);
 

@@ -113,13 +113,43 @@ export class ArrayDataSourceTests {
         Expect(actual).toEqual(expected);
     }
 
-    @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }])
-    @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }])
+    @TestCase(
+        [{ a: 4 }, { a: 2 }, { a: 3 }, { a: 1 }, { a: 5 }],
+        [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }, { a: 5 }],
+        'a'
+    )
+    @TestCase(
+        [{ a: 5 }, { a: 4 }, { a: 3 }, { a: 2 }, { a: 1 }],
+        [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }, { a: 5 }],
+        'a'
+    )
     @Test('sort(property) should add a sorter to the processors')
     public sort3<T>(data: T[], expected: T[], property: keyof T) {
         const dataSource = new ArrayDataSource(data);
 
         const actual = dataSource.sort(property);
+
+        Expect(actual).toEqual(expected);
+    }
+
+    @TestCase(
+        [{ a: 2, b: 3 }, { a: 2, b: 2 }, { a: 2, b: 1 }, { a: 1, b: 2 }, { a: 1, b: 1 }],
+        [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }],
+        [
+            <T extends { a: number; b: number }>(a: T, b: T) => (a.a === b.a ? 0 : a.a > b.a ? 1 : -1),
+            <T extends { a: number; b: number }>(a: T, b: T) => (a.b === b.b ? 0 : a.b > b.b ? 1 : -1)
+        ]
+    )
+    @TestCase(
+        [{ a: 2, b: 3 }, { a: 2, b: 2 }, { a: 2, b: 1 }, { a: 1, b: 2 }, { a: 1, b: 1 }],
+        [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }],
+        ['a', 'b']
+    )
+    @Test('sort(...sortersAndProperties) should add a sorter to the processors')
+    public sort4<T>(data: T[], expected: T[], sortersAndProperties: (ArrayDataSourceSorter<T> | keyof T)[]) {
+        const dataSource = new ArrayDataSource(data);
+
+        const actual = dataSource.sort(...sortersAndProperties);
 
         Expect(actual).toEqual(expected);
     }
