@@ -1,21 +1,21 @@
 import { DataSource, DataSourceProcessor } from './data-source';
 
-export type ArrayDataSourceFilter<TData> = (value: TData, index: number, array: TData[]) => boolean;
-export type ArrayDataSourceSorter<TData> = (data1: TData, data2: TData) => 1 | 0 | -1;
+export type ArrayDataSourceFilter<TEntry> = (value: TEntry, index: number, array: TEntry[]) => boolean;
+export type ArrayDataSourceSorter<TEntry> = (entryA: TEntry, entryB: TEntry) => 1 | 0 | -1;
 
 /**
  * TODO
  */
-export class ArrayDataSource<TData> extends DataSource<TData[]> {
-    protected filterProcessor?: DataSourceProcessor<TData[]>;
-    protected sortProcessor?: DataSourceProcessor<TData[]>;
+export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
+    protected filterProcessor?: DataSourceProcessor<TEntry[]>;
+    protected sortProcessor?: DataSourceProcessor<TEntry[]>;
 
     /**
      * TODO
      *
      * @param data TODO
      */
-    public constructor(data: TData[]) {
+    public constructor(data: TEntry[]) {
         super(data);
     }
 
@@ -24,10 +24,10 @@ export class ArrayDataSource<TData> extends DataSource<TData[]> {
      *
      * @param filter The function to filter the data by
      */
-    public filter(filter: ArrayDataSourceFilter<TData>): TData[] {
+    public filter(filter: ArrayDataSourceFilter<TEntry>): TEntry[] {
         this.removeFilter();
 
-        this.filterProcessor = (data: TData[]) => data.filter(filter);
+        this.filterProcessor = (entry: TEntry[]) => entry.filter(filter);
 
         return this.addProcessor(this.filterProcessor);
     }
@@ -38,7 +38,7 @@ export class ArrayDataSource<TData> extends DataSource<TData[]> {
      * Essentially:
      * (entry) => !!entry
      */
-    public filterBy(): TData[];
+    public filterBy(): TEntry[];
     /**
      * Filters the data by whether the supplied property of each entry is truthy
      *
@@ -47,7 +47,7 @@ export class ArrayDataSource<TData> extends DataSource<TData[]> {
      *
      * @param property The property to filter the data by
      */
-    public filterBy<TKey extends keyof TData>(property: TKey): TData[];
+    public filterBy<TKey extends keyof TEntry>(property: TKey): TEntry[];
     /**
      * Filters the data by strict equality of the supplied property of each entry to the supplied value
      *
@@ -57,8 +57,8 @@ export class ArrayDataSource<TData> extends DataSource<TData[]> {
      * @param property The property to filter the data by
      * @param value The value to filter the data by
      */
-    public filterBy<TKey extends keyof TData, TValue extends TData[TKey]>(property: TKey, value: TValue): TData[];
-    public filterBy<TKey extends keyof TData, TValue extends TData[TKey]>(property?: TKey, value?: TValue): TData[] {
+    public filterBy<TKey extends keyof TEntry, TValue extends TEntry[TKey]>(property: TKey, value: TValue): TEntry[];
+    public filterBy<TKey extends keyof TEntry, TValue extends TEntry[TKey]>(property?: TKey, value?: TValue): TEntry[] {
         return property == null
             ? this.filter(entry => !!entry)
             : arguments.length === 1
@@ -78,12 +78,12 @@ export class ArrayDataSource<TData> extends DataSource<TData[]> {
      *
      * @param sorter The function to sort the data by
      */
-    public sort(sorter: ArrayDataSourceSorter<TData>): TData[] {
+    public sort(sorter: ArrayDataSourceSorter<TEntry>): TEntry[] {
         if (this.sortProcessor) {
             this.removeProcessor(this.sortProcessor);
         }
 
-        this.sortProcessor = (data: TData[]) => data.sort(sorter);
+        this.sortProcessor = (data: TEntry[]) => data.sort(sorter);
 
         return this.addProcessor(this.sortProcessor);
     }
@@ -92,39 +92,39 @@ export class ArrayDataSource<TData> extends DataSource<TData[]> {
      * Sorts the data by comparing each entry
      *
      * Essentially:
-     * (a, b) => a === b ? 0 : a > b ? 1 : -1;
+     * (entryA, entryB) => entryA === entryB ? 0 : entryA > entryB ? 1 : -1;
      */
-    public sortBy(): TData[];
+    public sortBy(): TEntry[];
     /**
      * Sorts the data by comparing the property of each entry
      *
      * Essentially:
-     * (a, b) => a[property] === b[property] ? 0 : a[property] > b[property] ? 1 : -1;
+     * (entryA, entryB) => entryA[property] === entryB[property] ? 0 : entryA[property] > entryB[property] ? 1 : -1;
      *
      * @param property The property to sort the data by
      */
-    public sortBy<TKey extends keyof TData>(property: TKey): TData[];
-    public sortBy<TKey extends keyof TData>(property?: TKey): TData[] {
+    public sortBy<TKey extends keyof TEntry>(property: TKey): TEntry[];
+    public sortBy<TKey extends keyof TEntry>(property?: TKey): TEntry[] {
         return property == null
-            ? this.sort((entry1, entry2) => {
-                  if (entry1 === entry2) {
+            ? this.sort((entryA, entryB) => {
+                  if (entryA === entryB) {
                       return 0;
-                  } else if (entry1 > entry2) {
+                  } else if (entryA > entryB) {
                       return 1;
                   } else {
                       return -1;
                   }
               })
-            : this.sort((entry1, entry2) => {
-                  if (entry1 == null && entry2 == null) {
+            : this.sort((entryA, entryB) => {
+                  if (entryA == null && entryB == null) {
                       return 0;
-                  } else if (entry1 == null) {
+                  } else if (entryA == null) {
                       return -1;
-                  } else if (entry2 == null) {
+                  } else if (entryB == null) {
                       return 1;
-                  } else if (entry1[property] === entry2[property]) {
+                  } else if (entryA[property] === entryB[property]) {
                       return 0;
-                  } else if (entry1[property] > entry2[property]) {
+                  } else if (entryA[property] > entryB[property]) {
                       return 1;
                   } else {
                       return -1;
