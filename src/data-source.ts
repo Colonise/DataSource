@@ -3,7 +3,7 @@ import { NextObserver, PartialObserver, Subscribable, Subscription, Unsubscribab
 export type DataSourceProcessor<TData> = (data: TData) => TData;
 
 /**
- * TODO
+ * A class to handle temporal changes in data while not mutating the original data itself.
  */
 export class DataSource<TData> implements Subscribable<TData> {
     protected data: TData;
@@ -12,9 +12,9 @@ export class DataSource<TData> implements Subscribable<TData> {
     protected subscriptions: Subscription<TData>[] = [];
 
     /**
-     * TODO
+     * Creates a new DataSource with the supplied data
      *
-     * @param data TODO
+     * @param data The data
      */
     public constructor(data: TData) {
         this.data = data;
@@ -43,15 +43,15 @@ export class DataSource<TData> implements Subscribable<TData> {
     /**
      * Subscribes to change events of the data after processing.
      *
-     * @param observer TODO
+     * @param observer The data observer
      */
     public subscribe(observer: PartialObserver<TData>): Unsubscribable;
     /**
      * Subscribes to change events of the data after processing.
      *
-     * @param next TODO
-     * @param error TODO
-     * @param complete TODO
+     * @param next The function that will receive updates of newly processed data
+     * @param error The function that will receive the error if any occurs
+     * @param complete The functions that will be called when the data will no longer change
      */
     public subscribe(
         next: ((value: TData) => void) | undefined,
@@ -91,7 +91,7 @@ export class DataSource<TData> implements Subscribable<TData> {
     /**
      * Unsubscribes the supplied subscription from change events of the data after processing.
      *
-     * @param subscription TODO
+     * @param subscription The subscription that will be unsubscribed
      */
     public unsubscribe(subscription: Unsubscribable): void;
     public unsubscribe(oldSubscription: Unsubscribable) {
@@ -106,9 +106,9 @@ export class DataSource<TData> implements Subscribable<TData> {
     }
 
     /**
-     * TODO
+     * Appends the supplied processor to manipulate the data before it is output.
      *
-     * @param processor TODO
+     * @param processor The data processor to add
      */
     public addProcessor(processor: DataSourceProcessor<TData>) {
         if (this.processors.indexOf(processor) === -1) {
@@ -119,9 +119,9 @@ export class DataSource<TData> implements Subscribable<TData> {
     }
 
     /**
-     * TODO
+     * Removes the supplied processor from manipulating the data output.
      *
-     * @param processor TODO
+     * @param processor The data processor to remove
      */
     public removeProcessor(processor: DataSourceProcessor<TData>): TData;
     public removeProcessor(oldProcessor: DataSourceProcessor<TData>) {

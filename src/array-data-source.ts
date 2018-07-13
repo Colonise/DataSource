@@ -4,51 +4,51 @@ export type ArrayDataSourceFilter<TEntry> = (value: TEntry, index: number, array
 export type ArrayDataSourceSorter<TEntry> = (entryA: TEntry, entryB: TEntry) => 1 | 0 | -1;
 
 /**
- * TODO
+ * A class to handle temporal changes in an array while not mutating the array itself.
  */
 export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     protected filterProcessor?: DataSourceProcessor<TEntry[]>;
     protected sortProcessor?: DataSourceProcessor<TEntry[]>;
 
     /**
-     * TODO
+     * Creates a new ArrayDataSource with the supplied array
      *
-     * @param data TODO
+     * @param array The array
      */
-    public constructor(data: TEntry[]) {
-        super(data);
+    public constructor(array: TEntry[]) {
+        super(array);
     }
 
     /**
-     * Filters the data by whether the entry is truthy
+     * Filters the array by whether the entry is truthy
      *
      * Essentially:
      * (entry) => !!entry
      */
     public filter(): TEntry[];
     /**
-     * Filters the data by passing each entry to the supplied filter
+     * Filters the array by passing each entry to the supplied filter
      *
-     * @param filter The function to filter the data by
+     * @param filter The function to filter the array by
      */
     public filter(filter: ArrayDataSourceFilter<TEntry>): TEntry[];
     /**
-     * Filters the data by whether the supplied property of each entry is truthy
+     * Filters the array by whether the supplied property of each entry is truthy
      *
      * Essentially:
      * (entry) => !!entry[property]
      *
-     * @param property The property to filter the data by
+     * @param property The property to filter the array by
      */
     public filter<TKey extends keyof TEntry>(property: TKey): TEntry[];
     /**
-     * Filters the data by strict equality of the supplied property of each entry to the supplied value
+     * Filters the array by strict equality of the supplied property of each entry to the supplied value
      *
      * Essentially:
      * (entry) => entry[property] === value
      *
-     * @param property The property to filter the data by
-     * @param value The value to filter the data by
+     * @param property The property to filter the array by
+     * @param value The value to filter the array by
      */
     public filter<TKey extends keyof TEntry, TValue extends TEntry[TKey]>(property: TKey, value: TValue): TEntry[];
     public filter<TKey extends keyof TEntry, TValue extends TEntry[TKey]>(
@@ -73,44 +73,44 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     }
 
     /**
-     * Removes the data filter if it exists
+     * Removes the array filter
      */
     public removeFilter() {
         return this.filterProcessor ? this.removeProcessor(this.filterProcessor) : this.processedData;
     }
 
     /**
-     * Sorts the data by comparing each entry.
+     * Sorts the array by comparing each entry.
      */
     public sort(): TEntry[];
     /**
-     * Sorts the data using the supplied sorter to compare each entry.
+     * Sorts the array using the supplied sorter to compare each entry.
      *
-     * @param sorter The function to sort the data by
+     * @param sorter The function to sort the array by
      */
     public sort(sorter: ArrayDataSourceSorter<TEntry>): TEntry[];
     /**
-     * Sorts the data using the supplied sorters to compare each entry.
+     * Sorts the array using the supplied sorters to compare each entry.
      *
-     * @param sorter The function to sort the data by
+     * @param sorter The function to sort the array by
      */
     public sort(...sorters: ArrayDataSourceSorter<TEntry>[]): TEntry[];
     /**
-     * Sorts the data by comparing the property of each entry.
+     * Sorts the array by comparing the property of each entry.
      *
-     * @param property The property to sort the data by
+     * @param property The property to sort the array by
      */
     public sort<TKey extends keyof TEntry>(property: TKey): TEntry[];
     /**
-     * Sorts the data by comparing the properties of each entry.
+     * Sorts the array by comparing the properties of each entry.
      *
-     * @param property The property to sort the data by
+     * @param property The property to sort the array by
      */
     public sort<TKey extends keyof TEntry>(...properties: TKey[]): TEntry[];
     /**
-     * Sorts the data using the supplied sorters and by comparing the properties of each entry.
+     * Sorts the array using the supplied sorters and by comparing the properties of each entry.
      *
-     * @param property The property to sort the data by
+     * @param property The property to sort the array by
      */
     public sort<TKey extends keyof TEntry>(...sortersAndProperties: (ArrayDataSourceSorter<TEntry> | TKey)[]): TEntry[];
     public sort<TKey extends keyof TEntry>(): TEntry[] {
@@ -165,13 +165,13 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
             return 0;
         };
 
-        this.sortProcessor = (data: TEntry[]) => data.sort(sorter);
+        this.sortProcessor = (array: TEntry[]) => array.sort(sorter);
 
         return this.addProcessor(this.sortProcessor);
     }
 
     /**
-     * Removes the data sort if it exists
+     * Removes the array sorter
      */
     public removeSort() {
         return this.sortProcessor ? this.removeProcessor(this.sortProcessor) : this.processedData;
