@@ -59,11 +59,13 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      */
     public filterBy<TKey extends keyof TEntry, TValue extends TEntry[TKey]>(property: TKey, value: TValue): TEntry[];
     public filterBy<TKey extends keyof TEntry, TValue extends TEntry[TKey]>(property?: TKey, value?: TValue): TEntry[] {
-        return property == null
-            ? this.filter(entry => !!entry)
-            : arguments.length === 1
-                ? this.filter(entry => !!entry[property])
-                : this.filter(entry => entry[property] === value);
+        if (property == null) {
+            return this.filter(entry => !!entry);
+        } else if (arguments.length === 1) {
+            return this.filter(entry => !!entry[property]);
+        } else {
+            return this.filter(entry => entry[property] === value);
+        }
     }
 
     /**
@@ -105,31 +107,33 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      */
     public sortBy<TKey extends keyof TEntry>(property: TKey): TEntry[];
     public sortBy<TKey extends keyof TEntry>(property?: TKey): TEntry[] {
-        return property == null
-            ? this.sort((entryA, entryB) => {
-                  if (entryA === entryB) {
-                      return 0;
-                  } else if (entryA > entryB) {
-                      return 1;
-                  } else {
-                      return -1;
-                  }
-              })
-            : this.sort((entryA, entryB) => {
-                  if (entryA == null && entryB == null) {
-                      return 0;
-                  } else if (entryA == null) {
-                      return -1;
-                  } else if (entryB == null) {
-                      return 1;
-                  } else if (entryA[property] === entryB[property]) {
-                      return 0;
-                  } else if (entryA[property] > entryB[property]) {
-                      return 1;
-                  } else {
-                      return -1;
-                  }
-              });
+        if (property == null) {
+            return this.sort((entryA, entryB) => {
+                if (entryA === entryB) {
+                    return 0;
+                } else if (entryA > entryB) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
+        } else {
+            return this.sort((entryA, entryB) => {
+                if (entryA == null && entryB == null) {
+                    return 0;
+                } else if (entryA == null) {
+                    return -1;
+                } else if (entryB == null) {
+                    return 1;
+                } else if (entryA[property] === entryB[property]) {
+                    return 0;
+                } else if (entryA[property] > entryB[property]) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
+        }
     }
 
     /**
