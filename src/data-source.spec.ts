@@ -1,6 +1,5 @@
 import { createFunctionSpy, Expect, IgnoreTest, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
 import { DataSource, DataSourceProcessor } from './data-source';
-import { PartialObserver } from './rx-subscribable';
 
 @TestFixture('DataSource')
 export class DataSourceTests {
@@ -42,8 +41,6 @@ export class DataSourceTests {
         const get1 = dataSource.get();
         dataSource.set(data2);
         const get2 = dataSource.get();
-
-        Expect(data1).not.toBe(data2); // Validate Test Case
 
         Expect(get1).toEqual(data1);
         Expect(get2).toEqual(data2);
@@ -163,5 +160,44 @@ export class DataSourceTests {
         Expect(unsubscribeSpy)
             .toHaveBeenCalledWith(subscription)
             .exactly(1);
+    }
+
+    @TestCase(
+        { a: 1, b: 2 },
+        { key1: 'a', key2: 'b' },
+
+        <T>(data: T) => {
+            const newData: any = {};
+
+            Object.keys(data).forEach(key => (newData[data[<keyof T>key]] = key));
+
+            return newData;
+        },
+        <T>(data: T) => {
+            const newData: any = {};
+
+            Object.keys(data).forEach(key => (newData[`key${key}`] = data[<keyof T>key]));
+
+            return newData;
+        }
+    )
+    @Test('processData() should correctly process the data with preprocessors, then processors')
+    public processData1<T>(
+        data: T,
+        expected: T,
+        preprocessor: DataSourceProcessor<T>,
+        processor: DataSourceProcessor<T>
+    ) {
+        const dataSource = new DataSource(data);
+
+        const get1 = dataSource.get();
+        // tslint:disable-next-line:no-string-literal
+        dataSource['preprocessors'] = [preprocessor];
+        const get2 = dataSource.get();
+        dataSource.addProcessor(processor);
+        const get3 = dataSource.get();
+
+        Expect(get1).toBe(get2);
+        Expect(get3).toEqual(expected);
     }
 }

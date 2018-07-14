@@ -7,8 +7,8 @@ export type ArrayDataSourceSorter<TEntry> = (entryA: TEntry, entryB: TEntry) => 
  * A class to handle temporal changes in an array while not mutating the array itself.
  */
 export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
-    protected filterProcessor?: DataSourceProcessor<TEntry[]>;
-    protected sortProcessor?: DataSourceProcessor<TEntry[]>;
+    protected filterProcessor: DataSourceProcessor<TEntry[]> = this.createNoopProcessor();
+    protected sortProcessor: DataSourceProcessor<TEntry[]> = this.createNoopProcessor();
 
     /**
      * Creates a new ArrayDataSource with the supplied array.
@@ -17,6 +17,13 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      */
     public constructor(array: TEntry[]) {
         super(array);
+
+        this.preprocessors.push(data => {
+            const filteredData = this.filterProcessor(data);
+            const sortedData = this.sortProcessor(filteredData);
+
+            return sortedData;
+        });
     }
 
     /**
@@ -61,14 +68,16 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
 
         this.filterProcessor = (entry: TEntry[]) => entry.filter(filter);
 
-        return this.addProcessor(this.filterProcessor);
+        return this.processData();
     }
 
     /**
      * Removes the array filter
      */
     public removeFilter() {
-        return this.filterProcessor ? this.removeProcessor(this.filterProcessor) : this.processedData;
+        this.filterProcessor = this.createNoopProcessor();
+
+        return this.processData();
     }
 
     /**
@@ -160,13 +169,15 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
 
         this.sortProcessor = (array: TEntry[]) => array.sort(sorter);
 
-        return this.addProcessor(this.sortProcessor);
+        return this.processData();
     }
 
     /**
      * Removes the array sorter.
      */
     public removeSort() {
-        return this.sortProcessor ? this.removeProcessor(this.sortProcessor) : this.processedData;
+        this.sortProcessor = this.createNoopProcessor();
+
+        return this.processData();
     }
 }

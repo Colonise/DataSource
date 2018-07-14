@@ -6,19 +6,18 @@ export type DataSourceProcessor<TData> = (data: TData) => TData;
  * A class to handle temporal changes in data while not mutating the original data itself.
  */
 export class DataSource<TData> implements Subscribable<TData> {
-    protected data: TData;
     protected processedData: TData;
     protected processors: DataSourceProcessor<TData>[] = [];
+    protected preprocessors: DataSourceProcessor<TData>[] = [];
     protected subscriptions: DataSourceSubscription<TData>[] = [];
 
     /**
      * Creates a new DataSource with the supplied data.
      *
      * @param data The data.
+     * @param preprocessors The preprocessors that have precedence over the processors.
      */
-    public constructor(data: TData) {
-        this.data = data;
-
+    public constructor(protected data: TData) {
         this.processedData = this.cloneData();
     }
 
@@ -113,9 +112,11 @@ export class DataSource<TData> implements Subscribable<TData> {
     public addProcessor(processor: DataSourceProcessor<TData>) {
         if (this.processors.indexOf(processor) === -1) {
             this.processors.push(processor);
+
+            return this.processData();
         }
 
-        return this.processData();
+        return this.processedData;
     }
 
     /**
@@ -134,7 +135,11 @@ export class DataSource<TData> implements Subscribable<TData> {
             }
         });
 
-        return this.processors !== originalProcessors ? this.processData() : this.processedData;
+        return this.processors.length < originalProcessors.length ? this.processData() : this.processedData;
+    }
+
+    protected createNoopProcessor(): DataSourceProcessor<TData> {
+        return data => data;
     }
 
     protected cloneData(): TData {
@@ -148,13 +153,17 @@ export class DataSource<TData> implements Subscribable<TData> {
     }
 
     protected processData() {
-        let data = this.cloneData();
+        let clonedData = this.cloneData();
 
-        this.processors.forEach(processor => {
-            data = processor(data);
+        this.preprocessors.forEach(preprocessors => {
+            clonedData = preprocessors(clonedData);
         });
 
-        this.processedData = data;
+        this.processors.forEach(processor => {
+            clonedData = processor(clonedData);
+        });
+
+        this.processedData = clonedData;
 
         this.subscriptions.forEach(subscription => {
             if (subscription.observer.next) {
