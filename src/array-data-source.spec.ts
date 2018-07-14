@@ -1,5 +1,6 @@
-import { Any, Expect, IgnoreTest, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
-import { ArrayDataSource, ArrayDataSourceFilter, ArrayDataSourceSorter } from './array-data-source';
+import { Any, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
+import { ArrayDataSource } from './array-data-source';
+import { ArrayDataSourceFilter, ArrayDataSourcePager, ArrayDataSourceSorter } from './processors';
 
 @TestFixture('ArrayDataSource')
 export class ArrayDataSourceTests {
@@ -21,11 +22,11 @@ export class ArrayDataSourceTests {
 
     @TestCase([0, 1, 2, 3, 4, 5], [1, 2, 3, 4, 5])
     @TestCase([0, '', undefined, null, false], [])
-    @Test('filter() should add a filter to the processors')
-    public filter1<T>(data: T[], expected: T[]) {
+    @Test('setFilter() should add a filter to the processors')
+    public setFilter1<T>(data: T[], expected: T[]) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual = dataSource.filter();
+        const actual = dataSource.setFilter();
 
         Expect(actual).toEqual(expected);
     }
@@ -33,13 +34,13 @@ export class ArrayDataSourceTests {
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 0 }, { a: 0 }], (data: { a: 1 | 0 }) => !data.a)
     @TestCase([1, 2, 3, 4, 5], [1, 3, 5], (data: number) => data % 2 !== 0)
     @TestCase([0, '', undefined, null, false], [], (data: any) => !!data)
-    @Test('filter(filter) should add a filter to the processors')
-    public filter2<T>(data: T[], expected: T[], filter: ArrayDataSourceFilter<T>) {
+    @Test('setFilter(filter) should add a filter to the processors')
+    public setFilter2<T>(data: T[], expected: T[], filter: ArrayDataSourceFilter<T>) {
         const dataSource = new ArrayDataSource(data);
         const spyable = { filter };
         const filterSpy = SpyOn(spyable, 'filter');
 
-        const actual = dataSource.filter(spyable.filter);
+        const actual = dataSource.setFilter(spyable.filter);
 
         Expect(filterSpy)
             .toHaveBeenCalledWith(Any, Any(Number), Any(Array))
@@ -49,46 +50,46 @@ export class ArrayDataSourceTests {
 
     @TestCase([[], [1], [2], [3], []], [[1], [2], [3]], 'length')
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 1 }, { a: 1 }, { a: 1 }], 'a')
-    @Test('filter(property) should add a filter to the processors')
-    public filter3<T>(data: T[], expected: T[], property: keyof T) {
+    @Test('setFilter(property) should add a filter to the processors')
+    public setFilter3<T>(data: T[], expected: T[], property: keyof T) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual = dataSource.filter(property);
+        const actual = dataSource.setFilter(property);
 
         Expect(actual).toEqual(expected);
     }
 
     @TestCase([[], [1], [2], [3], []], [[], []], 'length', 0)
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 0 }, { a: 0 }], 'a', 0)
-    @Test('filter(property, value) should add a filter to the processors')
-    public filter4<T>(data: T[], expected: T[], property: keyof T, value: T[keyof T]) {
+    @Test('setFilter(property, value) should add a filter to the processors')
+    public setFilter4<T>(data: T[], expected: T[], property: keyof T, value: T[keyof T]) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual = dataSource.filter(property, value);
+        const actual = dataSource.setFilter(property, value);
 
         Expect(actual).toEqual(expected);
     }
 
-    @TestCase([0, '', undefined, null, false], [])
-    @TestCase([0, 1, 2, 3, 4, 5], [1, 2, 3, 4, 5])
+    @TestCase([0, '', undefined, null, false])
+    @TestCase([0, 1, 2, 3, 4, 5])
     @Test('removeFilter() should remove a filter from the processors')
-    public removeFilter1<T>(data: T[], expectedFiltered: T[]) {
+    public removeFilter1<T>(data: T[]) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual1 = dataSource.filter(entry => !!entry);
+        const actual1 = dataSource.setFilter(entry => !!entry);
         const actual2 = dataSource.removeFilter();
 
-        Expect(actual1).toEqual(expectedFiltered);
+        Expect(actual1).not.toEqual(data);
         Expect(actual2).toEqual(data);
     }
 
     @TestCase(['a', 'e', 'b', 'd', 'c'], ['a', 'b', 'c', 'd', 'e'])
     @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5])
-    @Test('sort() should add a sorter to the processors')
-    public sort1<T>(data: T[], expected: T[]) {
+    @Test('setSorter() should add a sorter to the processors')
+    public setSorter1<T>(data: T[], expected: T[]) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual = dataSource.sort();
+        const actual = dataSource.setSorter();
 
         Expect(actual).toEqual(expected);
     }
@@ -99,13 +100,13 @@ export class ArrayDataSourceTests {
         (a: string, b: string) => (a === b ? 0 : a > b ? 1 : -1)
     )
     @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5], (a: number, b: number) => (a === b ? 0 : a > b ? 1 : -1))
-    @Test('sort(sorter) should add a sorter to the processors')
-    public sort2<T>(data: T[], expected: T[], sorter: ArrayDataSourceSorter<T>) {
+    @Test('setSorter(sorter) should add a sorter to the processors')
+    public setSorter2<T>(data: T[], expected: T[], sorter: ArrayDataSourceSorter<T>) {
         const dataSource = new ArrayDataSource(data);
         const spyable = { sorter };
         const sorterSpy = SpyOn(spyable, 'sorter');
 
-        const actual = dataSource.sort(spyable.sorter);
+        const actual = dataSource.setSorter(spyable.sorter);
 
         Expect(sorterSpy)
             .toHaveBeenCalledWith(Any, Any)
@@ -123,11 +124,11 @@ export class ArrayDataSourceTests {
         [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }, { a: 5 }],
         'a'
     )
-    @Test('sort(property) should add a sorter to the processors')
-    public sort3<T>(data: T[], expected: T[], property: keyof T) {
+    @Test('setSorter(property) should add a sorter to the processors')
+    public setSorter3<T>(data: T[], expected: T[], property: keyof T) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual = dataSource.sort(property);
+        const actual = dataSource.setSorter(property);
 
         Expect(actual).toEqual(expected);
     }
@@ -145,11 +146,11 @@ export class ArrayDataSourceTests {
         [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }],
         ['a', 'b']
     )
-    @Test('sort(...sortersAndProperties) should add a sorter to the processors')
-    public sort4<T>(data: T[], expected: T[], sortersAndProperties: (ArrayDataSourceSorter<T> | keyof T)[]) {
+    @Test('setSorter(...sortersAndProperties) should add a sorter to the processors')
+    public setSorter4<T>(data: T[], expected: T[], sortersAndProperties: (ArrayDataSourceSorter<T> | keyof T)[]) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual = dataSource.sort(...sortersAndProperties);
+        const actual = dataSource.setSorter(...sortersAndProperties);
 
         Expect(actual).toEqual(expected);
     }
@@ -157,13 +158,38 @@ export class ArrayDataSourceTests {
     @TestCase(['a', 'e', 'b', 'd', 'c'], ['a', 'b', 'c', 'd', 'e'])
     @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5])
     @Test('removeSort() should remove a sorter from the processors')
-    public removeSort1<T>(data: T[], expectedSorted: T[]) {
+    public removeSorter1<T>(data: T[]) {
         const dataSource = new ArrayDataSource(data);
 
-        const actual1 = dataSource.sort((a, b) => (a === b ? 0 : a > b ? 1 : -1));
-        const actual2 = dataSource.removeSort();
+        const actual1 = dataSource.setSorter((a, b) => (a === b ? 0 : a > b ? 1 : -1));
+        const actual2 = dataSource.removeSorter();
 
-        Expect(actual1).toEqual(expectedSorted);
+        Expect(actual1).not.toEqual(data);
+        Expect(actual2).toEqual(data);
+    }
+
+    @TestCase([1, 2, 3, 4, 5], [1, 2, 3], 1, 3)
+    @TestCase([1, 2, 3, 4, 5], [4, 5], 2, 3)
+    @TestCase([1, 2, 3, 4, 5], [], 3, 3)
+    @Test('setPager(page, pageSize) should add a pager to the processors')
+    public setPager1<T>(data: T[], expected: T[], page: number, pageSize: number) {
+        const dataSource = new ArrayDataSource(data);
+
+        const actual = dataSource.setPager(page, pageSize);
+
+        Expect(actual).toEqual(expected);
+    }
+
+    @TestCase(['a', 'e', 'b', 'd', 'c'])
+    @TestCase([5, 4, 3, 2, 1])
+    @Test('removePager() should remove a sorter from the processors')
+    public removePager1<T>(data: T[]) {
+        const dataSource = new ArrayDataSource(data);
+
+        const actual1 = dataSource.setPager(1, 5);
+        const actual2 = dataSource.removePager();
+
+        Expect(actual1).not.toEqual(data);
         Expect(actual2).toEqual(data);
     }
 }

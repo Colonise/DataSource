@@ -1,6 +1,5 @@
+import { DataSourceProcessor } from './processors';
 import { DataSourceSubscription, NextObserver, PartialObserver, Subscribable, Unsubscribable } from './rx-subscribable';
-
-export type DataSourceProcessor<TData> = (data: TData) => TData;
 
 /**
  * A class to handle temporal changes in data while not mutating the original data itself.
