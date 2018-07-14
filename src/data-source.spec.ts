@@ -1,6 +1,6 @@
-import { createFunctionSpy, Expect, IgnoreTest, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
+import { createFunctionSpy, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
 import { DataSource } from './data-source';
-import { DataSourceProcessor } from './processors';
+import { Processor } from './processors/processor';
 
 @TestFixture('DataSource')
 export class DataSourceTests {
@@ -58,7 +58,7 @@ export class DataSourceTests {
         return data;
     })
     @Test('addProcessor() should add a processor')
-    public addProcessor1<T>(data: T, expected: T, processor: DataSourceProcessor<any>) {
+    public addProcessor1<T>(data: T, expected: T, processor: Processor<any>) {
         const dataSource = new DataSource(data);
         const spyable = { processor };
         const spy = SpyOn(spyable, 'processor');
@@ -87,7 +87,7 @@ export class DataSourceTests {
         return data;
     })
     @Test('removeProcessor() should remove a processor')
-    public removeProcessor1<T>(data: T, processor: DataSourceProcessor<any>) {
+    public removeProcessor1<T>(data: T, processor: Processor<any>) {
         const dataSource = new DataSource(data);
         const spyable = { processor };
         const spy = SpyOn(spyable, 'processor');
@@ -186,8 +186,8 @@ export class DataSourceTests {
     public processData1<T>(
         data: T,
         expected: T,
-        preprocessor: DataSourceProcessor<T>,
-        processor: DataSourceProcessor<T>
+        preprocessor: Processor<T>,
+        processor: Processor<T>
     ) {
         const dataSource = new DataSource(data);
 

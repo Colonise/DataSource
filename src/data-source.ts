@@ -1,4 +1,5 @@
-import { DataSourceProcessor } from './processors';
+import { CachedProcessor, ComplexProcessor } from './processors';
+import { Processor } from './processors/processor';
 import { DataSourceSubscription, NextObserver, PartialObserver, Subscribable, Unsubscribable } from './rx-subscribable';
 
 /**
@@ -6,8 +7,8 @@ import { DataSourceSubscription, NextObserver, PartialObserver, Subscribable, Un
  */
 export class DataSource<TData> implements Subscribable<TData> {
     protected processedData: TData;
-    protected processors: DataSourceProcessor<TData>[] = [];
-    protected preprocessors: DataSourceProcessor<TData>[] = [];
+    protected processors: Processor<TData>[] = [];
+    protected preprocessors: Processor<TData>[] = [];
     protected subscriptions: DataSourceSubscription<TData>[] = [];
 
     /**
@@ -108,7 +109,7 @@ export class DataSource<TData> implements Subscribable<TData> {
      *
      * @param processor The data processor to add.
      */
-    public addProcessor(processor: DataSourceProcessor<TData>) {
+    public addProcessor(processor: Processor<TData>) {
         if (this.processors.indexOf(processor) === -1) {
             this.processors.push(processor);
 
@@ -123,8 +124,8 @@ export class DataSource<TData> implements Subscribable<TData> {
      *
      * @param processor The data processor to remove.
      */
-    public removeProcessor(processor: DataSourceProcessor<TData>): TData;
-    public removeProcessor(oldProcessor: DataSourceProcessor<TData>) {
+    public removeProcessor(processor: Processor<TData>): TData;
+    public removeProcessor(oldProcessor: Processor<TData>) {
         const originalProcessors = this.processors;
         this.processors = [];
 
@@ -137,7 +138,7 @@ export class DataSource<TData> implements Subscribable<TData> {
         return this.processors.length < originalProcessors.length ? this.processData() : this.processedData;
     }
 
-    protected createNoopProcessor(): DataSourceProcessor<TData> {
+    protected createNoopProcessor(): Processor<TData> {
         return data => data;
     }
 
@@ -151,15 +152,23 @@ export class DataSource<TData> implements Subscribable<TData> {
         }
     }
 
+    protected runProcessor(processor: Processor<TData>, data: TData): TData {
+        if (processor instanceof ComplexProcessor) {
+            return processor.process(data);
+        } else {
+            return processor(data);
+        }
+    }
+
     protected processData() {
         let clonedData = this.cloneData();
 
         this.preprocessors.forEach(preprocessors => {
-            clonedData = preprocessors(clonedData);
+            clonedData = this.runProcessor(preprocessors, clonedData);
         });
 
         this.processors.forEach(processor => {
-            clonedData = processor(clonedData);
+            clonedData = this.runProcessor(processor, clonedData);
         });
 
         this.processedData = clonedData;
