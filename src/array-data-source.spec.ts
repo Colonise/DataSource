@@ -49,7 +49,7 @@ export class ArrayDataSourceTests {
 
     @TestCase([[], [1], [2], [3], []], [[1], [2], [3]], 'length')
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 1 }, { a: 1 }, { a: 1 }], 'a')
-    @Test('filterBy(property) should add a filter to the processors')
+    @Test('filter(property) should add a filter to the processors')
     public filter3<T>(data: T[], expected: T[], property: keyof T) {
         const dataSource = new ArrayDataSource(data);
 
@@ -60,7 +60,7 @@ export class ArrayDataSourceTests {
 
     @TestCase([[], [1], [2], [3], []], [[], []], 'length', 0)
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 0 }, { a: 0 }], 'a', 0)
-    @Test('filterBy(property, value) should add a filter to the processors')
+    @Test('filter(property, value) should add a filter to the processors')
     public filter4<T>(data: T[], expected: T[], property: keyof T, value: T[keyof T]) {
         const dataSource = new ArrayDataSource(data);
 
