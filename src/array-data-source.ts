@@ -1,14 +1,41 @@
-import { DataSource, DataSourceProcessor } from './data-source';
-
-export type ArrayDataSourceFilter<TEntry> = (value: TEntry, index: number, array: TEntry[]) => boolean;
-export type ArrayDataSourceSorter<TEntry> = (entryA: TEntry, entryB: TEntry) => 1 | 0 | -1;
+import { DataSource } from './data-source';
+import {
+    ArrayDataSourceFilter,
+    ArrayDataSourceFilterProcessor,
+    ArrayDataSourcePagerProcessor,
+    ArrayDataSourceSorter,
+    ArrayDataSourceSorterProcessor,
+    DataSourceProcessor
+} from './processors';
 
 /**
  * A class to handle temporal changes in an array while not mutating the array itself.
  */
 export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
-    protected filterProcessor: DataSourceProcessor<TEntry[]> = this.createNoopProcessor();
-    protected sortProcessor: DataSourceProcessor<TEntry[]> = this.createNoopProcessor();
+    protected filterProcessor: ArrayDataSourceFilterProcessor<TEntry> = {
+        processor: array => array.filter(this.filterProcessor.filter),
+        filter: () => true,
+        active: false
+    };
+
+    protected sorterProcessor: ArrayDataSourceSorterProcessor<TEntry> = {
+        processor: array => array.sort(this.sorterProcessor.sorter),
+        sorter: () => 0,
+        active: false
+    };
+
+    protected pagerProcessor: ArrayDataSourcePagerProcessor<TEntry> = {
+        processor: array => this.pagerProcessor.pager(this.pagerProcessor.page, this.pagerProcessor.pageSize, array),
+        pager: (page, pageSize, array) => {
+            const start = pageSize * (page - 1);
+            const end = start + pageSize;
+
+            return array.slice(start, end);
+        },
+        active: false,
+        page: 1,
+        pageSize: 20
+    };
 
     /**
      * Creates a new ArrayDataSource with the supplied array.
@@ -18,30 +45,41 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     public constructor(array: TEntry[]) {
         super(array);
 
-        this.preprocessors.push(data => {
-            const filteredData = this.filterProcessor(data);
-            const sortedData = this.sortProcessor(filteredData);
+        this.preprocessors.push(unprocessedArray => {
+            let preprocessedArray = unprocessedArray;
 
-            return sortedData;
+            if (this.filterProcessor.active) {
+                preprocessedArray = this.filterProcessor.processor(preprocessedArray);
+            }
+
+            if (this.sorterProcessor.active) {
+                preprocessedArray = this.sorterProcessor.processor(preprocessedArray);
+            }
+
+            if (this.pagerProcessor.active) {
+                preprocessedArray = this.pagerProcessor.processor(preprocessedArray);
+            }
+
+            return preprocessedArray;
         });
     }
 
     /**
      * Filters the array by checking whether the entry is truthy.
      */
-    public filter(): TEntry[];
+    public setFilter(): TEntry[];
     /**
      * Filters the array by passing each entry to the supplied filter.
      *
      * @param filter The function to filter the array by
      */
-    public filter(filter: ArrayDataSourceFilter<TEntry>): TEntry[];
+    public setFilter(filter: ArrayDataSourceFilter<TEntry>): TEntry[];
     /**
      * Filters the array by checking whether the supplied property of each entry is truthy.
      *
      * @param property The property to filter the array by
      */
-    public filter<TKey extends keyof TEntry>(property: TKey): TEntry[];
+    public setFilter<TKey extends keyof TEntry>(property: TKey): TEntry[];
     /**
      * Filters the array by comparing the supplied property of each entry
      * to the supplied value, using strict equality.
@@ -49,24 +87,22 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      * @param property The property to filter the array by.
      * @param value The value to filter the array by.
      */
-    public filter<TKey extends keyof TEntry, TValue extends TEntry[TKey]>(property: TKey, value: TValue): TEntry[];
-    public filter<TKey extends keyof TEntry, TValue extends TEntry[TKey]>(
+    public setFilter<TKey extends keyof TEntry, TValue extends TEntry[TKey]>(property: TKey, value: TValue): TEntry[];
+    public setFilter<TKey extends keyof TEntry, TValue extends TEntry[TKey]>(
         filterOrProperty?: ArrayDataSourceFilter<TEntry> | TKey,
         value?: TValue
     ): TEntry[] {
-        let filter: ArrayDataSourceFilter<TEntry>;
-
         if (filterOrProperty == null) {
-            filter = entry => !!entry;
+            this.filterProcessor.filter = entry => !!entry;
         } else if (typeof filterOrProperty === 'function') {
-            filter = filterOrProperty;
+            this.filterProcessor.filter = filterOrProperty;
         } else if (arguments.length === 1) {
-            filter = entry => !!entry[filterOrProperty];
+            this.filterProcessor.filter = entry => !!entry[filterOrProperty];
         } else {
-            filter = entry => entry[filterOrProperty] === value;
+            this.filterProcessor.filter = entry => entry[filterOrProperty] === value;
         }
 
-        this.filterProcessor = (entry: TEntry[]) => entry.filter(filter);
+        this.filterProcessor.active = true;
 
         return this.processData();
     }
@@ -75,7 +111,7 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      * Removes the array filter
      */
     public removeFilter() {
-        this.filterProcessor = this.createNoopProcessor();
+        this.filterProcessor.active = false;
 
         return this.processData();
     }
@@ -83,39 +119,41 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     /**
      * Sorts the array by comparing each entry using strict equality.
      */
-    public sort(): TEntry[];
+    public setSorter(): TEntry[];
     /**
      * Sorts the array using the supplied sorter to compare each entry.
      *
      * @param sorter The function to sort the array by
      */
-    public sort(sorter: ArrayDataSourceSorter<TEntry>): TEntry[];
+    public setSorter(sorter: ArrayDataSourceSorter<TEntry>): TEntry[];
     /**
      * Sorts the array using the supplied sorters to compare each entry.
      *
      * @param sorter The function to sort the array by
      */
-    public sort(...sorters: ArrayDataSourceSorter<TEntry>[]): TEntry[];
+    public setSorter(...sorters: ArrayDataSourceSorter<TEntry>[]): TEntry[];
     /**
      * Sorts the array by comparing the property of each entry using strict equality.
      *
      * @param property The property to sort the array by
      */
-    public sort<TKey extends keyof TEntry>(property: TKey): TEntry[];
+    public setSorter<TKey extends keyof TEntry>(property: TKey): TEntry[];
     /**
      * Sorts the array by comparing the properties of each entry.
      *
      * @param property The property to sort the array by
      */
-    public sort<TKey extends keyof TEntry>(...properties: TKey[]): TEntry[];
+    public setSorter<TKey extends keyof TEntry>(...properties: TKey[]): TEntry[];
     /**
      * Sorts the array using the supplied sorters and by comparing the supplied
      * properties of each entry, using strict equality.
      *
      * @param property The property to sort the array by
      */
-    public sort<TKey extends keyof TEntry>(...sortersAndProperties: (ArrayDataSourceSorter<TEntry> | TKey)[]): TEntry[];
-    public sort<TKey extends keyof TEntry>(): TEntry[] {
+    public setSorter<TKey extends keyof TEntry>(
+        ...sortersAndProperties: (ArrayDataSourceSorter<TEntry> | TKey)[]
+    ): TEntry[];
+    public setSorter<TKey extends keyof TEntry>(): TEntry[] {
         const sortersAndProperties: TypedArguments<ArrayDataSourceSorter<TEntry> | TKey> = arguments;
         const sorters: ArrayDataSourceSorter<TEntry>[] = [];
 
@@ -155,7 +193,7 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
             }
         }
 
-        const sorter: ArrayDataSourceSorter<TEntry> = (entryA, entryB) => {
+        this.sorterProcessor.sorter = (entryA, entryB) => {
             for (let i = 0; i < sorters.length; i++) {
                 const sorterResult = sorters[i](entryA, entryB);
 
@@ -167,7 +205,7 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
             return 0;
         };
 
-        this.sortProcessor = (array: TEntry[]) => array.sort(sorter);
+        this.sorterProcessor.active = true;
 
         return this.processData();
     }
@@ -175,8 +213,54 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     /**
      * Removes the array sorter.
      */
-    public removeSort() {
-        this.sortProcessor = this.createNoopProcessor();
+    public removeSorter() {
+        this.sorterProcessor.active = false;
+
+        return this.processData();
+    }
+
+    /**
+     * Reduces the processed array to the supplied page size, offset by the supplied page multipled by the page size.
+     *
+     * @param page The 1-based page number.
+     * @param pageSize The number of pages to show per page.
+     */
+    public setPager(page: number = this.pagerProcessor.page, pageSize: number = this.pagerProcessor.pageSize) {
+        this.pagerProcessor.page = page;
+        this.pagerProcessor.pageSize = pageSize;
+
+        this.pagerProcessor.active = true;
+
+        return this.processData();
+    }
+
+    /**
+     * Removes the array pager.
+     */
+    public removePager() {
+        this.pagerProcessor.active = false;
+
+        return this.processData();
+    }
+
+    /**
+     * Sets the pager's page.
+     *
+     * @param page The 1-based page number.
+     */
+    public setPage(page: number) {
+        this.pagerProcessor.page = page;
+
+        return this.processData();
+    }
+
+    /**
+     * Sets the pager's page size.
+     *
+     * @param pageSize The number of pages to show per page.
+     */
+    public setPageSize(pageSize: number) {
+        this.pagerProcessor.pageSize = pageSize;
 
         return this.processData();
     }

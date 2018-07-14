@@ -1,5 +1,6 @@
 import { createFunctionSpy, Expect, IgnoreTest, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
-import { DataSource, DataSourceProcessor } from './data-source';
+import { DataSource } from './data-source';
+import { DataSourceProcessor } from './processors';
 
 @TestFixture('DataSource')
 export class DataSourceTests {
