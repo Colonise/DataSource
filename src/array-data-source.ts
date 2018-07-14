@@ -8,6 +8,9 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     // tslint:disable-next-line:variable-name
     protected _filter?: FilterProcessor<TEntry>;
 
+    /**
+     * TODO
+     */
     get filter(): FilterProcessor<TEntry> | undefined {
         return this._filter;
     }
@@ -20,6 +23,9 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     // tslint:disable-next-line:variable-name
     protected _sorter?: SorterProcessor<TEntry>;
 
+    /**
+     * TODO
+     */
     get sorter(): SorterProcessor<TEntry> | undefined {
         return this._sorter;
     }
@@ -32,6 +38,9 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     // tslint:disable-next-line:variable-name
     protected _pager?: PagerProcessor<TEntry>;
 
+    /**
+     * TODO
+     */
     get pager(): PagerProcessor<TEntry> | undefined {
         return this._pager;
     }
