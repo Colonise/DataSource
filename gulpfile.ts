@@ -8,7 +8,7 @@ import * as TSGulp from 'tsgulp';
 import * as TSlint from 'tslint';
 
 @TSGulp.Project('Algorithmic')
-export class GulpFile {
+class GulpFile {
     public distFolder = 'dist';
     public tsProject = typescript.createProject('tsconfig.json');
     public tsLintProgram = TSlint.Linter.createProgram('./tsconfig.json');
