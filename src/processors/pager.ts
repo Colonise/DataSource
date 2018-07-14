@@ -2,9 +2,18 @@ import { CachedProcessor } from './cached-processor';
 
 export type Pager<TEntry> = (pageSize: number, array: TEntry[]) => TEntry[][];
 
+/**
+ * TODO
+ */
 export class PagerProcessor<TEntry> extends CachedProcessor<TEntry[]> {
-    public pager: Pager<TEntry>;
+    protected pager: Pager<TEntry>;
 
+    // tslint:disable-next-line:variable-name
+    protected _page: number = 1;
+
+    /**
+     * TODO
+     */
     public get page(): number {
         return this._page;
     }
@@ -14,6 +23,12 @@ export class PagerProcessor<TEntry> extends CachedProcessor<TEntry[]> {
         this.updateCache();
     }
 
+    // tslint:disable-next-line:variable-name
+    protected _pageSize: number = 20;
+
+    /**
+     * TODO
+     */
     public get pageSize(): number {
         return this._pageSize;
     }
@@ -23,14 +38,13 @@ export class PagerProcessor<TEntry> extends CachedProcessor<TEntry[]> {
         this.updateCache();
     }
 
-    // tslint:disable-next-line:variable-name
-    protected _page: number = 1;
-    // tslint:disable-next-line:variable-name
-    protected _pageSize: number = 20;
     protected pages: TEntry[][] = [];
     protected cache: TEntry[] = [];
     protected arrayCache: TEntry[] = [];
 
+    /**
+     * TODO
+     */
     constructor() {
         super();
 

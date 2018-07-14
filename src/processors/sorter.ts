@@ -25,6 +25,9 @@ export type MultiSorter<TEntry> = (CustomSorter<TEntry> | PropertySorter<TEntry>
  */
 export type Sorter<TEntry> = VoidSorter | PropertySorter<TEntry> | CustomSorter<TEntry> | MultiSorter<TEntry>;
 
+/**
+ * TODO
+ */
 export class SorterProcessor<TEntry> extends CachedProcessor<TEntry[]> {
     protected cache: TEntry[] = [];
 
