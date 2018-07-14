@@ -39,6 +39,15 @@ export interface Subscribable<T> {
     ): Unsubscribable;
 }
 
-export class Subscription<T> implements Unsubscribable {
+/**
+ * A subscription to a DataSource.
+ */
+export class DataSourceSubscription<T> implements Unsubscribable {
+    /**
+     * Creates a new subscription to a DataSource.
+     *
+     * @param observer The observer.
+     * @param unsubscribe The function to unsubscribe from further updates.
+     */
     constructor(public readonly observer: PartialObserver<T>, public readonly unsubscribe: () => void) {}
 }
