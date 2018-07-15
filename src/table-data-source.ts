@@ -1,53 +1,63 @@
 import { DataSource } from './data-source';
-import { FilterProcessor, PagerProcessor, Processor, SorterProcessor } from './processors';
+import { Filter, FilterProcessor, PagerProcessor, Sorter, SorterProcessor } from './processors';
 
 /**
  * A class to handle temporal changes in a table's array while not mutating the array.
  */
 export class TableDataSource<TEntry> extends DataSource<TEntry[]> {
-    // tslint:disable-next-line:variable-name
-    protected _filter?: FilterProcessor<TEntry>;
+    protected filterProcessor: FilterProcessor<TEntry> = new FilterProcessor<TEntry>();
+    protected sorterProcessor: SorterProcessor<TEntry> = new SorterProcessor<TEntry>();
+    protected pagerProcessor: PagerProcessor<TEntry> = new PagerProcessor<TEntry>();
+
+    /**
+     * Filters the table.
+     *
+     * Void:   (entry) => !!entry;
+     * Object: (entry) => entry[filter.property] === filter.value;
+     * String: (entry) => !!entry[filter];
+     */
+    get filter(): Filter<TEntry> {
+        return this.filterProcessor.filter;
+    }
+    set filter(filter: Filter<TEntry>) {
+        this.filterProcessor.filter = filter;
+
+        this.process();
+    }
+
+    /**
+     * Sorts the table.
+     *
+     * Void:   (entryA, entryB) => entryA < entryB ? -1 : entryA > entryB ? 1 : 0;
+     * String: (entryA, entryB) => entryA[sorter] < entryB[sorter] ? -1 : entryA[sorter] > entryB[sorter] ? 1 : 0;
+     */
+    get sorter(): Sorter<TEntry> {
+        return this.sorter;
+    }
+    set sorter(sorter: Sorter<TEntry>) {
+        this.sorterProcessor.sorter = sorter;
+
+        this.process();
+    }
 
     /**
      * TODO
      */
-    get filter(): FilterProcessor<TEntry> | undefined {
-        return this._filter;
+    get page(): number {
+        return this.pagerProcessor.page;
     }
-    set filter(filter: FilterProcessor<TEntry> | undefined) {
-        this._filter = filter;
-
-        this.processData();
+    set page(page: number) {
+        this.pagerProcessor.page = page;
     }
-
-    // tslint:disable-next-line:variable-name
-    protected _sorter?: SorterProcessor<TEntry>;
 
     /**
      * TODO
      */
-    get sorter(): SorterProcessor<TEntry> | undefined {
-        return this._sorter;
+    get pageSize(): number {
+        return this.pagerProcessor.pageSize;
     }
-    set sorter(sorter: SorterProcessor<TEntry> | undefined) {
-        this._sorter = sorter;
-
-        this.processData();
-    }
-
-    // tslint:disable-next-line:variable-name
-    protected _pager?: PagerProcessor<TEntry>;
-
-    /**
-     * TODO
-     */
-    get pager(): PagerProcessor<TEntry> | undefined {
-        return this._pager;
-    }
-    set pager(pager: PagerProcessor<TEntry> | undefined) {
-        this._pager = pager;
-
-        this.processData();
+    set pageSize(pageSize: number) {
+        this.pagerProcessor.pageSize = pageSize;
     }
 
     /**
@@ -58,24 +68,8 @@ export class TableDataSource<TEntry> extends DataSource<TEntry[]> {
     public constructor(array: TEntry[]) {
         super(array);
 
-        this.preprocessors.push(this.processor);
-    }
-
-    protected processor(array: TEntry[]) {
-        let processedArray = array;
-
-        if (this.filter) {
-            processedArray = this.filter.process(processedArray);
-        }
-
-        if (this.sorter) {
-            processedArray = this.sorter.process(processedArray);
-        }
-
-        if (this.pager) {
-            processedArray = this.pager.process(processedArray);
-        }
-
-        return processedArray;
+        this.preprocessors.addProcessor(this.filterProcessor);
+        this.preprocessors.addProcessor(this.sorterProcessor);
+        this.preprocessors.addProcessor(this.pagerProcessor);
     }
 }

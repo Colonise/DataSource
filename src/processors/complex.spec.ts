@@ -1,6 +1,6 @@
 import { Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
-import { ComplexProcessor } from './complex-processor';
-import { SimpleProcessor } from './simple-processor';
+import { ComplexProcessor } from './complex';
+import { SimpleProcessor } from './simple';
 
 class TestableComplexProcessor<T> extends ComplexProcessor<T> {
     protected processor(data: T): T {
@@ -12,11 +12,24 @@ class TestableComplexProcessor<T> extends ComplexProcessor<T> {
 @TestFixture('ComplexProcessor')
 export class ComplexProcessorTests {
     @Test('should be created')
-    public construct1<T>() {
-        const complexProcessor = new TestableComplexProcessor<T>();
+    public construct1<T>(data: T) {
+        const complexProcessor = new TestableComplexProcessor<T>(data);
 
         Expect(complexProcessor).toBeDefined();
         Expect(complexProcessor instanceof TestableComplexProcessor).toBe(true);
+    }
+
+    @TestCase({})
+    @Test('should be created with input and output that do not strictly equal')
+    public construct2<T>(data: T) {
+        const complexProcessor = new TestableComplexProcessor<T>(data);
+        // tslint:disable-next-line:no-string-literal
+        const lastInput = complexProcessor['lastInput'];
+        // tslint:disable-next-line:no-string-literal
+        const lastOutput = complexProcessor['lastOutput'];
+
+        Expect(lastInput).not.toBe(lastOutput);
+        Expect(lastInput).toEqual(lastOutput);
     }
 
     @TestCase([1, 2, 3], [], <T>(data: T[]) => data.slice(data.length))
@@ -26,7 +39,7 @@ export class ComplexProcessorTests {
     })
     @Test('should only process when active')
     public active1<T>(data: T, processed: T, processor: SimpleProcessor<T>) {
-        const complexProcessor = new TestableComplexProcessor<T>();
+        const complexProcessor = new TestableComplexProcessor<T>(data);
         // tslint:disable-next-line:no-string-literal
         complexProcessor['processor'] = processor;
 

@@ -1,18 +1,18 @@
-import { CachedProcessor } from './cached-processor';
+import { ComplexProcessor } from './complex';
 
 export type Pager<TEntry> = (pageSize: number, array: TEntry[]) => TEntry[][];
 
 /**
- * TODO
+ * An array processor to automatically paginate an array using the supplied page and page size.
  */
-export class PagerProcessor<TEntry> extends CachedProcessor<TEntry[]> {
+export class PagerProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
     protected pager: Pager<TEntry>;
 
     // tslint:disable-next-line:variable-name
     protected _page: number = 1;
 
     /**
-     * TODO
+     * The current page.
      */
     public get page(): number {
         return this._page;
@@ -20,52 +20,48 @@ export class PagerProcessor<TEntry> extends CachedProcessor<TEntry[]> {
     public set page(page: number) {
         this._page = page;
 
-        this.updateCache();
+        this.reprocess();
     }
 
     // tslint:disable-next-line:variable-name
     protected _pageSize: number = 20;
 
     /**
-     * TODO
+     * The number of entries to show per page.
      */
     public get pageSize(): number {
         return this._pageSize;
     }
     public set pageSize(pageSize: number) {
+        if (pageSize <= 0) {
+            throw TypeError(`pageSize must be a positive number, got ${pageSize}`);
+        }
+
         this._pageSize = pageSize;
 
-        this.updateCache();
+        this.next(this.currentPageEntries());
     }
 
     protected pages: TEntry[][] = [];
-    protected cache: TEntry[] = [];
     protected arrayCache: TEntry[] = [];
 
     /**
-     * TODO
+     * Creates a new PagerProcessor.
      */
     constructor() {
-        super();
+        super([]);
 
         this.pager = this.defaultPager;
     }
 
     protected processor(array: TEntry[]) {
-        this.arrayCache = array;
+        this.pages = this.pager(this.pageSize, array);
 
-        this.updatePages();
-        this.updateCache();
-
-        return this.cache;
+        return this.currentPageEntries();
     }
 
-    protected updatePages() {
-        this.pages = this.pager(this.pageSize, this.arrayCache);
-    }
-
-    protected updateCache() {
-        this.cache = this.pages[this._page] || [];
+    protected currentPageEntries() {
+        return this.pages[this._page - 1] || [];
     }
 
     protected defaultPager: Pager<TEntry> = (pageSize, array) => {
@@ -73,7 +69,10 @@ export class PagerProcessor<TEntry> extends CachedProcessor<TEntry[]> {
         const pages: TEntry[][] = [];
 
         for (let i = 0; i < groups; i++) {
-            pages.push(array.slice(i, i * pageSize + pageSize));
+            const start = i * pageSize;
+            const end = start + pageSize;
+
+            pages.push(array.slice(start, end));
         }
 
         return pages;

@@ -1,6 +1,6 @@
-import { createFunctionSpy, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
+import { Any, createFunctionSpy, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
 import { DataSource } from './data-source';
-import { Processor } from './processors/processor';
+import { Processor } from './processors';
 
 @TestFixture('DataSource')
 export class DataSourceTests {
@@ -61,17 +61,21 @@ export class DataSourceTests {
     public addProcessor1<T>(data: T, expected: T, processor: Processor<any>) {
         const dataSource = new DataSource(data);
         const spyable = { processor };
-        const spy = SpyOn(spyable, 'processor');
+        const processorSpy = SpyOn(spyable, 'processor');
+
         const get1 = dataSource.get();
-        dataSource.addProcessor(spyable.processor);
+        const addProcessorResult = dataSource.addProcessor(spyable.processor);
         const get2 = dataSource.get();
 
+        Expect(get1).not.toBe(addProcessorResult);
+        Expect(get1).not.toBe(get2);
         Expect(get1).not.toEqual(expected);
+        Expect(get1).not.toEqual(addProcessorResult);
         Expect(get1).not.toEqual(get2);
+        Expect(addProcessorResult).toBe(get2);
         Expect(get2).toEqual(expected);
-        Expect(spy).not.toHaveBeenCalledWith(get1);
-        Expect(spy).toHaveBeenCalledWith(get2);
-        Expect(spy)
+        Expect(processorSpy).not.toHaveBeenCalledWith(get1);
+        Expect(processorSpy)
             .toHaveBeenCalled()
             .exactly(1);
     }
@@ -93,13 +97,21 @@ export class DataSourceTests {
         const spy = SpyOn(spyable, 'processor');
 
         const get1 = dataSource.get();
-        dataSource.addProcessor(spyable.processor);
+        const addProcessorResult = dataSource.addProcessor(spyable.processor);
         const get2 = dataSource.get();
-        dataSource.removeProcessor(spyable.processor);
+        const removeProcessorResult = dataSource.removeProcessor(spyable.processor);
         const get3 = dataSource.get();
 
-        Expect(spy).not.toHaveBeenCalledWith(get1);
-        Expect(spy).toHaveBeenCalledWith(get2);
+        Expect(get1).not.toEqual(addProcessorResult);
+        Expect(get1).not.toEqual(get2);
+        Expect(get1).toEqual(removeProcessorResult);
+        Expect(get1).toEqual(get3);
+        Expect(get2).not.toEqual(removeProcessorResult);
+        Expect(get2).not.toEqual(get3);
+        Expect(addProcessorResult).toBe(get2);
+        Expect(removeProcessorResult).toBe(get3);
+        // Expect(spy).toHaveBeenCalledWith(Any(Object).thatMatches(<object><any>get1));
+        // Expect(spy).not.toHaveBeenCalledWith(get2);
         Expect(spy).not.toHaveBeenCalledWith(get3);
         Expect(spy)
             .toHaveBeenCalled()
@@ -118,17 +130,9 @@ export class DataSourceTests {
         const observerSpy = createFunctionSpy();
         const subscription = dataSource.subscribe(observerSpy);
 
-        const get1 = dataSource.get();
         dataSource.set(data2);
-        const get2 = dataSource.get();
 
         Expect(subscription).toBeDefined();
-        Expect(observerSpy)
-            .toHaveBeenCalledWith(get1)
-            .exactly(1);
-        Expect(observerSpy)
-            .toHaveBeenCalledWith(get2)
-            .exactly(1);
         Expect(observerSpy)
             .toHaveBeenCalled()
             .exactly(2);
@@ -182,23 +186,22 @@ export class DataSourceTests {
             return newData;
         }
     )
-    @Test('processData() should correctly process the data with preprocessors, then processors')
-    public processData1<T>(
-        data: T,
-        expected: T,
-        preprocessor: Processor<T>,
-        processor: Processor<T>
-    ) {
+    @Test('process() should correctly process the data with preprocessors, then processors')
+    public process1<T>(data: T, expected: T, preprocessor: Processor<T>, processor: Processor<T>) {
         const dataSource = new DataSource(data);
 
         const get1 = dataSource.get();
         // tslint:disable-next-line:no-string-literal
-        dataSource['preprocessors'] = [preprocessor];
+        const addPreprocessorResult = dataSource['preprocessors'].addProcessor(preprocessor);
         const get2 = dataSource.get();
-        dataSource.addProcessor(processor);
+        const addProcessorResult = dataSource.addProcessor(processor);
         const get3 = dataSource.get();
 
-        Expect(get1).toBe(get2);
+        Expect(get1).toEqual(data);
+        Expect(addPreprocessorResult).toBe(get2);
+        Expect(get1).not.toEqual(get2);
+        Expect(addProcessorResult).toBe(get3);
+        Expect(get2).not.toEqual(get3);
         Expect(get3).toEqual(expected);
     }
 }

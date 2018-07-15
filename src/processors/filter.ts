@@ -1,22 +1,17 @@
-import { CachedProcessor } from './cached-processor';
+import { ComplexProcessor } from './complex';
 
 /**
- * TODO
+ * Filters an array using truthiness.
  */
 export type VoidFilter = void;
 
 /**
- * TODO
- */
-export type CustomFilter<TEntry> = (value: TEntry, index: number, array: TEntry[]) => boolean;
-
-/**
- * TODO
+ * Filters an array by a property using truthiness.
  */
 export type PropertyFilter<TEntry> = keyof TEntry;
 
 /**
- * TODO
+ * Filters an array by a property using truthiness and strict equality to the supplied value.
  */
 export interface PropertyAndValueFilter<TEntry> {
     property: keyof TEntry;
@@ -24,22 +19,30 @@ export interface PropertyAndValueFilter<TEntry> {
 }
 
 /**
- * TODO
+ * Filters an array.
+ */
+export type FunctionFilter<TEntry> = (value: TEntry, index: number, array: TEntry[]) => boolean;
+
+/**
+ * Union type of VoidFilter | PropertyFilter<TEntry> | PropertyAndValueFilter<TEntry> | FunctionFilter<TEntry>
  */
 export type Filter<TEntry> =
     | VoidFilter
-    | CustomFilter<TEntry>
     | PropertyFilter<TEntry>
-    | PropertyAndValueFilter<TEntry>;
+    | PropertyAndValueFilter<TEntry>
+    | FunctionFilter<TEntry>;
 
 /**
- * TODO
+ * An array processor to automatically sort an array using the supplied filter.
  */
-export class FilterProcessor<TEntry> extends CachedProcessor<TEntry[]> {
-    protected cache: TEntry[] = [];
-
+export class FilterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
     protected inputFilter?: Filter<TEntry>;
-    protected currentFilter: CustomFilter<TEntry> = entry => !!entry;
+
+    protected currentFilter: FunctionFilter<TEntry> = this.voidFilterToFunctionFilter();
+
+    constructor() {
+        super([]);
+    }
 
     /**
      * Filters the array.
@@ -55,19 +58,33 @@ export class FilterProcessor<TEntry> extends CachedProcessor<TEntry[]> {
         this.inputFilter = filter;
 
         if (filter == null) {
-            this.currentFilter = entry => !!entry;
+            this.currentFilter = this.voidFilterToFunctionFilter();
         } else if (typeof filter === 'function') {
             this.currentFilter = filter;
         } else if (typeof filter === 'object') {
-            this.currentFilter = entry => entry[filter.property] === filter.value;
+            this.currentFilter = this.propertyAndValueFilterToFunctionFilter(filter);
         } else {
-            this.currentFilter = entry => !!entry[filter];
+            this.currentFilter = this.propertyFilterToFunctionFilter(filter);
         }
 
-        this.active = true;
+        this.reprocess();
     }
 
     protected processor(array: TEntry[]) {
         return array.filter(this.currentFilter);
+    }
+
+    protected voidFilterToFunctionFilter(): FunctionFilter<TEntry> {
+        return entry => !!entry;
+    }
+
+    protected propertyFilterToFunctionFilter(property: PropertyFilter<TEntry>): FunctionFilter<TEntry> {
+        return entry => !!entry[property];
+    }
+
+    protected propertyAndValueFilterToFunctionFilter(
+        propertyAndValue: PropertyAndValueFilter<TEntry>
+    ): FunctionFilter<TEntry> {
+        return entry => entry[propertyAndValue.property] === propertyAndValue.value;
     }
 }
