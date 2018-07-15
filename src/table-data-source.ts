@@ -2,9 +2,9 @@ import { DataSource } from './data-source';
 import { FilterProcessor, PagerProcessor, Processor, SorterProcessor } from './processors';
 
 /**
- * A class to handle temporal changes in an array while not mutating the array itself.
+ * A class to handle temporal changes in a table's array while not mutating the array.
  */
-export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
+export class TableDataSource<TEntry> extends DataSource<TEntry[]> {
     // tslint:disable-next-line:variable-name
     protected _filter?: FilterProcessor<TEntry>;
 
