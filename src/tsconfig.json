@@ -13,7 +13,8 @@
         "strictPropertyInitialization": true,
         "importHelpers": true,
         "moduleResolution": "node",
+        "outDir": "../build",
         "target": "es5"
     },
-    "include": ["gulpfile.ts"]
+    "include": ["./**/**.ts"]
 }

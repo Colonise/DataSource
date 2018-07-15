@@ -1,38 +1,46 @@
-import { CachedProcessor } from './cached-processor';
+import { ComplexProcessor } from './complex';
 
 /**
- * TODO
+ * Sorts an array using truthiness and strict equality.
  */
 export type VoidSorter = void;
 
 /**
- * TODO
+ * Sorts an array by a property using truthiness and strict equality.
  */
 export type PropertySorter<TEntry> = keyof TEntry;
 
 /**
- * TODO
+ * Sorts an array.
  */
-export type CustomSorter<TEntry> = (entryA: TEntry, entryB: TEntry) => 1 | 0 | -1;
+export type FunctionSorter<TEntry> = (entryA: TEntry, entryB: TEntry) => 1 | 0 | -1;
 
 /**
- * TODO
+ * Union type of FunctionSorter<TEntry> | PropertySorter<TEntry>
  */
-export type MultiSorter<TEntry> = (CustomSorter<TEntry> | PropertySorter<TEntry>)[];
+export type SingleSorter<TEntry> = FunctionSorter<TEntry> | PropertySorter<TEntry>;
 
 /**
- * TODO
+ * Sorts an array by multiple sorters in order.
  */
-export type Sorter<TEntry> = VoidSorter | PropertySorter<TEntry> | CustomSorter<TEntry> | MultiSorter<TEntry>;
+export type MultiSorter<TEntry> = SingleSorter<TEntry>[];
 
 /**
- * TODO
+ * Union Type of VoidSorter | SingleSorter<TEntry> | MultiSorter<TEntry>
  */
-export class SorterProcessor<TEntry> extends CachedProcessor<TEntry[]> {
-    protected cache: TEntry[] = [];
+export type Sorter<TEntry> = VoidSorter | SingleSorter<TEntry> | MultiSorter<TEntry>;
 
+/**
+ * An array processor to automatically sort an array using the supplied sorter.
+ */
+export class SorterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
     protected inputSorter?: Sorter<TEntry>;
-    protected currentSorter: CustomSorter<TEntry> = this.createVoidSorter();
+
+    protected currentSorter: FunctionSorter<TEntry> = this.voidSorterToFunctionSorter();
+
+    constructor() {
+        super([]);
+    }
 
     /**
      * Sorts the array.
@@ -47,55 +55,25 @@ export class SorterProcessor<TEntry> extends CachedProcessor<TEntry[]> {
         this.inputSorter = sorter;
 
         if (sorter == null) {
-            this.currentSorter = this.createVoidSorter();
-
-            return;
+            this.currentSorter = this.voidSorterToFunctionSorter();
+        } else if (!Array.isArray(sorter)) {
+            this.currentSorter = this.singleSorterToFunctionSorter(sorter);
+        } else {
+            this.currentSorter = this.multiSorterToFunctionSorter(sorter);
         }
-
-        if (typeof sorter === 'function') {
-            this.currentSorter = sorter;
-
-            return;
-        }
-
-        if (typeof sorter === 'string') {
-            this.currentSorter = this.createPropertySorter(sorter);
-
-            return;
-        }
-
-        // MultiSorter support
-
-        const sorters = (<MultiSorter<TEntry>>sorter).map(sorterOrProperty => {
-            return typeof sorterOrProperty === 'function'
-                ? sorterOrProperty
-                : this.createPropertySorter(sorterOrProperty);
-        });
-
-        this.currentSorter = (entryA, entryB) => {
-            for (let i = 0; i < sorters.length; i++) {
-                const sorterResult = sorters[i](entryA, entryB);
-
-                if (sorterResult) {
-                    return sorterResult;
-                }
-            }
-
-            return 0;
-        };
     }
 
     protected processor(array: TEntry[]) {
         return array.sort(this.currentSorter);
     }
 
-    protected createVoidSorter(): CustomSorter<TEntry> {
+    protected voidSorterToFunctionSorter(): FunctionSorter<TEntry> {
         return (entryA, entryB) => {
             return entryA < entryB ? -1 : entryA > entryB ? 1 : 0;
         };
     }
 
-    protected createPropertySorter(property: keyof TEntry): CustomSorter<TEntry> {
+    protected propertySorterToFunctionSorter(property: PropertySorter<TEntry>): FunctionSorter<TEntry> {
         return (entryA: TEntry, entryB: TEntry) => {
             if (entryA == null && entryB == null) {
                 return 0;
@@ -110,6 +88,26 @@ export class SorterProcessor<TEntry> extends CachedProcessor<TEntry[]> {
             } else {
                 return 0;
             }
+        };
+    }
+
+    protected singleSorterToFunctionSorter(sorter: SingleSorter<TEntry>): FunctionSorter<TEntry> {
+        return typeof sorter === 'function' ? sorter : this.propertySorterToFunctionSorter(sorter);
+    }
+
+    protected multiSorterToFunctionSorter(sorters: MultiSorter<TEntry>): FunctionSorter<TEntry> {
+        const customSorters = sorters.map(sorter => this.singleSorterToFunctionSorter(sorter));
+
+        return (entryA, entryB) => {
+            for (let i = 0; i < customSorters.length; i++) {
+                const sorterResult = customSorters[i](entryA, entryB);
+
+                if (sorterResult) {
+                    return sorterResult;
+                }
+            }
+
+            return 0;
         };
     }
 }

@@ -29,25 +29,3 @@ export type PartialObserver<T> = NextObserver<T> | ErrorObserver<T> | Completion
 export interface Unsubscribable {
     unsubscribe(): void;
 }
-
-// https://beta-rxjsdocs.firebaseapp.com/api/index/Subscribable
-export interface Subscribable<T> {
-    subscribe(
-        observerOrNext?: PartialObserver<T> | ((value: T) => void),
-        error?: (error: any) => void,
-        complete?: () => void
-    ): Unsubscribable;
-}
-
-/**
- * A subscription to a DataSource.
- */
-export class DataSourceSubscription<T> implements Unsubscribable {
-    /**
-     * Creates a new subscription to a DataSource.
-     *
-     * @param observer The observer.
-     * @param unsubscribe The function to unsubscribe from further updates.
-     */
-    constructor(public readonly observer: PartialObserver<T>, public readonly unsubscribe: () => void) {}
-}

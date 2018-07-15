@@ -1,6 +1,7 @@
 import { TestRunner, TestSet } from 'alsatian';
 import del from 'del';
 import gulp from 'gulp';
+import Istanbul from 'gulp-istanbul';
 import GulpTSLint from 'gulp-tslint';
 import * as typescript from 'gulp-typescript';
 import { TapBark } from 'tap-bark';
@@ -10,12 +11,8 @@ import * as TSlint from 'tslint';
 @TSGulp.Project('Algorithmic')
 class GulpFile {
     public distFolder = 'dist';
-    public tsProject = typescript.createProject('tsconfig.json');
-    public tsLintProgram = TSlint.Linter.createProgram('./tsconfig.json');
-
-    constructor() {
-        this.tsProject.config.exclude = ['gulpfile.ts', '**/**.spec.ts'];
-    }
+    public tsProject = typescript.createProject('./src/tsconfig.json');
+    public tsLintProgram = TSlint.Linter.createProgram('./src/tsconfig.json');
 
     public clean(): Promise<string[]> {
         return del(this.distFolder);
@@ -56,10 +53,27 @@ class GulpFile {
         this.runAlsatian(false).then(() => done());
     }
 
+    @TSGulp.Dependencies('compile')
+    public coverage(done: () => void): void {
+        const testSet = TestSet.create();
+
+        testSet.addTestsFromFiles('src/**/*.spec.ts');
+
+        const testRunner = new TestRunner();
+
+        gulp.src(['src/**/*.ts'])
+            .pipe(Istanbul())
+            .pipe(Istanbul.hookRequire());
+
+        testRunner.outputStream.pipe(Istanbul.writeReports());
+
+        testRunner.run(testSet).then(() => done());
+    }
+
     public runAlsatian(output: boolean = true): Promise<void> {
         const testSet = TestSet.create();
 
-        testSet.addTestsFromFiles('**/*.spec.ts');
+        testSet.addTestsFromFiles('src/**/*.spec.ts');
 
         const testRunner = new TestRunner();
 

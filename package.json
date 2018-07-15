@@ -4,7 +4,8 @@
     "description": "Simple DataSource class in TypeScript",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "alsatian ./build/**/*.spec.js",
+        "check-coverage": "nyc --reporter=lcov --reporter=html npm run test && nyc report"
     },
     "repository": {
         "type": "git",
@@ -23,14 +24,39 @@
     "devDependencies": {
         "@types/del": "3.0.1",
         "@types/gulp": "4.0.5",
+        "@types/gulp-istanbul": "^0.9.32",
         "alsatian": "^2.2.1",
         "del": "^3.0.0",
         "gulp": "^3.9.1",
+        "gulp-istanbul": "^1.1.3",
+        "gulp-sourcemaps": "^2.6.4",
         "gulp-tslint": "^8.1.3",
         "gulp-typescript": "^5.0.0-alpha.3",
+        "nyc": "^12.0.2",
         "tsgulp": "^1.1.2",
         "tslib": "^1.9.3",
         "tslint": "^5.10.0",
         "typescript": "^2.9.2"
+    },
+    "nyc": {
+        "check-coverage": true,
+        "per-file": true,
+        "include": [
+            "build/**/*.js"
+        ],
+        "exclude": [
+            "build/**/*.spec.js",
+            "build/**/index.js"
+        ],
+        "reporter": [
+            "lcov",
+            "html"
+        ],
+        "require": [],
+        "extension": [
+            ".js"
+        ],
+        "cache": true,
+        "all": true
     }
 }

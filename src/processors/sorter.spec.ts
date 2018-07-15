@@ -1,5 +1,5 @@
 import { Any, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
-import { CustomSorter, MultiSorter, PropertySorter, SorterProcessor, VoidSorter } from './sorter';
+import { FunctionSorter, MultiSorter, PropertySorter, SorterProcessor, VoidSorter } from './sorter';
 
 @TestFixture('SorterProcessor')
 export class SorterProcessorTests {
@@ -49,8 +49,8 @@ export class SorterProcessorTests {
         (a: string, b: string) => (a === b ? 0 : a > b ? 1 : -1)
     )
     @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5], (a: number, b: number) => (a === b ? 0 : a > b ? 1 : -1))
-    @Test('CustomSorter should work')
-    public CustomSorter1<T>(data: T[], expected: T[], sorter: CustomSorter<T>) {
+    @Test('FunctionSorter should work')
+    public FunctionSorter1<T>(data: T[], expected: T[], sorter: FunctionSorter<T>) {
         const sorterProcessor = new SorterProcessor<T>();
         sorterProcessor.sorter = sorter;
         const sorterSpy = SpyOn(sorterProcessor, 'sorter');
