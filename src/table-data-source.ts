@@ -21,8 +21,6 @@ export class TableDataSource<TEntry> extends DataSource<TEntry[]> {
     }
     set filter(filter: Filter<TEntry>) {
         this.filterProcessor.filter = filter;
-
-        this.process();
     }
 
     /**
@@ -36,8 +34,6 @@ export class TableDataSource<TEntry> extends DataSource<TEntry[]> {
     }
     set sorter(sorter: Sorter<TEntry>) {
         this.sorterProcessor.sorter = sorter;
-
-        this.process();
     }
 
     /**
