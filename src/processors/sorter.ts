@@ -61,6 +61,8 @@ export class SorterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
         } else {
             this.currentSorter = this.multiSorterToFunctionSorter(sorter);
         }
+
+        this.reprocess();
     }
 
     protected processor(array: TEntry[]) {
