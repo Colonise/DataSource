@@ -1,5 +1,5 @@
 import { Any, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
-import { FunctionSorter, MultiSorter, PropertySorter, SorterProcessor, VoidSorter } from './sorter';
+import { BooleanSorter, FunctionSorter, MultiSorter, PropertySorter, SorterProcessor } from './sorter';
 
 @TestFixture('SorterProcessor')
 export class SorterProcessorTests {
@@ -11,10 +11,12 @@ export class SorterProcessorTests {
         Expect(sorterProcessor instanceof SorterProcessor).toBe(true);
     }
 
-    @TestCase(['a', 'e', 'b', 'd', 'c'], ['a', 'b', 'c', 'd', 'e'])
-    @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5])
-    @Test('VoidSorter should work')
-    public VoidSorter1<T>(data: T[], expected: T[], processor: VoidSorter) {
+    @TestCase(['a', 'e', 'b', 'd', 'c'], ['a', 'b', 'c', 'd', 'e'], true)
+    @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5], true)
+    @TestCase(['a', 'e', 'b', 'd', 'c'], ['e', 'd', 'c', 'b', 'a'], false)
+    @TestCase([1, 2, 3, 4, 5], [5, 4, 3, 2, 1], false)
+    @Test('BooleanSorter should work')
+    public BooleanSorter1<T>(data: T[], expected: T[], processor: BooleanSorter) {
         const sorterProcessor = new SorterProcessor<T>();
         sorterProcessor.sorter = processor;
 

@@ -11,16 +11,18 @@ export class FilterProcessorTests {
         Expect(filterProcessor instanceof FilterProcessor).toBe(true);
     }
 
-    @TestCase([0, 1, 2, 3, 4, 5], [1, 2, 3, 4, 5])
-    @TestCase([0, '', undefined, null, false], [])
-    @Test('VoidFilter should work')
-    public VoidFilter1<T>(data: T[], expected: T[]) {
+    @TestCase([0, 1, 2, 3, 4, 5], [1, 2, 3, 4, 5], true)
+    @TestCase([0, '', undefined, null, false], [], true)
+    @TestCase([0, 1, 2, 3, 4, 5], [0], false)
+    @TestCase([0, '', undefined, null, false], [0, '', undefined, null, false], false)
+    @Test('BooleanFilter should work')
+    public BooleanFilter1<T>(data: T[], expected: T[], filter: boolean) {
         const filterProcessor = new FilterProcessor<T>();
-        filterProcessor.filter = undefined;
+        filterProcessor.filter = filter;
 
         const actual = filterProcessor.process(data);
 
-        Expect(filterProcessor.filter).toBe(undefined);
+        Expect(filterProcessor.filter).toBe(filter);
         Expect(actual).toEqual(expected);
     }
 

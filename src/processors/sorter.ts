@@ -3,7 +3,7 @@ import { ComplexProcessor } from './complex';
 /**
  * Sorts an array using truthiness and strict equality.
  */
-export type VoidSorter = void;
+export type BooleanSorter = void;
 
 /**
  * Sorts an array by a property using truthiness and strict equality.
@@ -28,25 +28,44 @@ export type MultiSorter<TEntry> = SingleSorter<TEntry>[];
 /**
  * Union Type of VoidSorter | SingleSorter<TEntry> | MultiSorter<TEntry>
  */
-export type Sorter<TEntry> = VoidSorter | SingleSorter<TEntry> | MultiSorter<TEntry>;
+export type Sorter<TEntry> = BooleanSorter | SingleSorter<TEntry> | MultiSorter<TEntry> | void;
 
 /**
  * An array processor to automatically sort an array using the supplied sorter.
  */
 export class SorterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
-    protected inputSorter?: Sorter<TEntry>;
+    protected inputSorter: Sorter<TEntry> = undefined;
 
-    protected currentSorter: FunctionSorter<TEntry> = this.voidSorterToFunctionSorter();
+    protected currentSorter: FunctionSorter<TEntry> | void = undefined;
 
-    constructor() {
-        super([]);
+    // tslint:disable-next-line:variable-name
+    protected _direction: boolean = true;
+
+    /**
+     * Sets the sorting direction.
+     *
+     * Ascending = true;
+     *
+     * Descending = false;
+     */
+    public get direction(): boolean {
+        return this._direction;
+    }
+    public set direction(ascending: boolean) {
+        this._direction = ascending;
+    }
+
+    public constructor(active: boolean = true) {
+        super([], active);
     }
 
     /**
      * Sorts the array.
      *
-     * Void:   (entryA, entryB) => entryA < entryB ? -1 : entryA > entryB ? 1 : 0;
-     * String: (entryA, entryB) => entryA[sorter] < entryB[sorter] ? -1 : entryA[sorter] > entryB[sorter] ? 1 : 0;
+     * Setting as a boolean sets the direction.
+     *
+     * Boolean: (entryA, entryB) => entryA < entryB ? -1 : entryA > entryB ? 1 : 0;
+     * String:  (entryA, entryB) => entryA[sorter] < entryB[sorter] ? -1 : entryA[sorter] > entryB[sorter] ? 1 : 0;
      */
     public get sorter(): Sorter<TEntry> | undefined {
         return this.inputSorter;
@@ -55,21 +74,23 @@ export class SorterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
         this.inputSorter = sorter;
 
         if (sorter == null) {
-            this.currentSorter = this.voidSorterToFunctionSorter();
+            this.currentSorter = sorter;
         } else if (!Array.isArray(sorter)) {
-            this.currentSorter = this.singleSorterToFunctionSorter(sorter);
+            this.currentSorter = this.sorterToDirectionalSorter(this.singleSorterToFunctionSorter(sorter));
         } else {
-            this.currentSorter = this.multiSorterToFunctionSorter(sorter);
+            this.currentSorter = this.sorterToDirectionalSorter(this.multiSorterToFunctionSorter(sorter));
         }
 
         this.reprocess();
     }
 
     protected processor(array: TEntry[]) {
-        return array.sort(this.currentSorter);
+        return this.currentSorter ? array.sort(this.currentSorter) : array;
     }
 
-    protected voidSorterToFunctionSorter(): FunctionSorter<TEntry> {
+    protected booleanSorterToFunctionSorter(ascending: boolean): FunctionSorter<TEntry> {
+        this.direction = ascending;
+
         return (entryA, entryB) => {
             return entryA < entryB ? -1 : entryA > entryB ? 1 : 0;
         };
@@ -94,7 +115,13 @@ export class SorterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
     }
 
     protected singleSorterToFunctionSorter(sorter: SingleSorter<TEntry>): FunctionSorter<TEntry> {
-        return typeof sorter === 'function' ? sorter : this.propertySorterToFunctionSorter(sorter);
+        if (typeof sorter === 'function') {
+            return sorter;
+        } else if (typeof sorter === 'boolean') {
+            return this.booleanSorterToFunctionSorter(sorter);
+        } else {
+            return this.propertySorterToFunctionSorter(sorter);
+        }
     }
 
     protected multiSorterToFunctionSorter(sorters: MultiSorter<TEntry>): FunctionSorter<TEntry> {
@@ -111,5 +138,15 @@ export class SorterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
 
             return 0;
         };
+    }
+
+    protected sorterToDirectionalSorter(sorter: FunctionSorter<TEntry>): FunctionSorter<TEntry> {
+        if (this.direction) {
+            return sorter;
+        } else {
+            return (entryA, entryB) => {
+                return <-1 | 0 | 1>(sorter(entryA, entryB) * -1);
+            };
+        }
     }
 }
