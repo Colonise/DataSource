@@ -8,14 +8,17 @@ import { TapBark } from 'tap-bark';
 import * as TSGulp from 'tsgulp';
 import * as TSlint from 'tslint';
 
-@TSGulp.Project('Algorithmic')
+@TSGulp.Project('DataSource')
 class GulpFile {
-    public distFolder = 'dist';
     public tsProject = typescript.createProject('./src/tsconfig.json');
     public tsLintProgram = TSlint.Linter.createProgram('./src/tsconfig.json');
 
-    public clean(): Promise<string[]> {
-        return del(this.distFolder);
+    constructor() {
+        this.tsProject.config.exclude = ['**/*.spec.ts'];
+    }
+
+    public clean() {
+        return del(<string>this.tsProject.options.outDir);
     }
 
     @TSGulp.Dependencies('clean')
@@ -23,17 +26,17 @@ class GulpFile {
         this.tsProject
             .src()
             .pipe(this.tsProject())
-            .pipe(gulp.dest(this.distFolder));
+            .pipe(gulp.dest(<string>this.tsProject.options.outDir));
     }
 
     @TSGulp.Default()
     @TSGulp.Dependencies('compile', 'lint', 'test-no-output')
-    public all(): void {
-        /**/
-    }
+    // tslint:disable-next-line:no-empty
+    public all() {}
 
     public lint(): void {
-        gulp.src('src/**/*.ts')
+        this.tsProject
+            .src()
             .pipe(
                 GulpTSLint({
                     fix: true,
@@ -44,24 +47,24 @@ class GulpFile {
             .pipe(GulpTSLint.report());
     }
 
-    public test(done: () => void): void {
-        this.runAlsatian().then(() => done());
+    public test() {
+        this.runAlsatian('./src/**/*.spec.ts');
     }
 
     @TSGulp.Name('test-no-output')
-    public testNoOutput(done: () => void): void {
-        this.runAlsatian(false).then(() => done());
+    public testNoOutput() {
+        this.runAlsatian('./src/**/*.spec.ts', false);
     }
 
     @TSGulp.Dependencies('compile')
     public coverage(done: () => void): void {
         const testSet = TestSet.create();
 
-        testSet.addTestsFromFiles('src/**/*.spec.ts');
+        testSet.addTestsFromFiles('./src/**/*.spec.ts');
 
         const testRunner = new TestRunner();
 
-        gulp.src(['src/**/*.ts'])
+        gulp.src(['./dist/**/*.js'])
             .pipe(Istanbul())
             .pipe(Istanbul.hookRequire());
 
@@ -70,10 +73,10 @@ class GulpFile {
         testRunner.run(testSet).then(() => done());
     }
 
-    public runAlsatian(output: boolean = true): Promise<void> {
+    public runAlsatian(tests: string, output: boolean = true): Promise<void> {
         const testSet = TestSet.create();
 
-        testSet.addTestsFromFiles('src/**/*.spec.ts');
+        testSet.addTestsFromFiles(tests);
 
         const testRunner = new TestRunner();
 

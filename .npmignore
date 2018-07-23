@@ -1,0 +1,7 @@
+# Source
+src/
+
+# Build
+gulpfile.ts
+tslint.json
+tsconfig.json
