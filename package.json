@@ -1,11 +1,15 @@
 {
-    "name": "colonise-datasource",
-    "version": "0.0.1",
+    "name": "@colonise/datasource",
+    "version": "0.0.0",
     "description": "Simple DataSource class in TypeScript",
-    "main": "index.js",
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
+    "files": [
+        "dist/**/*.*"
+    ],
     "scripts": {
-        "test": "alsatian ./build/**/*.spec.js",
-        "check-coverage": "nyc --reporter=lcov --reporter=html npm run test && nyc report"
+        "test": "gulp test",
+        "dist": "gulp compile"
     },
     "repository": {
         "type": "git",
@@ -31,22 +35,24 @@
         "gulp-istanbul": "^1.1.3",
         "gulp-sourcemaps": "^2.6.4",
         "gulp-tslint": "^8.1.3",
-        "gulp-typescript": "^5.0.0-alpha.3",
+        "gulp-typescript": "^4.0.2",
         "nyc": "^12.0.2",
         "tsgulp": "^1.1.2",
-        "tslib": "^1.9.3",
         "tslint": "^5.10.0",
-        "typescript": "^2.9.2"
+        "typescript": "^2.7.2"
+    },
+    "dependencies": {
+        "tslib": "^1.9.3"
     },
     "nyc": {
         "check-coverage": true,
         "per-file": true,
         "include": [
-            "build/**/*.js"
+            "dist/**/*.js"
         ],
         "exclude": [
-            "build/**/*.spec.js",
-            "build/**/index.js"
+            "dist/**/*.spec.js",
+            "dist/**/index.js"
         ],
         "reporter": [
             "lcov",

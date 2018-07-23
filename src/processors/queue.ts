@@ -1,5 +1,5 @@
 import { Unsubscribable } from '../rxjs';
-import { clone, find, findIndex, insert, remove } from '../utils';
+import { findIndex, insert, remove } from '../utils';
 import { ComplexProcessor } from './complex';
 import { Processor } from './processor';
 

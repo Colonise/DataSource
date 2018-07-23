@@ -1,6 +1,6 @@
 import { ComplexProcessor } from './complex';
-import { SimpleProcessor } from './simple';
 import { QueueProcessor } from './queue';
+import { SimpleProcessor } from './simple';
 
 /**
  * TODO
