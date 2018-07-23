@@ -264,4 +264,26 @@ export class TableDataSourceTests {
 
         Expect(actual).toEqual(expected);
     }
+
+    @TestCase(TestData.BarryGoodwin, [
+        TestData.HenryLawson,
+        TestData.TonyGibson,
+        TestData.MarySwan,
+        TestData.JohnSmith,
+        TestData.BarryGoodwin,
+        TestData.FreyaClark,
+        TestData.MollyRichards,
+        TestData.KarenHoward,
+        TestData.FredRichards,
+        TestData.JaneSmith,
+        TestData.BarryGoodwin
+    ])
+    @Test('.push() should append a new row to the TableDataSource')
+    public push1(person: Person, expected: Person[]) {
+        TestData.tableDataSource.push(person);
+
+        const actual = TestData.tableDataSource.get();
+
+        Expect(actual).toEqual(expected);
+    }
 }

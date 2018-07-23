@@ -34,7 +34,7 @@ export class PagerProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
     }
     public set pageSize(pageSize: number) {
         if (pageSize <= 0) {
-            throw TypeError(`pageSize must be a positive number, got ${pageSize}`);
+            throw TypeError(`pageSize must be a positive whole number, got ${pageSize}`);
         }
 
         this._pageSize = pageSize;
@@ -48,8 +48,8 @@ export class PagerProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
     /**
      * Creates a new PagerProcessor.
      */
-    constructor() {
-        super([]);
+    public constructor(active: boolean = true) {
+        super([], active);
 
         this.pager = this.defaultPager;
     }

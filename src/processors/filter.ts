@@ -3,7 +3,7 @@ import { ComplexProcessor } from './complex';
 /**
  * Filters an array using truthiness.
  */
-export type VoidFilter = void;
+export type BooleanFilter = boolean;
 
 /**
  * Filters an array by a property using truthiness.
@@ -24,30 +24,32 @@ export interface PropertyAndValueFilter<TEntry> {
 export type FunctionFilter<TEntry> = (value: TEntry, index: number, array: TEntry[]) => boolean;
 
 /**
- * Union type of VoidFilter | PropertyFilter<TEntry> | PropertyAndValueFilter<TEntry> | FunctionFilter<TEntry>
+ * Union type of BooleanSorter | PropertyFilter<TEntry> | PropertyAndValueFilter<TEntry> | FunctionFilter<TEntry>
  */
 export type Filter<TEntry> =
-    | VoidFilter
+    | BooleanFilter
     | PropertyFilter<TEntry>
     | PropertyAndValueFilter<TEntry>
-    | FunctionFilter<TEntry>;
+    | FunctionFilter<TEntry>
+    | void;
 
 /**
  * An array processor to automatically sort an array using the supplied filter.
  */
 export class FilterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
-    protected inputFilter?: Filter<TEntry>;
+    protected inputFilter: Filter<TEntry> | void = undefined;
 
-    protected currentFilter: FunctionFilter<TEntry> = this.voidFilterToFunctionFilter();
+    protected currentFilter: FunctionFilter<TEntry> | void = undefined;
 
-    constructor() {
-        super([]);
+    public constructor(active: boolean = true) {
+        super([], active);
     }
 
     /**
      * Filters the array.
      *
-     * Void:   (entry) => !!entry;
+     * True:   (entry) => !!entry;
+     * False:  (entry) => !entry;
      * Object: (entry) => entry[filter.property] === filter.value;
      * String: (entry) => !!entry[filter];
      */
@@ -58,7 +60,9 @@ export class FilterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
         this.inputFilter = filter;
 
         if (filter == null) {
-            this.currentFilter = this.voidFilterToFunctionFilter();
+            this.currentFilter = filter;
+        } else if (typeof filter === 'boolean') {
+            this.currentFilter = this.booleanFilterToFunctionFilter(filter);
         } else if (typeof filter === 'function') {
             this.currentFilter = filter;
         } else if (typeof filter === 'object') {
@@ -71,11 +75,11 @@ export class FilterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
     }
 
     protected processor(array: TEntry[]) {
-        return array.filter(this.currentFilter);
+        return this.currentFilter ? array.filter(this.currentFilter) : array;
     }
 
-    protected voidFilterToFunctionFilter(): FunctionFilter<TEntry> {
-        return entry => !!entry;
+    protected booleanFilterToFunctionFilter(filter: boolean): FunctionFilter<TEntry> {
+        return filter ? entry => !!entry : entry => !entry;
     }
 
     protected propertyFilterToFunctionFilter(property: PropertyFilter<TEntry>): FunctionFilter<TEntry> {

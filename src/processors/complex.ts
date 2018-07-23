@@ -27,6 +27,14 @@ export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> {
     }
     public set active(active: boolean) {
         this._active = active;
+
+        this.reprocess(active);
+    }
+
+    public constructor(data: TData, active: boolean = true) {
+        super(data);
+
+        this._active = active;
     }
 
     /**
