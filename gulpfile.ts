@@ -27,6 +27,8 @@ class GulpFile {
             .src()
             .pipe(this.tsProject())
             .pipe(gulp.dest(<string>this.tsProject.options.outDir));
+
+        gulp.src('./src/**/*.d.ts').pipe(gulp.dest(<string>this.tsProject.options.outDir));
     }
 
     @TSGulp.Default()
