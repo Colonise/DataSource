@@ -20,10 +20,11 @@ export class PagerProcessorTests {
     @Test('should output correct entries when setting page and page size')
     public page1<T>(data: T[], expected: T[], page: number, pageSize: number) {
         const pagerProcessor = new PagerProcessor<T>();
+        pagerProcessor.process(data);
         pagerProcessor.page = page;
         pagerProcessor.pageSize = pageSize;
 
-        const actual = pagerProcessor.process(data);
+        const actual = pagerProcessor.value;
 
         Expect(actual).toEqual(expected);
     }
