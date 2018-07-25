@@ -1,11 +1,28 @@
-import { ComplexProcessor } from './complex';
+import { ArrayProcessor, ArrayProcessorApi } from './array';
 
+/**
+ * Paginates an array with the given page size.
+ */
 export type Pager<TEntry> = (pageSize: number, array: TEntry[]) => TEntry[][];
+
+/**
+ * The public API of a PagerProcessor.
+ */
+export interface PagerProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
+    /**
+     * The current page.
+     */
+    page: number;
+    /**
+     * The number of entries to show per page.
+     */
+    pageSize: number;
+}
 
 /**
  * An array processor to automatically paginate an array using the supplied page and page size.
  */
-export class PagerProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
+export class PagerProcessor<TEntry> extends ArrayProcessor<TEntry> implements PagerProcessorApi<TEntry> {
     protected pager: Pager<TEntry>;
 
     // tslint:disable-next-line:variable-name
@@ -43,13 +60,14 @@ export class PagerProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
     }
 
     protected pages: TEntry[][] = [];
-    protected arrayCache: TEntry[] = [];
 
     /**
      * Creates a new PagerProcessor.
+     *
+     * @param active Whether the PagerProcessor should start active.
      */
     public constructor(active: boolean = true) {
-        super([], active);
+        super(active);
 
         this.pager = this.defaultPager;
     }

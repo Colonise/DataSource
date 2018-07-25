@@ -22,11 +22,11 @@ export class DataSourceTests {
 
     @TestCase({})
     @TestCase([])
-    @Test('get() should return a single clone')
+    @Test('value should return a single clone')
     public get1<T>(data: T) {
         const dataSource = new DataSource(data);
-        const get1 = dataSource.get();
-        const get2 = dataSource.get();
+        const get1 = dataSource.value;
+        const get2 = dataSource.value;
 
         Expect(get1).toEqual(data);
         Expect(get1).not.toBe(data);
@@ -39,9 +39,9 @@ export class DataSourceTests {
     @Test('set() should set the data')
     public set1<T>(data1: T, data2: T) {
         const dataSource = new DataSource(data1);
-        const get1 = dataSource.get();
+        const get1 = dataSource.value;
         dataSource.set(data2);
-        const get2 = dataSource.get();
+        const get2 = dataSource.value;
 
         Expect(get1).toEqual(data1);
         Expect(get2).toEqual(data2);
@@ -63,9 +63,9 @@ export class DataSourceTests {
         const spyable = { processor };
         const processorSpy = SpyOn(spyable, 'processor');
 
-        const get1 = dataSource.get();
+        const get1 = dataSource.value;
         const addProcessorResult = dataSource.addProcessor(spyable.processor);
-        const get2 = dataSource.get();
+        const get2 = dataSource.value;
 
         Expect(get1).not.toBe(addProcessorResult);
         Expect(get1).not.toBe(get2);
@@ -96,11 +96,11 @@ export class DataSourceTests {
         const spyable = { processor };
         const spy = SpyOn(spyable, 'processor');
 
-        const get1 = dataSource.get();
+        const get1 = dataSource.value;
         const addProcessorResult = dataSource.addProcessor(spyable.processor);
-        const get2 = dataSource.get();
+        const get2 = dataSource.value;
         const removeProcessorResult = dataSource.removeProcessor(spyable.processor);
-        const get3 = dataSource.get();
+        const get3 = dataSource.value;
 
         Expect(get1).not.toEqual(addProcessorResult);
         Expect(get1).not.toEqual(get2);
@@ -151,7 +151,7 @@ export class DataSourceTests {
         const subscription = dataSource.subscribe(observerSpy);
         const unsubscribeSpy = SpyOn(dataSource, 'unsubscribe');
 
-        const get1 = dataSource.get();
+        const get1 = dataSource.value;
         dataSource.unsubscribe(subscription);
         dataSource.set(data2);
 
@@ -190,12 +190,12 @@ export class DataSourceTests {
     public process1<T>(data: T, expected: T, preprocessor: Processor<T>, processor: Processor<T>) {
         const dataSource = new DataSource(data);
 
-        const get1 = dataSource.get();
+        const get1 = dataSource.value;
         // tslint:disable-next-line:no-string-literal
         const addPreprocessorResult = dataSource['preprocessors'].addProcessor(preprocessor);
-        const get2 = dataSource.get();
+        const get2 = dataSource.value;
         const addProcessorResult = dataSource.addProcessor(processor);
-        const get3 = dataSource.get();
+        const get3 = dataSource.value;
 
         Expect(get1).toEqual(data);
         Expect(addPreprocessorResult).toBe(get2);
