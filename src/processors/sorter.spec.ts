@@ -18,9 +18,10 @@ export class SorterProcessorTests {
     @Test('BooleanSorter should work')
     public BooleanSorter1<T>(data: T[], expected: T[], processor: BooleanSorter) {
         const sorterProcessor = new SorterProcessor<T>();
+        sorterProcessor.process(data);
         sorterProcessor.sorter = processor;
 
-        const actual = sorterProcessor.process(data);
+        const actual = sorterProcessor.value;
 
         Expect(actual).toEqual(expected);
     }
@@ -38,9 +39,10 @@ export class SorterProcessorTests {
     @Test('PropertySorter should work')
     public PropertySorter1<T>(data: T[], expected: T[], sorter: PropertySorter<T>) {
         const sorterProcessor = new SorterProcessor<T>();
+        sorterProcessor.process(data);
         sorterProcessor.sorter = sorter;
 
-        const actual = sorterProcessor.process(data);
+        const actual = sorterProcessor.value;
 
         Expect(actual).toEqual(expected);
     }
@@ -54,10 +56,11 @@ export class SorterProcessorTests {
     @Test('FunctionSorter should work')
     public FunctionSorter1<T>(data: T[], expected: T[], sorter: FunctionSorter<T>) {
         const sorterProcessor = new SorterProcessor<T>();
+        sorterProcessor.process(data);
         sorterProcessor.sorter = sorter;
         const sorterSpy = SpyOn(sorterProcessor, 'sorter');
 
-        const actual = sorterProcessor.process(data);
+        const actual = sorterProcessor.value;
 
         sorterSpy.restore();
 
@@ -92,9 +95,10 @@ export class SorterProcessorTests {
     @Test('MultiSorter should work')
     public MultiSorter1<T>(data: T[], expected: T[], sorter: MultiSorter<T>) {
         const sorterProcessor = new SorterProcessor<T>();
+        sorterProcessor.process(data);
         sorterProcessor.sorter = sorter;
 
-        const actual = sorterProcessor.process(data);
+        const actual = sorterProcessor.value;
 
         Expect(actual).toEqual(expected);
     }
@@ -103,9 +107,10 @@ export class SorterProcessorTests {
     @Test('setting the direction should reprocess the data in the supplied direction')
     public direction1<T>(data: T[], expected: T[], sorter: Sorter<T>) {
         const sorterProcessor = new SorterProcessor<T>();
+        sorterProcessor.process(data);
         sorterProcessor.sorter = sorter;
 
-        const actual = sorterProcessor.process(data);
+        const actual = sorterProcessor.value;
         sorterProcessor.direction = false;
         const actualDescending = sorterProcessor.value;
         sorterProcessor.direction = true;
