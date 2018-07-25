@@ -25,13 +25,6 @@ export class DataSource<TData> extends BehaviourSubject<TData> {
     }
 
     /**
-     * Gets the current processed version of the data.
-     */
-    public get(): TData {
-        return this.getValue();
-    }
-
-    /**
      * Sets the data.
      *
      * @param data The new data to replace the current data with.

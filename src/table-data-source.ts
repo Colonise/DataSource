@@ -1,5 +1,12 @@
 import { DataSource } from './data-source';
-import { Filter, FilterProcessor, PagerProcessor, Sorter, SorterProcessor } from './processors';
+import {
+    FilterProcessor,
+    FilterProcessorApi,
+    PagerProcessor,
+    PagerProcessorApi,
+    SorterProcessor,
+    SorterProcessorApi
+} from './processors';
 import { remove } from './utils';
 
 /**
@@ -11,90 +18,31 @@ export class TableDataSource<TRow> extends DataSource<TRow[]> {
     protected pagerProcessor: PagerProcessor<TRow> = new PagerProcessor<TRow>();
 
     /**
-     * Whether the table will filter.
+     * The filtering processor.
      */
-    public get filtering(): boolean {
-        return this.filterProcessor.active;
-    }
-    public set filtering(active: boolean) {
-        this.filterProcessor.active = active;
+    public get filtering(): FilterProcessorApi<TRow> {
+        return this.filterProcessor;
     }
 
     /**
-     * Filters the table.
-     *
-     * True:   (entry) => !!entry;
-     * False:  (entry) => !entry;
-     * Object: (entry) => entry[filter.property] === filter.value;
-     * String: (entry) => !!entry[filter];
+     * The sorting processor.
      */
-    public get filter(): Filter<TRow> {
-        return this.filterProcessor.filter;
-    }
-    public set filter(filter: Filter<TRow>) {
-        this.filterProcessor.filter = filter;
+    public get sorting(): SorterProcessorApi<TRow> {
+        return this.sorterProcessor;
     }
 
     /**
-     * Whether the table will sort.
+     * The paging processor.
      */
-    public get sorting(): boolean {
-        return this.sorterProcessor.active;
-    }
-    public set sorting(active: boolean) {
-        this.sorterProcessor.active = active;
+    public get paging(): PagerProcessorApi<TRow> {
+        return this.pagerProcessor;
     }
 
     /**
-     * Sorts the table.
-     *
-     * Setting as a boolean sets the direction.
-     *
-     * Boolean: (entryA, entryB) => entryA < entryB ? -1 : entryA > entryB ? 1 : 0;
-     * String:  (entryA, entryB) => entryA[sorter] < entryB[sorter] ? -1 : entryA[sorter] > entryB[sorter] ? 1 : 0;
-     */
-    public get sorter(): Sorter<TRow> {
-        return this.sorterProcessor.sorter;
-    }
-    public set sorter(sorter: Sorter<TRow>) {
-        this.sorterProcessor.sorter = sorter;
-    }
-
-    /**
-     * Whether the table will paginate.
-     */
-    public get paginate(): boolean {
-        return this.pagerProcessor.active;
-    }
-    public set paginate(active: boolean) {
-        this.pagerProcessor.active = active;
-    }
-
-    /**
-     * The current page.
-     */
-    public get page(): number {
-        return this.pagerProcessor.page;
-    }
-    public set page(page: number) {
-        this.pagerProcessor.page = page;
-    }
-
-    /**
-     * The current page size.
-     */
-    public get pageSize(): number {
-        return this.pagerProcessor.pageSize;
-    }
-    public set pageSize(pageSize: number) {
-        this.pagerProcessor.pageSize = pageSize;
-    }
-
-    /**
-     * The total number of rows in the processed table.
+     * The total number of rows in the table before processing.
      */
     public get length(): number {
-        return this.value.length;
+        return this.data.length;
     }
 
     /**

@@ -5,15 +5,27 @@ import { Processor } from './processor';
 
 type ProcessorTuple<TData> = [Processor<TData>, Unsubscribable | undefined];
 
+/**
+ * A processor that wraps a queue of ComplexProcessors, passing the input data through the queue.
+ */
 export class QueueProcessor<TData> extends ComplexProcessor<TData> {
     protected processorTuples: ProcessorTuple<TData>[] = [];
 
+    /**
+     * The number of processors in the queue.
+     */
     public get length(): number {
         return this.processorTuples.length;
     }
 
-    constructor(lastOutput: TData, processors: Processor<TData>[] = []) {
-        super(lastOutput);
+    /**
+     * Creates a new QueueProcessor.
+     *
+     * @param value The initial value for subscribers.
+     * @param processors The initial processors.
+     */
+    constructor(value: TData, processors: Processor<TData>[] = []) {
+        super(value);
 
         processors.forEach(processor => this.addProcessor(processor));
     }
