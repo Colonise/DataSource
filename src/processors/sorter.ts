@@ -75,7 +75,11 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
         return this._direction;
     }
     public set direction(ascending: boolean) {
-        this._direction = ascending;
+        if (this._direction !== ascending) {
+            this._direction = ascending;
+
+            this.reprocess();
+        }
     }
 
     /**
@@ -169,12 +173,10 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     }
 
     protected sorterToDirectionalSorter(sorter: FunctionSorter<TEntry>): FunctionSorter<TEntry> {
-        if (this.direction) {
-            return sorter;
-        } else {
-            return (entryA, entryB) => {
-                return <-1 | 0 | 1>(sorter(entryA, entryB) * -1);
-            };
-        }
+        return (entryA, entryB) => {
+            const result = sorter(entryA, entryB);
+
+            return this.direction ? result : <-1 | 0 | 1>(result * -1);
+        };
     }
 }
