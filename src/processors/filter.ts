@@ -1,4 +1,4 @@
-import { ComplexProcessor } from './complex';
+import { ArrayProcessor, ArrayProcessorApi } from './array';
 
 /**
  * Filters an array using truthiness.
@@ -34,15 +34,35 @@ export type Filter<TEntry> =
     | void;
 
 /**
+ * The public API of a FilterProcessor.
+ */
+export interface FilterProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
+    /**
+     * Filters the array.
+     *
+     * True:   (entry) => !!entry;
+     * False:  (entry) => !entry;
+     * Object: (entry) => entry[filter.property] === filter.value;
+     * String: (entry) => !!entry[filter];
+     */
+    filter: Filter<TEntry>;
+}
+
+/**
  * An array processor to automatically sort an array using the supplied filter.
  */
-export class FilterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
+export class FilterProcessor<TEntry> extends ArrayProcessor<TEntry> implements FilterProcessorApi<TEntry> {
     protected inputFilter: Filter<TEntry> | void = undefined;
 
     protected currentFilter: FunctionFilter<TEntry> | void = undefined;
 
+    /**
+     * Creates a new FilterProcessor.
+     *
+     * @param active Whether the FilterProcessor should start active.
+     */
     public constructor(active: boolean = true) {
-        super([], active);
+        super(active);
     }
 
     /**

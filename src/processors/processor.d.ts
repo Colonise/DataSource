@@ -3,6 +3,6 @@ import { QueueProcessor } from './queue';
 import { SimpleProcessor } from './simple';
 
 /**
- * TODO
+ * A data processor.
  */
 export type Processor<TData> = QueueProcessor<TData> | ComplexProcessor<TData> | SimpleProcessor<TData>;

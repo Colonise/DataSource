@@ -1,11 +1,24 @@
-import { BehaviourSubject } from '../rxjs';
+import { BehaviourSubject, BehaviourSubjectApi } from '../rxjs';
 import { clone } from '../utils';
 
 /**
+ * The public API of a ComplexProcessor.
+ */
+export interface ComplexProcessorApi<TData> extends BehaviourSubjectApi<TData> {
+    /**
+     * Whether this processor is active.
+     *
+     * An inactive processor returns the data it is supplied.
+     */
+    active: boolean;
+}
+
+/**
  * A processor that can be activated and deactived.
+ *
  * Designed for complex proessing.
  */
-export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> {
+export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> implements ComplexProcessorApi<TData> {
     protected processing = false;
 
     // tslint:disable-next-line:variable-name
@@ -19,8 +32,11 @@ export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> {
 
     // tslint:disable-next-line:variable-name
     protected _active: boolean = true;
+
     /**
-     * Whether this processor is active. Inactive processor return any data it is supplied.
+     * Whether this processor is active.
+     *
+     * An inactive processor returns the data it is supplied.
      */
     public get active(): boolean {
         return this._active;
@@ -53,6 +69,11 @@ export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> {
         return this.next(this.processor(data));
     }
 
+    /**
+     * Reprocesses the data.
+     *
+     * @param force Whether to force the ComplexProcessor to reprocess.
+     */
     public reprocess(force: boolean = false): TData {
         return this.process(this.lastInput, force);
     }
