@@ -265,6 +265,28 @@ export class TableDataSourceTests {
         Expect(actual).toEqual(expected);
     }
 
+    @TestCase((person: Person) => person.gender === Gender.Male, 'age', 1, 2, [
+        TestData.JohnSmith,
+        TestData.BarryGoodwin
+    ])
+    @Test('should filter then sort then paginate, while exposing individual results')
+    public FilterSorterPager1(
+        filter: Filter<Person>,
+        sorter: Sorter<Person>,
+        page: number,
+        pageSize: number,
+        expected: Person[]
+    ) {
+        TestData.tableDataSource.filtering.filter = filter;
+        TestData.tableDataSource.sorting.sorter = sorter;
+        TestData.tableDataSource.paging.page = page;
+        TestData.tableDataSource.paging.pageSize = pageSize;
+
+        const actual = TestData.tableDataSource.value;
+
+        Expect(actual).toEqual(expected);
+    }
+
     @TestCase(TestData.BarryGoodwin, [
         TestData.HenryLawson,
         TestData.TonyGibson,

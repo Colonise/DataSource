@@ -35,9 +35,13 @@ export class PagerProcessor<TEntry> extends ArrayProcessor<TEntry> implements Pa
         return this._page;
     }
     public set page(page: number) {
+        if (page <= 0) {
+            throw TypeError(`pageSize must be a positive whole number, got ${page}`);
+        }
+
         this._page = page;
 
-        this.reprocess();
+        this.next(this.currentPageEntries());
     }
 
     // tslint:disable-next-line:variable-name
@@ -56,7 +60,7 @@ export class PagerProcessor<TEntry> extends ArrayProcessor<TEntry> implements Pa
 
         this._pageSize = pageSize;
 
-        this.next(this.currentPageEntries());
+        this.reprocess();
     }
 
     protected pages: TEntry[][] = [];
