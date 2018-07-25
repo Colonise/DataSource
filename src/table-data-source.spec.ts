@@ -89,9 +89,9 @@ export class TableDataSourceTests {
     ])
     @Test('PropertyFilter should correctly filter the output data')
     public PropertyFilter1(filter: Filter<Person>, expected: Person[]) {
-        TestData.tableDataSource.filter = filter;
+        TestData.tableDataSource.filtering.filter = filter;
 
-        const actual = TestData.tableDataSource.get();
+        const actual = TestData.tableDataSource.value;
 
         Expect(actual.length).toBe(expected.length);
 
@@ -130,9 +130,9 @@ export class TableDataSourceTests {
     ])
     @Test('PropertyAndValueFilter should correctly filter the output data')
     public PropertyAndValueFilter1(filter: Filter<Person>, expected: Person[]) {
-        TestData.tableDataSource.filter = filter;
+        TestData.tableDataSource.filtering.filter = filter;
 
-        const actual = TestData.tableDataSource.get();
+        const actual = TestData.tableDataSource.value;
 
         Expect(actual.length).toBe(expected.length);
 
@@ -185,9 +185,9 @@ export class TableDataSourceTests {
     ])
     @Test('FunctionFilter should correctly filter the output data')
     public FunctionFilter1(filter: Filter<Person>, expected: Person[]) {
-        TestData.tableDataSource.filter = filter;
+        TestData.tableDataSource.filtering.filter = filter;
 
-        const actual = TestData.tableDataSource.get();
+        const actual = TestData.tableDataSource.value;
 
         Expect(actual.length).toBe(expected.length);
 
@@ -258,9 +258,9 @@ export class TableDataSourceTests {
     ])
     @Test('PropertySorter should correctly sort the output data')
     public PropertySorter1(sorter: Sorter<Person>, expected: Person[]) {
-        TestData.tableDataSource.sorter = sorter;
+        TestData.tableDataSource.sorting.sorter = sorter;
 
-        const actual = TestData.tableDataSource.get();
+        const actual = TestData.tableDataSource.value;
 
         Expect(actual).toEqual(expected);
     }
@@ -282,7 +282,7 @@ export class TableDataSourceTests {
     public push1(person: Person, expected: Person[]) {
         TestData.tableDataSource.push(person);
 
-        const actual = TestData.tableDataSource.get();
+        const actual = TestData.tableDataSource.value;
 
         Expect(actual).toEqual(expected);
     }

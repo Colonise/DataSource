@@ -1,4 +1,4 @@
-import { ComplexProcessor } from './complex';
+import { ArrayProcessor, ArrayProcessorApi } from './array';
 
 /**
  * Sorts an array using truthiness and strict equality.
@@ -31,9 +31,32 @@ export type MultiSorter<TEntry> = SingleSorter<TEntry>[];
 export type Sorter<TEntry> = BooleanSorter | SingleSorter<TEntry> | MultiSorter<TEntry> | void;
 
 /**
+ * The public API of a SorterProcessor.
+ */
+export interface SorterProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
+    /**
+     * Sets the sorting direction.
+     *
+     * Ascending = true;
+     *
+     * Descending = false;
+     */
+    direction: boolean;
+    /**
+     * Sorts the array.
+     *
+     * Setting as a boolean sets the direction.
+     *
+     * Boolean: (entryA, entryB) => entryA < entryB ? -1 : entryA > entryB ? 1 : 0;
+     * String:  (entryA, entryB) => entryA[sorter] < entryB[sorter] ? -1 : entryA[sorter] > entryB[sorter] ? 1 : 0;
+     */
+    sorter: Sorter<TEntry>;
+}
+
+/**
  * An array processor to automatically sort an array using the supplied sorter.
  */
-export class SorterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
+export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements SorterProcessorApi<TEntry> {
     protected inputSorter: Sorter<TEntry> = undefined;
 
     protected currentSorter: FunctionSorter<TEntry> | void = undefined;
@@ -55,8 +78,13 @@ export class SorterProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
         this._direction = ascending;
     }
 
+    /**
+     * Creates a new SorterProcessor.
+     *
+     * @param active Whether the SorterProcessor should start active.
+     */
     public constructor(active: boolean = true) {
-        super([], active);
+        super(active);
     }
 
     /**
