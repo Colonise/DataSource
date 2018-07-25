@@ -18,9 +18,10 @@ export class FilterProcessorTests {
     @Test('BooleanFilter should work')
     public BooleanFilter1<T>(data: T[], expected: T[], filter: boolean) {
         const filterProcessor = new FilterProcessor<T>();
+        filterProcessor.process(data);
         filterProcessor.filter = filter;
 
-        const actual = filterProcessor.process(data);
+        const actual = filterProcessor.value;
 
         Expect(filterProcessor.filter).toBe(filter);
         Expect(actual).toEqual(expected);
@@ -32,10 +33,12 @@ export class FilterProcessorTests {
     @Test('FunctionFilter should work')
     public FunctionFilter1<T>(data: T[], expected: T[], filter: FunctionFilter<T>) {
         const filterProcessor = new FilterProcessor<T>();
+        filterProcessor.process(data);
         filterProcessor.filter = filter;
+
         const filterSpy = SpyOn(filterProcessor, 'filter');
 
-        const actual = filterProcessor.process(data);
+        const actual = filterProcessor.value;
 
         filterSpy.restore();
 
@@ -51,9 +54,10 @@ export class FilterProcessorTests {
     @Test('PropertyFilter should work')
     public PropertyFilter1<T>(data: T[], expected: T[], filter: PropertyFilter<T>) {
         const filterProcessor = new FilterProcessor<T>();
+        filterProcessor.process(data);
         filterProcessor.filter = filter;
 
-        const actual = filterProcessor.process(data);
+        const actual = filterProcessor.value;
 
         Expect(filterProcessor.filter).toBe(filter);
         Expect(actual).toEqual(expected);
@@ -64,9 +68,10 @@ export class FilterProcessorTests {
     @Test('PropertyAndValueFilter should work')
     public PropertyAndValueFilter1<T>(data: T[], expected: T[], filter: PropertyAndValueFilter<T>) {
         const filterProcessor = new FilterProcessor<T>();
+        filterProcessor.process(data);
         filterProcessor.filter = filter;
 
-        const actual = filterProcessor.process(data);
+        const actual = filterProcessor.value;
 
         Expect(filterProcessor.filter).toBe(filter);
         Expect(actual).toEqual(expected);
