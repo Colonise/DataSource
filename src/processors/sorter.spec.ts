@@ -1,5 +1,5 @@
 import { Any, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
-import { BooleanSorter, FunctionSorter, MultiSorter, PropertySorter, SorterProcessor } from './sorter';
+import { BooleanSorter, FunctionSorter, MultiSorter, PropertySorter, Sorter, SorterProcessor } from './sorter';
 
 @TestFixture('SorterProcessor')
 export class SorterProcessorTests {
@@ -97,5 +97,22 @@ export class SorterProcessorTests {
         const actual = sorterProcessor.process(data);
 
         Expect(actual).toEqual(expected);
+    }
+
+    @TestCase([1, 2, 3, 4, 5], [1, 2, 3, 4, 5], true)
+    @Test('setting the direction should reprocess the data in the supplied direction')
+    public direction1<T>(data: T[], expected: T[], sorter: Sorter<T>) {
+        const sorterProcessor = new SorterProcessor<T>();
+        sorterProcessor.sorter = sorter;
+
+        const actual = sorterProcessor.process(data);
+        sorterProcessor.direction = false;
+        const actualDescending = sorterProcessor.value;
+        sorterProcessor.direction = true;
+        const actualAscending = sorterProcessor.value;
+
+        Expect(actual).toEqual(expected);
+        Expect(actualDescending).toEqual(expected.slice().reverse());
+        Expect(actualAscending).toEqual(expected);
     }
 }
