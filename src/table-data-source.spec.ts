@@ -1,5 +1,5 @@
-import { Expect, IgnoreTest, Setup, Test, TestCase, TestFixture } from 'alsatian';
-import { Filter, FilterProcessor, Sorter } from './processors';
+import { Expect, Setup, Test, TestCase, TestFixture } from 'alsatian';
+import { Filter, Sorter } from './processors';
 import { TableDataSource } from './table-data-source';
 
 enum Gender {
