@@ -1,3 +1,4 @@
+language: javascript
 before_script:
   - npm install -g gulp-cli
   - npm install -g ts-node
