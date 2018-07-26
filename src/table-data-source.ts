@@ -21,7 +21,9 @@ export class TableDataSource<TRow> extends DataSource<TRow[]> {
      * The filtering processor.
      */
     public get filtering(): FilterProcessorApi<TRow> {
-        throw 1;
+        let foo = 1;
+        foo++;
+        console.log(foo);
         return this.filterProcessor;
     }
 
