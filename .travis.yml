@@ -1,7 +1,8 @@
 language: javascript
 before_script:
-  - npm install -g gulp-cli
+  - npm install -g typescript
   - npm install -g ts-node
+  - npm install -g gulp-cli
 jobs:
   include:
     - stage: build
