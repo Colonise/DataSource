@@ -1,4 +1,4 @@
-import { Any, createFunctionSpy, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
+import { createFunctionSpy, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
 import { DataSource } from './data-source';
 import { Processor } from './processors';
 
