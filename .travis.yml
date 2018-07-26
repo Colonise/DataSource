@@ -7,22 +7,8 @@ cache:
 before_script:
   - npm install -g npm
   - npm install -g gulp
-jobs:
-  include:
-    - stage: build
-      name: "Build"
-      script: gulp build
-    - stage: lint
-      name: "Lint"
-      script: gulp lint
-    - stage: test
-      name: "Unit Tests"
-      script: gulp test
-    - stage: coverage
-      name: "Unit Test Coverage"
-      script: gulp coverage
-stages:
-  - lint
-  - build
-  - test
-  - coverage
+script:
+  - gulp build
+  - gulp lint
+  - gulp test
+  - gulp coverage
