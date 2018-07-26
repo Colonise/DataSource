@@ -61,7 +61,10 @@ typings/
 .next
 
 # Build
-dist
+build
 
 # Test
 coverage
+
+# Distribute
+dist

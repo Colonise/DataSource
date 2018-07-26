@@ -1,4 +1,4 @@
-import { Any, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
+import { Expect, Test, TestCase, TestFixture } from 'alsatian';
 import { PagerProcessor } from './pager';
 
 @TestFixture('PagerProcessor')
