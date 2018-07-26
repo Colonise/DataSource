@@ -98,7 +98,6 @@ export class TableDataSourceTests {
         expected.forEach(expectedPerson => {
             Expect(actual).toContain(expectedPerson);
         });
-        throw 1;
     }
 
     @TestCase({ property: 'alive', value: true }, [
