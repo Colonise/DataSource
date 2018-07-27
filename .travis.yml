@@ -4,6 +4,10 @@ node_js:
 before_script:
   - npm install -g npm
   - npm install -g gulp
+  - npm install -g greenkeeper-lockfile
+install: npm install
+before_script: greenkeeper-lockfile-update
+after_script: greenkeeper-lockfile-upload
 script:
   - gulp build
   - gulp lint
