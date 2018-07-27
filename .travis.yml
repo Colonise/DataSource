@@ -4,12 +4,15 @@ env:
 language: node_js
 node_js:
   - "10"
+install: npm install
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
   - npm install -g npm
   - npm install -g gulp
+  - npm install -g greenkeeper-lockfile
+  - greenkeeper-lockfile-update
 script:
   - gulp build
   - gulp lint
@@ -17,3 +20,4 @@ script:
   - gulp coverage
 after_script:
   - ./cc-test-reporter after-build --prefix /coverage --exit-code $TRAVIS_TEST_RESULT
+  - greenkeeper-lockfile-upload
