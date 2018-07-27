@@ -1,11 +1,15 @@
 language: node_js
 node_js:
   - "10"
+install: npm install
 before_script:
   - npm install -g npm
   - npm install -g gulp
+  - npm install -g greenkeeper-lockfile
+  - greenkeeper-lockfile-update
 script:
   - gulp build
   - gulp lint
   - gulp test
   - gulp coverage
+after_script: greenkeeper-lockfile-upload
