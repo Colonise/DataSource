@@ -13,7 +13,7 @@ export type PropertySorter<TEntry> = keyof TEntry;
 /**
  * Sorts an array.
  */
-export type FunctionSorter<TEntry> = (entryA: TEntry, entryB: TEntry) => 1 | 0 | -1;
+export type FunctionSorter<TEntry> = (entryA: TEntry, entryB: TEntry) => number;
 
 /**
  * Union type of FunctionSorter<TEntry> | PropertySorter<TEntry>
@@ -176,7 +176,7 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
         return (entryA, entryB) => {
             const result = sorter(entryA, entryB);
 
-            return this.direction ? result : <-1 | 0 | 1>(result * -1);
+            return this.direction ? result : result * -1;
         };
     }
 }
