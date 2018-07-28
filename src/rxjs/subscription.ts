@@ -10,5 +10,5 @@ export class Subscription<T> implements Unsubscribable {
      * @param observer The observer.
      * @param unsubscribe The function to unsubscribe from further updates.
      */
-    constructor(public readonly observer: PartialObserver<T>, public readonly unsubscribe: () => void) {}
+    public constructor(public readonly observer: PartialObserver<T>, public readonly unsubscribe: () => void) {}
 }

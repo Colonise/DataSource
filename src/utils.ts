@@ -59,8 +59,50 @@ export function clone<T>(object: T): T {
     if (typeof object !== 'object' || object === null) {
         return object;
     } else if (Array.isArray(object)) {
+        // tslint:disable-next-line:no-any
         return <any>object.slice();
     } else {
+        // tslint:disable-next-line:no-any
         return { ...(<any>object) };
     }
+}
+
+// tslint:disable-next-line:no-any
+export function isBoolean(obj: any): obj is boolean {
+    return typeof obj === 'boolean';
+}
+
+// tslint:disable-next-line:no-any
+export function isFunction(obj: any): obj is Function {
+    return typeof obj === 'function';
+}
+
+// tslint:disable-next-line:no-any
+export function isNumber(obj: any): obj is number {
+    return typeof obj === 'number';
+}
+
+// tslint:disable-next-line:no-any
+export function isObject(obj: any): obj is object {
+    return typeof obj === 'object';
+}
+
+// tslint:disable-next-line:no-any
+export function isString(obj: any): obj is string {
+    return typeof obj === 'string';
+}
+
+// tslint:disable-next-line:no-any
+export function isUndefined(obj: any): obj is undefined {
+    return typeof obj === 'undefined';
+}
+
+// tslint:disable-next-line:no-any
+export function isNull(obj: any): obj is null {
+    return obj === null;
+}
+
+// tslint:disable-next-line:no-any
+export function isVoid(obj: any): obj is void {
+    return obj == null;
 }

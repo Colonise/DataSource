@@ -35,6 +35,7 @@ export class ComplexProcessorTests {
     @TestCase([1, 2, 3], [], <T>(data: T[]) => data.slice(data.length))
     @TestCase({ a: 1, b: 2, c: 3 }, {}, <T>(data: T) => {
         Object.keys(data).forEach(key => delete data[<keyof T>key]);
+
         return data;
     })
     @Test('should only process when active')

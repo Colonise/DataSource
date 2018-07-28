@@ -31,7 +31,7 @@ export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> im
     }
 
     // tslint:disable-next-line:variable-name
-    protected _active: boolean = true;
+    protected _active = true;
 
     /**
      * Whether this processor is active.

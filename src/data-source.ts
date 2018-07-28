@@ -29,7 +29,7 @@ export class DataSource<TData> extends BehaviourSubject<TData> {
      *
      * @param data The new data to replace the current data with.
      */
-    public set(data: TData) {
+    public set(data: TData): TData {
         this.data = data;
 
         return this.process();
