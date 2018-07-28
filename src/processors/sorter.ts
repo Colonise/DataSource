@@ -131,18 +131,10 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
 
     protected propertySorterToFunctionSorter(property: PropertySorter<TEntry>): FunctionSorter<TEntry> {
         return (entryA: TEntry, entryB: TEntry) => {
-            if (entryA == null && entryB == null) {
-                return 0;
-            } else if (entryA == null) {
-                return -1;
-            } else if (entryB == null) {
-                return 1;
-            } else if (entryA[property] < entryB[property]) {
-                return -1;
-            } else if (entryA[property] > entryB[property]) {
-                return 1;
+            if (entryA == null || entryB == null) {
+                return entryA == null && entryB == null ? 0 : entryA == null ? -1 : 1;
             } else {
-                return 0;
+                return entryA[property] < entryB[property] ? -1 : entryA[property] > entryB[property] ? 1 : 0;
             }
         };
     }
