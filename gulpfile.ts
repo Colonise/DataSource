@@ -26,6 +26,7 @@ class GulpFile {
 
     public readonly coverableFiles = ['./build/**/*.js', '!./build/**/*.spec.*'];
     public readonly testFiles = './build/**/*.spec.js';
+    public readonly debugTestFiles = './src/**/*.spec.ts';
 
     public readonly distributeFiles = ['./build/**/*.*', '!./build/**/*.spec.*'];
     public readonly distributeDirectiory = './dist/';
@@ -80,6 +81,18 @@ class GulpFile {
         return this.runAlsatian(TestOutput.Coverage);
     }
 
+    public debug() {
+        const testRunner = new TestRunner();
+
+        testRunner.outputStream.pipe(TapBark.create().getPipeable()).pipe(process.stdout);
+
+        const testSet = TestSet.create();
+
+        testSet.addTestsFromFiles(this.debugTestFiles);
+
+        return testRunner.run(testSet);
+    }
+
     public async runAlsatian(output: TestOutput) {
         const testRunner = new TestRunner();
 
@@ -97,6 +110,7 @@ class GulpFile {
                 );
                 testRunner.outputStream.pipe(gulpIstanbul.writeReports({ dir: './coverage' }));
                 break;
+            default:
         }
 
         const testSet = TestSet.create();
