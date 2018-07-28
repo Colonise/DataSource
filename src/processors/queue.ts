@@ -3,7 +3,7 @@ import { findIndex, insert, remove } from '../utils';
 import { ComplexProcessor } from './complex';
 import { Processor } from './processor';
 
-type ProcessorTuple<TData> = [Processor<TData>, Unsubscribable | undefined];
+export type ProcessorTuple<TData> = [Processor<TData>, Unsubscribable | undefined];
 
 /**
  * A processor that wraps a queue of ComplexProcessors, passing the input data through the queue.
@@ -24,7 +24,7 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
      * @param value The initial value for subscribers.
      * @param processors The initial processors.
      */
-    constructor(value: TData, processors: Processor<TData>[] = []) {
+    public constructor(value: TData, processors: Processor<TData>[] = []) {
         super(value);
 
         processors.forEach(processor => this.addProcessor(processor));
@@ -45,7 +45,7 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
             });
         }
 
-        if (index == null) {
+        if (index === undefined) {
             this.processorTuples.push(processorTuple);
 
             return this.reprocessFromIndex(this.processorTuples.length - 1);

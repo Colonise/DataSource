@@ -2,6 +2,7 @@
 export interface NextObserver<T> {
     closed?: boolean;
     next(value: T): void;
+    // tslint:disable-next-line:no-any
     error?(err: any): void;
     complete?(): void;
 }
@@ -10,6 +11,7 @@ export interface NextObserver<T> {
 export interface ErrorObserver<T> {
     closed?: boolean;
     next?(value: T): void;
+    // tslint:disable-next-line:no-any
     error(err: any): void;
     complete?(): void;
 }
@@ -18,6 +20,7 @@ export interface ErrorObserver<T> {
 export interface CompletionObserver<T> {
     closed?: boolean;
     next?(value: T): void;
+    // tslint:disable-next-line:no-any
     error?(err: any): void;
     complete(): void;
 }

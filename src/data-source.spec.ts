@@ -47,17 +47,20 @@ export class DataSourceTests {
         Expect(get2).toEqual(data2);
     }
 
+    // tslint:disable-next-line:no-any
     @TestCase({ a: 1 }, { a: 1, b: 2 }, (data: any) => {
         data.b = 2;
 
         return data;
     })
+    // tslint:disable-next-line:no-any
     @TestCase([1], [1, 2], (data: any) => {
         data.push(2);
 
         return data;
     })
     @Test('addProcessor() should add a processor')
+    // tslint:disable-next-line:no-any
     public addProcessor1<T>(data: T, expected: T, processor: Processor<any>) {
         const dataSource = new DataSource(data);
         const spyable = { processor };
@@ -80,17 +83,20 @@ export class DataSourceTests {
             .exactly(1);
     }
 
+    // tslint:disable-next-line:no-any
     @TestCase({ a: 1 }, (data: any) => {
         data.b = 2;
 
         return data;
     })
+    // tslint:disable-next-line:no-any
     @TestCase([1], (data: any) => {
         data.push(2);
 
         return data;
     })
     @Test('removeProcessor() should remove a processor')
+    // tslint:disable-next-line:no-any
     public removeProcessor1<T>(data: T, processor: Processor<any>) {
         const dataSource = new DataSource(data);
         const spyable = { processor };
@@ -172,6 +178,7 @@ export class DataSourceTests {
         { key1: 'a', key2: 'b' },
 
         <T>(data: T) => {
+            // tslint:disable-next-line:no-any
             const newData: any = {};
 
             Object.keys(data).forEach(key => (newData[data[<keyof T>key]] = key));
@@ -179,6 +186,7 @@ export class DataSourceTests {
             return newData;
         },
         <T>(data: T) => {
+            // tslint:disable-next-line:no-any
             const newData: any = {};
 
             Object.keys(data).forEach(key => (newData[`key${key}`] = data[<keyof T>key]));

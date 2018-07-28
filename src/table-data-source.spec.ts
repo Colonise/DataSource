@@ -2,13 +2,13 @@ import { Expect, Setup, Test, TestCase, TestFixture } from 'alsatian';
 import { Filter, Sorter } from './processors';
 import { TableDataSource } from './table-data-source';
 
-enum Gender {
+export enum Gender {
     Male,
     Female
 }
 
-class Person {
-    constructor(
+export class Person {
+    public constructor(
         public firstName: string,
         public lastName: string,
         public age: number,
@@ -18,7 +18,8 @@ class Person {
 }
 
 // tslint:disable-next-line:max-classes-per-file
-class TestData {
+export class TestData {
+    // tslint:disable:variable-name
     public static JohnSmith = new Person('John', 'Smith', 16, Gender.Male, true);
     public static FredRichards = new Person('Fred', 'Richards', 64, Gender.Male, true);
     public static HenryLawson = new Person('Henry', 'Lawson', 81, Gender.Male, false);
@@ -30,6 +31,7 @@ class TestData {
     public static MollyRichards = new Person('Molly', 'Richards', 33, Gender.Female, false);
     public static KarenHoward = new Person('Karen', 'Howard', 9, Gender.Female, true);
     public static FreyaClark = new Person('Freya', 'Clark', 26, Gender.Female, true);
+    // tslint:enable:variable-name
 
     public static people: Person[] = [];
     public static tableDataSource = new TableDataSource<Person>([]);

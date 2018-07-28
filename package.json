@@ -48,7 +48,7 @@
         "stream-to-promise": "^2.2.0",
         "tsgulp": "^1.1.2",
         "tslint": "^5.10.0",
-        "typescript": "^2.7.2"
+        "typescript": "~2.7.2"
     },
     "dependencies": {
         "tslib": "^1.9.3"
