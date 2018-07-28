@@ -3,7 +3,9 @@ export function insert<T>(array: T[], index: number, items: T[]): T[];
 export function insert<T>(array: T[], index: number, itemOrItems: T | T[]) {
     const items = Array.isArray(itemOrItems) ? itemOrItems : [itemOrItems];
 
-    return array.splice(index, 0, ...items);
+    array.splice(index, 0, ...items);
+
+    return array;
 }
 
 export function remove<T>(array: T[], item: T): T[];
@@ -11,18 +13,16 @@ export function remove<T>(array: T[], items: T[]): T[];
 export function remove<T>(array: T[], index: number, count?: number): T[];
 export function remove<T>(array: T[], indexOrItemOrItems: number | T | T[], count: number = 1) {
     if (typeof indexOrItemOrItems === 'number') {
-        return array.splice(indexOrItemOrItems, count);
+        array.splice(indexOrItemOrItems, count);
     } else if (Array.isArray(indexOrItemOrItems)) {
-        const newArray = array;
-
-        indexOrItemOrItems.forEach(item => remove(newArray, item));
-
-        return newArray;
+        indexOrItemOrItems.forEach(item => remove(array, item));
     } else {
         const index = array.indexOf(indexOrItemOrItems);
 
-        return array.splice(index, 1);
+        array.splice(index, 1);
     }
+
+    return array;
 }
 
 export type Finder<T> = (item: T, index: number, array: T[]) => boolean;
@@ -84,7 +84,7 @@ export function isNumber(obj: any): obj is number {
 
 // tslint:disable-next-line:no-any
 export function isObject(obj: any): obj is object {
-    return typeof obj === 'object';
+    return typeof obj === 'object' && obj !== null;
 }
 
 // tslint:disable-next-line:no-any
