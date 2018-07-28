@@ -1,3 +1,4 @@
+import { isBoolean, isFunction, isObject, isVoid } from '../utils';
 import { ArrayProcessor, ArrayProcessorApi } from './array';
 
 /**
@@ -57,15 +58,6 @@ export class FilterProcessor<TEntry> extends ArrayProcessor<TEntry> implements F
     protected currentFilter: FunctionFilter<TEntry> | void = undefined;
 
     /**
-     * Creates a new FilterProcessor.
-     *
-     * @param active Whether the FilterProcessor should start active.
-     */
-    public constructor(active: boolean = true) {
-        super(active);
-    }
-
-    /**
      * Filters the array.
      *
      * True:   (entry) => !!entry;
@@ -79,19 +71,28 @@ export class FilterProcessor<TEntry> extends ArrayProcessor<TEntry> implements F
     public set filter(filter: Filter<TEntry>) {
         this.inputFilter = filter;
 
-        if (filter == null) {
+        if (isVoid(filter)) {
             this.currentFilter = filter;
-        } else if (typeof filter === 'boolean') {
+        } else if (isBoolean(filter)) {
             this.currentFilter = this.booleanFilterToFunctionFilter(filter);
-        } else if (typeof filter === 'function') {
+        } else if (isFunction(filter)) {
             this.currentFilter = filter;
-        } else if (typeof filter === 'object') {
+        } else if (isObject(filter)) {
             this.currentFilter = this.propertyAndValueFilterToFunctionFilter(filter);
         } else {
             this.currentFilter = this.propertyFilterToFunctionFilter(filter);
         }
 
         this.reprocess();
+    }
+
+    /**
+     * Creates a new FilterProcessor.
+     *
+     * @param active Whether the FilterProcessor should start active.
+     */
+    public constructor(active: boolean = true) {
+        super(active);
     }
 
     protected processor(array: TEntry[]) {

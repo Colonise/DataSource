@@ -1,3 +1,4 @@
+import { isBoolean, isFunction, isVoid } from '../utils';
 import { ArrayProcessor, ArrayProcessorApi } from './array';
 
 /**
@@ -62,7 +63,7 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     protected currentSorter: FunctionSorter<TEntry> | void = undefined;
 
     // tslint:disable-next-line:variable-name
-    protected _direction: boolean = true;
+    protected _direction = true;
 
     /**
      * Sets the sorting direction.
@@ -83,15 +84,6 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     }
 
     /**
-     * Creates a new SorterProcessor.
-     *
-     * @param active Whether the SorterProcessor should start active.
-     */
-    public constructor(active: boolean = true) {
-        super(active);
-    }
-
-    /**
      * Sorts the array.
      *
      * Setting as a boolean sets the direction.
@@ -105,7 +97,7 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     public set sorter(sorter: Sorter<TEntry> | undefined) {
         this.inputSorter = sorter;
 
-        if (sorter == null) {
+        if (isVoid(sorter)) {
             this.currentSorter = sorter;
         } else if (!Array.isArray(sorter)) {
             this.currentSorter = this.sorterToDirectionalSorter(this.singleSorterToFunctionSorter(sorter));
@@ -114,6 +106,15 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
         }
 
         this.reprocess();
+    }
+
+    /**
+     * Creates a new SorterProcessor.
+     *
+     * @param active Whether the SorterProcessor should start active.
+     */
+    public constructor(active: boolean = true) {
+        super(active);
     }
 
     protected processor(array: TEntry[]) {
@@ -147,9 +148,9 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     }
 
     protected singleSorterToFunctionSorter(sorter: SingleSorter<TEntry>): FunctionSorter<TEntry> {
-        if (typeof sorter === 'function') {
+        if (isFunction(sorter)) {
             return sorter;
-        } else if (typeof sorter === 'boolean') {
+        } else if (isBoolean(sorter)) {
             return this.booleanSorterToFunctionSorter(sorter);
         } else {
             return this.propertySorterToFunctionSorter(sorter);

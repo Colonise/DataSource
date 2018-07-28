@@ -26,7 +26,7 @@ export class PagerProcessor<TEntry> extends ArrayProcessor<TEntry> implements Pa
     protected pager: Pager<TEntry>;
 
     // tslint:disable-next-line:variable-name
-    protected _page: number = 1;
+    protected _page = 1;
 
     /**
      * The current page.
@@ -45,7 +45,7 @@ export class PagerProcessor<TEntry> extends ArrayProcessor<TEntry> implements Pa
     }
 
     // tslint:disable-next-line:variable-name
-    protected _pageSize: number = 20;
+    protected _pageSize = 20;
 
     /**
      * The number of entries to show per page.

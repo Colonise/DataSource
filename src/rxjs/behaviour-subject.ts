@@ -28,6 +28,7 @@ export interface BehaviourSubjectApi<TData> {
      */
     subscribe(
         next: ((value: TData) => void) | undefined,
+        // tslint:disable-next-line:no-any
         error?: (error: any) => void,
         complete?: () => void
     ): Unsubscribable;
@@ -50,7 +51,7 @@ export abstract class BehaviourSubject<TData> {
     /**
      * The current value.
      */
-    get value(): TData {
+    public get value(): TData {
         return this.getValue();
     }
 
@@ -59,7 +60,7 @@ export abstract class BehaviourSubject<TData> {
      *
      * @param lastOutput The current output value of the subject.
      */
-    constructor(protected lastOutput: TData) {}
+    public constructor(protected lastOutput: TData) {}
 
     /**
      * Returns the current value.
@@ -83,11 +84,13 @@ export abstract class BehaviourSubject<TData> {
      */
     public subscribe(
         next: ((value: TData) => void) | undefined,
+        // tslint:disable-next-line:no-any
         error?: (error: any) => void,
         complete?: () => void
     ): Unsubscribable;
     public subscribe(
         observerOrNext: PartialObserver<TData> | ((value: TData) => void) | undefined,
+        // tslint:disable-next-line:no-any
         error?: (error: any) => void,
         complete?: () => void
     ): Unsubscribable {
@@ -102,9 +105,9 @@ export abstract class BehaviourSubject<TData> {
 
         const subscriptionHolder = <{ subscription: Subscription<TData> }>{};
 
-        subscriptionHolder.subscription = new Subscription(observer, () =>
-            this.unsubscribe(subscriptionHolder.subscription)
-        );
+        subscriptionHolder.subscription = new Subscription(observer, () => {
+            this.unsubscribe(subscriptionHolder.subscription);
+        });
 
         // Call the observer's next once
         if (subscriptionHolder.subscription.observer.next) {
