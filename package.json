@@ -12,6 +12,7 @@
         "lint": "gulp lint",
         "test": "gulp test",
         "coverage": "gulp coverage",
+        "debug": "gulp debug",
         "pack": "npm pack",
         "dist": "gulp distribute"
     },
