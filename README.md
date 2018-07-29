@@ -6,4 +6,4 @@
 ![npm bundle size (minified, zipped)](https://img.shields.io/bundlephobia/minzip/@colonise/datasource.svg)
 
 # DataSource
-Simple DataSource class in TypeScript
+Simple DataSource library written in TypeScript
