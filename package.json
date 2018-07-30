@@ -75,5 +75,9 @@
         ],
         "cache": true,
         "all": true
+    },
+    "release": {
+        "dryRun": true,
+        "debug": true
     }
 }
