@@ -31,6 +31,10 @@
     },
     "homepage": "https://github.com/Colonise/DataSource#readme",
     "devDependencies": {
+        "@semantic-release/changelog": "^3.0.0",
+        "@semantic-release/git": "^7.0.1",
+        "@semantic-release/github": "^5.0.1",
+        "@semantic-release/npm": "^4.0.2",
         "@types/del": "3.0.1",
         "@types/gulp": "4.0.5",
         "@types/gulp-istanbul": "^0.9.32",
