@@ -77,7 +77,20 @@
         "all": true
     },
     "release": {
-        "dryRun": true,
-        "debug": true
+        "verifyConditions": [
+            "@semantic-release/changelog",
+            "@semantic-release/npm",
+            "@semantic-release/git",
+            "@semantic-release/github"
+        ],
+        "prepare": [
+            "@semantic-release/changelog",
+            "@semantic-release/npm",
+            "@semantic-release/git"
+        ],
+        "publish": [
+            "@semantic-release/changelog",
+            "@semantic-release/npm"
+        ]
     }
 }
