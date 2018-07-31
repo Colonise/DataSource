@@ -1,5 +1,5 @@
 import { Expect, Setup, Test, TestCase, TestFixture } from 'alsatian';
-import { Filter, Sorter } from './processors';
+import { Filter, Sorter } from '../processors';
 import { TableDataSource } from './table-data-source';
 
 export enum Gender {
@@ -283,28 +283,6 @@ export class TableDataSourceTests {
         TestData.tableDataSource.sorting.sorter = sorter;
         TestData.tableDataSource.paging.page = page;
         TestData.tableDataSource.paging.pageSize = pageSize;
-
-        const actual = TestData.tableDataSource.value;
-
-        Expect(actual).toEqual(expected);
-    }
-
-    @TestCase(TestData.BarryGoodwin, [
-        TestData.HenryLawson,
-        TestData.TonyGibson,
-        TestData.MarySwan,
-        TestData.JohnSmith,
-        TestData.BarryGoodwin,
-        TestData.FreyaClark,
-        TestData.MollyRichards,
-        TestData.KarenHoward,
-        TestData.FredRichards,
-        TestData.JaneSmith,
-        TestData.BarryGoodwin
-    ])
-    @Test('.push() should append a new row to the TableDataSource')
-    public push1(person: Person, expected: Person[]) {
-        TestData.tableDataSource.push(person);
 
         const actual = TestData.tableDataSource.value;
 
