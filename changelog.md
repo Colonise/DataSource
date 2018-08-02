@@ -1,6 +1,4 @@
-# CHANGELOG
-
-Changelog
+# Changelog
 
 ## [1.3.1](https://github.com/Colonise/DataSource/compare/v1.3.0...v1.3.1) \(2018-08-01\)
 

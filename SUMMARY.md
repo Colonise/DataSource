@@ -1,7 +1,6 @@
 # Table of contents
 
-* [README](README.md)
-* [CHANGELOG](changelog.md)
+* [DataSource](README.md)
 * [API](src/README.md)
   * [Data Sources](src/data-sources/README.md)
     * [Data Source](src/data-sources/data-source.md)
@@ -18,4 +17,8 @@
   * [RxJS Support](src/rxjs/README.md)
     * [Behaviour Subject](src/rxjs/behaviour-subject.md)
     * [Subscription](src/rxjs/subscription.md)
+* [Changelog](changelog.md)
+* [Contributing](contributing.md)
+* [Tutorials](tutorials/README.md)
+  * [Custom Processors](tutorials/custom-processors.md)
 
