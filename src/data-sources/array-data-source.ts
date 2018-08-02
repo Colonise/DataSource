@@ -17,7 +17,7 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      *
      * @param array The array.
      */
-    public constructor(array: TEntry[]) {
+    public constructor(array: TEntry[] = []) {
         super(array);
     }
 

@@ -40,10 +40,17 @@ export class TableDataSource<TRow> extends ArrayDataSource<TRow> {
     /**
      * Creates a new TableDataSource with the supplied array.
      *
-     * @param array The array.
+     * @param array The original array.
+     * @param filtering Whether filtering should be active.
+     * @param sorting Whether the sorting should be active.
+     * @param paging Whether the paging should be active.
      */
-    public constructor(array: TRow[]) {
+    public constructor(array: TRow[] = [], filtering: boolean = true, sorting: boolean = true, paging: boolean = true) {
         super(array);
+
+        this.filterProcessor.active = filtering;
+        this.sorterProcessor.active = sorting;
+        this.pagerProcessor.active = paging;
 
         this.preprocessors.addProcessor(this.filterProcessor);
         this.preprocessors.addProcessor(this.sorterProcessor);
