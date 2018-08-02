@@ -21,7 +21,7 @@ script:
   - gulp coverage
 
 after_script:
-  - ./cc-test-reporter after-build --prefix /coverage --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
   - greenkeeper-lockfile-upload
 
 before_deploy:
