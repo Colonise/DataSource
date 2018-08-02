@@ -17,8 +17,8 @@
   * [RxJS Support](src/rxjs/README.md)
     * [Behaviour Subject](src/rxjs/behaviour-subject.md)
     * [Subscription](src/rxjs/subscription.md)
-* [Changelog](changelog.md)
-* [Contributing](contributing.md)
 * [Tutorials](tutorials/README.md)
   * [Custom Processors](tutorials/custom-processors.md)
+* [Changelog](changelog.md)
+* [Contributing](contributing.md)
 
