@@ -41,7 +41,9 @@ export class PagerProcessor<TEntry> extends ArrayProcessor<TEntry> implements Pa
 
         this._page = page;
 
-        this.next(this.currentPageEntries());
+        if (this.shouldProcess()) {
+            this.next(this.currentPageEntries());
+        }
     }
 
     // tslint:disable-next-line:variable-name

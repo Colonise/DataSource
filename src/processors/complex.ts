@@ -66,7 +66,9 @@ export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> im
             return data;
         }
 
-        return this.next(this.processor(data));
+        const processedData = this.processor(data);
+
+        return this.next(processedData);
     }
 
     /**
