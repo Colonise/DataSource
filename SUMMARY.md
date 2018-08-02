@@ -1,7 +1,7 @@
 # Table of contents
 
 * [README](README.md)
-* [Changelog](changelog.md)
+* [CHANGELOG](CHANGELOG.md)
 * [API](src/README.md)
   * [Data Sources](src/data-sources/README.md)
     * [Data Source](src/data-sources/data-source.md)
