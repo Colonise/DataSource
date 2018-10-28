@@ -3,6 +3,7 @@ import { ComplexProcessor } from './complex';
 import { SimpleProcessor } from './simple';
 
 class TestableComplexProcessor<T> extends ComplexProcessor<T> {
+    // @ts-ignore: Allow unused parameter
     protected processor(data: T): T {
         throw new Error('Method not implemented.');
     }
