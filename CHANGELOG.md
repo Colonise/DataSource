@@ -1,3 +1,17 @@
+Changelog
+
+# [2.0.0](https://github.com/Colonise/DataSource/compare/v1.3.2...v2.0.0) (2018-10-28)
+
+
+### Features
+
+* upgrade TypeScript version to 3.1.3 ([a3785a5](https://github.com/Colonise/DataSource/commit/a3785a5))
+
+
+### BREAKING CHANGES
+
+* TypeScript version 2.7.2 changed to 3.1.3
+
 # Changelog
 
 ## [1.3.2](https://github.com/Colonise/DataSource/compare/v1.3.1...v1.3.2) (2018-08-02)
