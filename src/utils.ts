@@ -30,7 +30,8 @@ export type Finder<T> = (item: T, index: number, array: T[]) => boolean;
 export function find<T>(array: T[], item: T): T | undefined;
 export function find<T>(array: T[], finder: Finder<T>): T | undefined;
 export function find<T>(array: T[], itemOrFinder: T | Finder<T>) {
-    const finder: Finder<T> = typeof itemOrFinder === 'function' ? itemOrFinder : item => item === itemOrFinder;
+    const finder: Finder<T> =
+        typeof itemOrFinder === 'function' ? <Finder<T>>itemOrFinder : item => item === itemOrFinder;
 
     for (let i = 0; i < array.length; i++) {
         if (finder(array[i], i, array)) {
@@ -44,7 +45,8 @@ export function find<T>(array: T[], itemOrFinder: T | Finder<T>) {
 export function findIndex<T>(array: T[], item: T): number;
 export function findIndex<T>(array: T[], finder: Finder<T>): number;
 export function findIndex<T>(array: T[], itemOrFinder: T | Finder<T>) {
-    const finder: Finder<T> = typeof itemOrFinder === 'function' ? itemOrFinder : item => item === itemOrFinder;
+    const finder: Finder<T> =
+        typeof itemOrFinder === 'function' ? <Finder<T>>itemOrFinder : item => item === itemOrFinder;
 
     for (let i = 0; i < array.length; i++) {
         if (finder(array[i], i, array)) {
