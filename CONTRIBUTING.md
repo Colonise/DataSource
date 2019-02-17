@@ -18,18 +18,16 @@ Each commit message consists of a **header**, a **body** and a **footer**. The h
 
 #### Examples
 
-{% code-tabs %}
-{% code-tabs-item title="Feature Commit Message Example" %}
+##### Feature Commit Message Example
+
 ```text
 feat(ArrayDataSource): add 'push' method
 
 Add the ability to append, or "push", an entry onto the end of the internal data.
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
 
-{% code-tabs %}
-{% code-tabs-item title="Breaking Change Commit Message Example" %}
+##### Breaking Change Commit Message Example
+
 ```text
 perf(PagerProcessor): reduce page generation load
 
@@ -40,8 +38,6 @@ BREAKING CHANGE:
 
 Setting the .page property will no longer reprocess the entire attached DataSource
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
 
 #### Type
 
