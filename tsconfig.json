@@ -18,5 +18,7 @@
         "strictPropertyInitialization": true,
         "target": "es6"
     },
-    "include": ["gulpfile.ts"]
+    "include": [
+        "gulpfile.ts"
+    ]
 }
