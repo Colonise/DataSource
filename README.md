@@ -8,25 +8,25 @@
 
 The DataSource library is designed to make creating complex data structures easy.
 
-Through the use of [Processors](src/processors/), a data structure can be processed to output a temprarily altered version of the input data.
+Through the use of [Processors](src/processors), a data structure can be processed to output a temprarily altered version of the input data.
 
 The best use cases for this are UI Tables that use [Filtering](src/processors/filter-processor.md), [Sorting](src/processors/sorter-processor.md), [Paging](src/processors/pager-processor.md), and [more](tutorials/custom-processors.md).
 
 ### Documentation
 
-Full documentation can be found on [our documentation site](https://colonise.gitbook.io/datasource), or by looking for the Markdown file named identically to the source file.
+Full documentation can be found under [documentation](documentation), or by looking for the identically named Markdown file adjacent to each source file.
 
 ### Want to contribute?
 
 That's great! We'd love to see what suggestions you have.
 
-[Read the contributing guide.](contributing.md)
+[Read the contributing guide.](CONTRIBUTING.md)
 
 ### Open Source
 
 DataSource is part of the Colonise Open Source Software, and is made with love by the Colonise team.
 
-![](.gitbook/assets/colonise256.png)
+![](documentation/assets/colonise256.png)
 
 ### [License](https://github.com/Colonise/DataSource/blob/master/LICENSE)
 
