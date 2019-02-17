@@ -10,7 +10,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
   - npm install -g npm
-  - npm install -g gulp
+  - npm install -g gulp@3.9.1
   - npm install -g greenkeeper-lockfile
   - greenkeeper-lockfile-update
 
