@@ -36,7 +36,7 @@
         "@semantic-release/github": "^5.2.10",
         "@semantic-release/npm": "^5.1.5",
         "@types/del": "3.0.1",
-        "@types/gulp": "4.0.5",
+        "@types/gulp": "4.0.6",
         "@types/gulp-istanbul": "^0.9.32",
         "@types/merge-stream": "^1.1.2",
         "@types/stream-to-promise": "^2.2.0",
