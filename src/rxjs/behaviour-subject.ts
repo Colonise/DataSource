@@ -60,7 +60,7 @@ export abstract class BehaviourSubject<TData> {
      *
      * @param lastOutput The current output value of the subject.
      */
-    public constructor(protected lastOutput: TData) {}
+    public constructor(protected lastOutput: TData) { }
 
     /**
      * Returns the current value.
@@ -98,10 +98,10 @@ export abstract class BehaviourSubject<TData> {
             typeof observerOrNext === 'object'
                 ? observerOrNext
                 : <NextObserver<TData>>{
-                      next: observerOrNext,
-                      error,
-                      complete
-                  };
+                    next: observerOrNext,
+                    error,
+                    complete
+                };
 
         const subscriptionHolder = <{ subscription: Subscription<TData> }>{};
 
