@@ -29,8 +29,7 @@ export class FilterProcessorTests {
 
     @TestCase([{ a: 1 }, { a: 0 }, { a: 1 }, { a: 0 }, { a: 1 }], [{ a: 0 }, { a: 0 }], (data: { a: 1 | 0 }) => !data.a)
     @TestCase([1, 2, 3, 4, 5], [1, 3, 5], (data: number) => data % 2 !== 0)
-    // tslint:disable-next-line:no-any
-    @TestCase([0, '', undefined, null, false], [], (data: any) => !!data)
+    @TestCase([0, '', undefined, null, false], [], (data: unknown) => !!data)
     @Test('FunctionFilter should work')
     public FunctionFilter1<T>(data: T[], expected: T[], filter: FunctionFilter<T>) {
         const filterProcessor = new FilterProcessor<T>();
