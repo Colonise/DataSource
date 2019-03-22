@@ -47,21 +47,18 @@ export class DataSourceTests {
         Expect(get2).toEqual(data2);
     }
 
-    // tslint:disable-next-line:no-any
-    @TestCase({ a: 1 }, { a: 1, b: 2 }, (data: any) => {
+    @TestCase({ a: 1 }, { a: 1, b: 2 }, (data: { b: number }) => {
         data.b = 2;
 
         return data;
     })
-    // tslint:disable-next-line:no-any
-    @TestCase([1], [1, 2], (data: any) => {
+    @TestCase([1], [1, 2], (data: number[]) => {
         data.push(2);
 
         return data;
     })
     @Test('addProcessor() should add a processor')
-    // tslint:disable-next-line:no-any
-    public addProcessor1<T>(data: T, expected: T, processor: Processor<any>) {
+    public addProcessor1<T>(data: T, expected: T, processor: Processor<T>) {
         const dataSource = new DataSource(data);
         const spyable = { processor };
         const processorSpy = SpyOn(spyable, 'processor');
@@ -83,21 +80,18 @@ export class DataSourceTests {
             .exactly(1);
     }
 
-    // tslint:disable-next-line:no-any
-    @TestCase({ a: 1 }, (data: any) => {
+    @TestCase({ a: 1 }, (data: { b: number }) => {
         data.b = 2;
 
         return data;
     })
-    // tslint:disable-next-line:no-any
-    @TestCase([1], (data: any) => {
+    @TestCase([1], (data: number[]) => {
         data.push(2);
 
         return data;
     })
     @Test('removeProcessor() should remove a processor')
-    // tslint:disable-next-line:no-any
-    public removeProcessor1<T>(data: T, processor: Processor<any>) {
+    public removeProcessor1<T>(data: T, processor: Processor<T>) {
         const dataSource = new DataSource(data);
         const spyable = { processor };
         const spy = SpyOn(spyable, 'processor');
@@ -177,19 +171,17 @@ export class DataSourceTests {
         { a: 1, b: 2 },
         { key1: 'a', key2: 'b' },
 
-        <T>(data: T) => {
-            // tslint:disable-next-line:no-any
-            const newData: any = {};
+        (data: { [key: string]: string }) => {
+            const newData: { [key: string]: string } = {};
 
-            Object.keys(data).forEach(key => (newData[data[<keyof T>key]] = key));
+            Object.keys(data).forEach(key => (newData[data[key]] = key));
 
             return newData;
         },
-        <T>(data: T) => {
-            // tslint:disable-next-line:no-any
-            const newData: any = {};
+        (data: { [key: string]: string }) => {
+            const newData: { [key: string]: string } = {};
 
-            Object.keys(data).forEach(key => (newData[`key${key}`] = data[<keyof T>key]));
+            Object.keys(data).forEach(key => (newData[`key${key}`] = data[key]));
 
             return newData;
         }
