@@ -1,4 +1,4 @@
-import { insert, remove } from '../utils';
+import { insert, remove, removeAt, removeMany } from '@colonise/utilities';
 import { DataSource } from './data-source';
 
 /**
@@ -77,7 +77,9 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     public remove(index: number, count?: number): TEntry[];
     public remove(indexOrEntryOrEntries: number | TEntry | TEntry[], count: number = 1) {
         if (typeof indexOrEntryOrEntries === 'number') {
-            remove(this.data, indexOrEntryOrEntries, count);
+            removeAt(this.data, indexOrEntryOrEntries, count);
+        } else if (Array.isArray(indexOrEntryOrEntries)) {
+            removeMany(this.data, indexOrEntryOrEntries);
         } else {
             remove(this.data, indexOrEntryOrEntries);
         }

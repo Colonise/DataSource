@@ -1,4 +1,4 @@
-import { isBoolean, isFunction, isObject, isVoid } from '../utils';
+import { isBoolean, isFunction, isObject, isVoid } from '@colonise/utilities';
 import { ArrayProcessor, ArrayProcessorApi } from './array';
 
 /**

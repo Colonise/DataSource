@@ -1,5 +1,5 @@
+import { clone } from '@colonise/utilities';
 import { BehaviourSubject, BehaviourSubjectApi } from '../rxjs';
-import { clone } from '../utils';
 
 /**
  * The public API of a ComplexProcessor.

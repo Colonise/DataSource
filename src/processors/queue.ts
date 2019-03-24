@@ -1,5 +1,5 @@
+import { findIndexBy, insert, removeAt } from '@colonise/utilities';
 import { Unsubscribable } from '../rxjs';
-import { findIndex, insert, remove } from '../utils';
 import { ComplexProcessor } from './complex';
 import { Processor } from './processor';
 
@@ -62,10 +62,10 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
      * @param processor The data processor to remove.
      */
     public removeProcessor(processor: Processor<TData>): TData {
-        const index = findIndex(this.processorTuples, processorTuple => processorTuple[0] === processor);
+        const index = findIndexBy(this.processorTuples, processorTuple => processorTuple[0] === processor);
 
         if (index !== -1) {
-            remove(this.processorTuples, index);
+            removeAt(this.processorTuples, index);
 
             return this.reprocessFromIndex(index);
         }
