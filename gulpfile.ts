@@ -21,9 +21,11 @@ const tsLintProgram = TSlint.Linter.createProgram('./src/tsconfig.json');
 const declarationFiles = './src/**/*.d.ts';
 const buildDirectiory = './build/';
 
-const coverableFiles = ['./build/**/*.js', '!./build/**/*.spec.*'];
+const coverableFiles = ['./build/**/*.js', '!./build/**/*.spec.*', '!./build/**/index.js'];
 const testFiles = './build/**/*.spec.js';
 const debugTestFiles = './src/**/*.spec.ts';
+
+const coverageDirectiory = './coverage/';
 
 const distributeFiles = ['./build/**/*.*', '!./build/**/*.spec.*'];
 const distributeDirectiory = './dist/';
@@ -108,14 +110,18 @@ function javascriptCopyToDistributeDirectory() {
 }
 
 async function cleanBuildDirectory() {
-    return del(distributeDirectiory);
+    return del(buildDirectiory);
+}
+
+async function cleanCoverageDirectory() {
+    return del(coverageDirectiory);
 }
 
 async function cleanDistributeDirectory() {
     return del(distributeDirectiory);
 }
 
-export const clean = GulpClient.parallel(cleanBuildDirectory, cleanDistributeDirectory);
+export const clean = GulpClient.parallel(cleanBuildDirectory, cleanCoverageDirectory, cleanDistributeDirectory);
 
 export const build = GulpClient.series(clean, typescriptBuild);
 

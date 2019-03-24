@@ -47,7 +47,6 @@
         "gulp-tslint": "^8.1.4",
         "gulp-typescript": "^5.0.1",
         "merge-stream": "^1.0.1",
-        "nyc": "^13.3.0",
         "semantic-release": "^15.13.3",
         "stream-to-promise": "^2.2.0",
         "tslint": "^5.14.0",
@@ -56,27 +55,6 @@
     "dependencies": {
         "@colonise/utilities": "^2.2.1",
         "tslib": "^1.9.3"
-    },
-    "nyc": {
-        "check-coverage": true,
-        "per-file": true,
-        "include": [
-            "dist/**/*.js"
-        ],
-        "exclude": [
-            "dist/**/*.spec.js",
-            "dist/**/index.js"
-        ],
-        "reporter": [
-            "lcov",
-            "html"
-        ],
-        "require": [],
-        "extension": [
-            ".js"
-        ],
-        "cache": true,
-        "all": true
     },
     "release": {
         "verifyConditions": [
