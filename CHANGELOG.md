@@ -1,5 +1,12 @@
 Changelog
 
+## [3.0.1](https://github.com/Colonise/DataSource/compare/v3.0.0...v3.0.1) (2019-03-24)
+
+
+### Bug Fixes
+
+* **Config:** Update semantic-release and config ([15ec8d2](https://github.com/Colonise/DataSource/commit/15ec8d2))
+
 # [3.0.0](https://github.com/Colonise/DataSource/compare/v2.0.0...v3.0.0) (2019-03-24)
 
 
