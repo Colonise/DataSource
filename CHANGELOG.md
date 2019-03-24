@@ -1,5 +1,22 @@
 Changelog
 
+# [3.0.0](https://github.com/Colonise/DataSource/compare/v2.0.0...v3.0.0) (2019-03-24)
+
+
+### Bug Fixes
+
+* Replace utils with @colonise/utilities ([0ddf1b9](https://github.com/Colonise/DataSource/commit/0ddf1b9))
+
+
+### Features
+
+* Update TypeScript to 3.3.1 ([943a672](https://github.com/Colonise/DataSource/commit/943a672))
+
+
+### BREAKING CHANGES
+
+* Update TypeScript and start using `unknown`
+
 # [2.0.0](https://github.com/Colonise/DataSource/compare/v1.3.2...v2.0.0) (2018-10-28)
 
 
