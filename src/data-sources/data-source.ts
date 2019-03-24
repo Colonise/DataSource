@@ -1,6 +1,6 @@
+import { clone } from '@colonise/utilities';
 import { Processor, QueueProcessor } from '../processors';
 import { BehaviourSubject } from '../rxjs';
-import { clone } from '../utils';
 
 /**
  * A class to handle temporal changes in data while not mutating the original data itself.
