@@ -47,7 +47,7 @@
         "gulp-tslint": "^8.1.4",
         "gulp-typescript": "^5.0.1",
         "merge-stream": "^1.0.1",
-        "nyc": "^13.3.0",
+        "nyc": "^14.0.0",
         "semantic-release": "^15.13.3",
         "stream-to-promise": "^2.2.0",
         "tslint": "^5.14.0",
