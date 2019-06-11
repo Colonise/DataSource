@@ -67,4 +67,4 @@ build
 coverage
 
 # Distribute
-dist
+distribute
