@@ -1,14 +1,23 @@
-import { clone } from '@colonise/utilities';
-import { Processor, QueueProcessor } from '../processors';
 import { BehaviourSubject } from '../rxjs';
+import { clone } from '@colonise/utilities';
+import type { Processor } from '../processors';
+import { QueueProcessor } from '../processors';
 
 /**
  * A class to handle temporal changes in data while not mutating the original data itself.
  */
 export class DataSource<TData> extends BehaviourSubject<TData> {
+    // eslint-disable-next-line @typescript-eslint/no-invalid-this
     protected preprocessors = new QueueProcessor<TData>(this.data);
+    // eslint-disable-next-line @typescript-eslint/no-invalid-this
     protected processors = new QueueProcessor<TData>(this.data);
-    protected queue = new QueueProcessor<TData>(this.data, [this.preprocessors, this.processors]);
+    // eslint-disable-next-line @typescript-eslint/no-invalid-this
+    protected queue = new QueueProcessor<TData>(this.data, [
+        // eslint-disable-next-line @typescript-eslint/no-invalid-this
+        this.preprocessors,
+        // eslint-disable-next-line @typescript-eslint/no-invalid-this
+        this.processors
+    ]);
 
     /**
      * Creates a new DataSource with the supplied data.
@@ -57,7 +66,7 @@ export class DataSource<TData> extends BehaviourSubject<TData> {
         return this.processors.removeProcessor(processor);
     }
 
-    protected process() {
+    protected process(): TData {
         const clonedData = clone(this.data);
         const processedData = this.queue.process(clonedData);
 

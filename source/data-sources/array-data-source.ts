@@ -1,5 +1,7 @@
-import { insert, remove, removeAt, removeMany } from '@colonise/utilities';
 import { DataSource } from './data-source';
+import {
+    insert, remove, removeAt, removeMany
+} from '@colonise/utilities';
 
 /**
  * A class to handle temporal changes in a array while not mutating the array.
@@ -27,7 +29,7 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      * @param entries The entries to append.
      * @returns The newly processed table.
      */
-    public push(...entries: TEntry[]) {
+    public push(...entries: TEntry[]): TEntry[] {
         this.data.push(...entries);
 
         return this.process();
@@ -40,6 +42,7 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      * @param entry The entry to insert.
      */
     public insert(index: number, entry: TEntry): TEntry[];
+
     /**
      * Inserts the entries into the table at the given index.
      *
@@ -60,6 +63,7 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      * @returns The newly processed table.
      */
     public remove(entry: TEntry): TEntry[];
+
     /**
      * Removes the entries from the table.
      *
@@ -67,6 +71,7 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      * @returns The newly processed table.
      */
     public remove(entries: TEntry[]): TEntry[];
+
     /**
      * Removes a number of entries from the table from the supplied index and count.
      *
@@ -75,12 +80,14 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      * @returns The newly processed table.
      */
     public remove(index: number, count?: number): TEntry[];
-    public remove(indexOrEntryOrEntries: number | TEntry | TEntry[], count: number = 1) {
+    public remove(indexOrEntryOrEntries: number | TEntry | TEntry[], count: number = 1): TEntry[] {
         if (typeof indexOrEntryOrEntries === 'number') {
             removeAt(this.data, indexOrEntryOrEntries, count);
-        } else if (Array.isArray(indexOrEntryOrEntries)) {
+        }
+        else if (Array.isArray(indexOrEntryOrEntries)) {
             removeMany(this.data, indexOrEntryOrEntries);
-        } else {
+        }
+        else {
             remove(this.data, indexOrEntryOrEntries);
         }
 

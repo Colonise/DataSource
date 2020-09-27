@@ -8,13 +8,12 @@
         "**/*.*"
     ],
     "scripts": {
-        "build": "gulp build",
-        "lint": "gulp lint",
-        "test": "gulp test",
-        "coverage": "gulp coverage",
-        "debug": "gulp debug",
-        "distribute": "gulp distribute",
-        "postpublish": "gulp publish"
+        "clean": "colonise-config clean",
+        "build": "colonise-config build",
+        "lint": "colonise-config lint",
+        "test": "colonise-config test",
+        "coverage": "colonise-config coverage",
+        "distribute": "colonise-config distribute"
     },
     "repository": {
         "type": "git",
@@ -34,7 +33,7 @@
         "@colonise/config": "latest"
     },
     "dependencies": {
-        "@colonise/utilities": "^2.2.1",
-        "tslib": "^1.9.3"
+        "@colonise/utilities": "latest",
+        "tslib": "^2.0.1"
     }
 }

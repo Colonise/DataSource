@@ -1,6 +1,6 @@
-import { ComplexProcessor } from './complex';
-import { QueueProcessor } from './queue';
-import { SimpleProcessor } from './simple';
+import type { ComplexProcessor } from './complex';
+import type { QueueProcessor } from './queue';
+import type { SimpleProcessor } from './simple';
 
 /**
  * A data processor.
