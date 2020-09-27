@@ -1,105 +1,184 @@
-import { Expect, Test, TestCase, TestFixture } from 'alsatian';
+import { expect } from 'chai';
 import { ArrayDataSource } from './array-data-source';
 
-@TestFixture('ArrayDataSource')
-export class ArrayDataSourceTests {
-    @TestCase('')
-    @TestCase(0)
-    @TestCase(true)
-    @TestCase(null)
-    @TestCase(undefined)
-    @TestCase(() => null)
-    @TestCase({})
-    @TestCase([])
-    @Test('should be created')
-    public construct1<T>(array: T[]) {
-        const arrayDataSource = new ArrayDataSource(array);
+describe('ArrayDataSource Tests', () => {
+    it('should be created', () => {
+        const testCases = [
+            {
+                array: []
+            }
+        ];
 
-        Expect(arrayDataSource).toBeDefined();
-        Expect(arrayDataSource instanceof ArrayDataSource).toBe(true);
-    }
+        for (const { array } of testCases) {
+            const arrayDataSource = new ArrayDataSource(array);
 
-    @TestCase([1, 2, 3, 4], 4)
-    @TestCase([1, 2, 3, 4, 5], 5)
-    // tslint:disable-next-line:no-sparse-arrays
-    @TestCase([1, 2, 3, 4, 5, , 7], 7)
-    @Test('.length should return correct length')
-    public length1<T>(array: T[], expected: number) {
-        const arrayDataSource = new ArrayDataSource(array);
+            expect(arrayDataSource).to.exist;
+            expect(arrayDataSource instanceof ArrayDataSource).to.be.true;
+        }
+    });
 
-        Expect(arrayDataSource.length).toEqual(expected);
-    }
+    it('.length should return correct length', () => {
+        const testCases = [
+            {
+                array: [1, 2, 3, 4],
+                expected: 4
+            },
+            {
+                array: [1, 2, 3, 4, 5],
+                expected: 5
+            },
+            {
+                // tslint:disable-next-line:no-sparse-arrays
+                array: [1, 2, 3, 4, 5, , 7],
+                expected: 7
+            }
+        ];
 
-    @TestCase([1, 2, 3, 4, 5], [1, 2, 3, 4, 5, 6], [6])
-    @TestCase([1, 2, 3, 4, 5], [1, 2, 3, 4, 5, 6, 7], [6, 7])
-    @Test('.push() should return correct length')
-    public push1<T>(array: T[], expected: T[], entries: T[]) {
-        const arrayDataSource = new ArrayDataSource(array);
+        for (const { array, expected } of testCases) {
+            const arrayDataSource = new ArrayDataSource(array);
 
-        arrayDataSource.push(...entries);
+            expect(arrayDataSource.length).to.equal(expected);
+        }
+    });
 
-        Expect(arrayDataSource.value).toEqual(expected);
-    }
+    it('.push() should return correct length', () => {
+        const testCases = [
+            {
+                array: [1, 2, 3, 4, 5],
+                entries: [6],
+                expected: [1, 2, 3, 4, 5, 6]
+            },
+            {
+                array: [1, 2, 3, 4, 5],
+                entries: [6, 7],
+                expected: [1, 2, 3, 4, 5, 6, 7]
+            }
+        ];
 
-    @TestCase([1, 2, 3, 4, 5], [1, 2, 6, 3, 4, 5], 2, 6)
-    @Test('.insert(index: number, entry: TEntry) should insert the entry at the index')
-    public insert1<T>(array: T[], expected: T[], index: number, entry: T) {
-        const arrayDataSource = new ArrayDataSource(array);
+        for (const { array, entries, expected } of testCases) {
+            const arrayDataSource = new ArrayDataSource(array);
 
-        arrayDataSource.insert(index, entry);
+            arrayDataSource.push(...entries);
 
-        Expect(arrayDataSource.value).toEqual(expected);
-    }
+            expect(arrayDataSource.value).to.eql(expected);
+        }
+    });
 
-    @TestCase([1, 2, 3, 4, 5], [1, 2, 6, 7, 3, 4, 5], 2, [6, 7])
-    @Test('.insert(index: number, entries: TEntry[]) should insert the entries at the index')
-    public insert2<T>(array: T[], expected: T[], index: number, entries: T[]) {
-        const arrayDataSource = new ArrayDataSource(array);
+    it('.insert(index: number, entry: TEntry) should insert the entry at the index', () => {
+        const testCases = [
+            {
+                array: [1, 2, 3, 4, 5],
+                index: 2,
+                entry: 6,
+                expected: [1, 2, 6, 3, 4, 5]
+            }
+        ];
 
-        arrayDataSource.insert(index, entries);
+        for (const { array, index, entry, expected } of testCases) {
+            const arrayDataSource = new ArrayDataSource(array);
 
-        Expect(arrayDataSource.value).toEqual(expected);
-    }
+            arrayDataSource.insert(index, entry);
 
-    @TestCase(['1', '2', '3', '4', '5'], ['1', '2', '3', '4'], '5')
-    @Test('.remove(entry: TEntry) should remove the entry')
-    public remove1<T>(array: T[], expected: T[], entry: T) {
-        const arrayDataSource = new ArrayDataSource(array);
+            expect(arrayDataSource.value).to.eql(expected);
+        }
+    });
 
-        arrayDataSource.remove(entry);
+    it('.insert(index: number, entries: TEntry[]) should insert the entries at the index', () => {
+        const testCases = [
+            {
+                array: [1, 2, 3, 4, 5],
+                index: 2,
+                entries: [6, 7],
+                expected: [1, 2, 6, 7, 3, 4, 5]
+            }
+        ];
 
-        Expect(arrayDataSource.value).toEqual(expected);
-    }
+        for (const { array, index, entries, expected } of testCases) {
+            const arrayDataSource = new ArrayDataSource(array);
 
-    @TestCase(['1', '2', '3', '4', '5'], ['2', '3', '4'], ['1', '5'])
-    @Test('.remove(entries: TEntry[]) should remove the entries')
-    public remove2<T>(array: T[], expected: T[], entries: T[]) {
-        const arrayDataSource = new ArrayDataSource(array);
+            arrayDataSource.insert(index, entries);
 
-        arrayDataSource.remove(entries);
+            expect(arrayDataSource.value).to.eql(expected);
+        }
+    });
 
-        Expect(arrayDataSource.value).toEqual(expected);
-    }
+    it('.remove(entry: TEntry) should remove the entry', () => {
+        const testCases = [
+            {
+                array: ['1', '2', '3', '4', '5'],
+                entry: '5',
+                expected: ['1', '2', '3', '4']
+            }
+        ];
 
-    @TestCase([1, 2, 3, 4, 5], [1, 4, 5], 1, 2)
-    @Test('.remove(index: number, count?: number) should remove the count of entries from the index')
-    public remove3<T>(array: T[], expected: T[], index: number, count?: number) {
-        const arrayDataSource = new ArrayDataSource(array);
+        for (const { array, entry, expected } of testCases) {
+            const arrayDataSource = new ArrayDataSource(array);
 
-        arrayDataSource.remove(index, count);
+            arrayDataSource.remove(entry);
 
-        Expect(arrayDataSource.value).toEqual(expected);
-    }
+            expect(arrayDataSource.value).to.eql(expected);
+        }
+    });
 
-    // tslint:disable-next-line:no-sparse-arrays
-    @TestCase([1, 2, 3, 4, 5], [1, 2, 3, 4, 5, , 6], 6, 6)
-    @TestCase([1, 2, 3, 4, 5], [1, 2, 3, 6, 5], 3, 6)
-    @Test('.assign() should assign an entry at an index')
-    public assign1<T>(array: T[], expected: T[], index: number, entry: T) {
-        const arrayDataSource = new ArrayDataSource(array);
+    it('.remove(entries: TEntry[]) should remove the entries', () => {
+        const testCases = [
+            {
+                array: ['1', '2', '3', '4', '5'],
+                entries: ['1', '5'],
+                expected: ['2', '3', '4']
+            }
+        ];
 
-        arrayDataSource.assign(index, entry);
+        for (const { array, entries, expected } of testCases) {
+            const arrayDataSource = new ArrayDataSource(array);
 
-        Expect(arrayDataSource.value).toEqual(expected);
-    }
-}
+            arrayDataSource.remove(entries);
+
+            expect(arrayDataSource.value).to.eql(expected);
+        }
+    });
+
+    it('.remove(index: number, count?: number) should remove the count of entries from the index', () => {
+        const testCases = [
+            {
+                array: [1, 2, 3, 4, 5],
+                index: 1,
+                count: 2,
+                expected: [1, 4, 5]
+            }
+        ];
+
+        for (const { array, index, count, expected } of testCases) {
+            const arrayDataSource = new ArrayDataSource(array);
+
+            arrayDataSource.remove(index, count);
+
+            expect(arrayDataSource.value).to.eql(expected);
+        }
+    });
+
+    it('.assign() should assign an entry at an index', () => {
+        const testCases = [
+            {
+                array: [1, 2, 3, 4, 5],
+                index: 6,
+                entry: 6,
+                expected: [1, 2, 3, 4, 5, , 6]
+            },
+            {
+                array: [1, 2, 3, 4, 5],
+                index: 3,
+                entry: 6,
+                expected: [1, 2, 3, 6, 5]
+            }
+        ];
+
+        for (const { array, index, entry, expected } of testCases) {
+            const arrayDataSource = new ArrayDataSource(array);
+
+            arrayDataSource.assign(index, entry);
+
+            expect(arrayDataSource.value).to.eql(expected);
+        }
+    });
+});

@@ -1,0 +1,158 @@
+name: Node.js CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  CI: true
+  CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+  COLONISE_PACKAGE_NAME: ${{ secrets.COLONISE_PACKAGE_NAME }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v1
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+
+    - name: Install dependencies
+      run: |
+        # Run NPM Clean Install
+        npm ci
+
+    - name: Run Linters
+      run: |
+        # Run NPM lint script
+        npm run lint
+
+  build:
+    name: Build
+    needs: [lint]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v1
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+
+    - name: Install dependencies
+      run: |
+        # Run NPM Clean Install
+        npm ci
+
+    - name: Run Build
+      run: |
+        # Run NPM build script
+        npm run build
+
+  test:
+    name: Test
+    needs: [lint, build]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x, 11.x, 12.x]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v1
+
+    - name: Setup Node.js with ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: |
+        # Run NPM Clean Install
+        npm ci
+
+    - name: Run Unit Tests
+      run: |
+        # Run NPM test script
+        npm run test
+
+  coverage:
+    name: Test Coverage
+    needs: [lint, build, test]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v1
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+
+    - name: Install dependencies
+      run: |
+        # Run NPM Clean Install
+        npm ci
+
+    - name: Run Test Coverage and Code Climate
+      uses: paambaati/codeclimate-action@v2.3.0
+      with:
+        coverageCommand: npm run coverage
+        debug: true
+
+  release:
+    name: Release
+    needs: [lint, build, test]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set Git Signing Key
+        run: |
+          # Decrypt the git_gpg_keys.asc.enc key into git_gpg_keys.asc
+          gpg --output /tmp/git_gpg_keys.asc --decrypt --batch --passphrase ${{ secrets.GPG_DECRYPT_PASSPHRASE }} git_gpg_keys.asc.enc
+          # Make sure only the current user can read the keys
+          chmod 600 /tmp/git_gpg_keys.asc
+          # Import the gpg key
+          gpg --batch --yes --import /tmp/git_gpg_keys.asc
+          # Create a script that will pass the passphrase to the gpg CLI called by git
+          echo '/usr/bin/gpg2 --passphrase ${{ secrets.GPG_PASSPHRASE }} --batch --no-tty "$@"' > /tmp/gpg-with-passphrase
+          # Make the script executable
+          chmod +x /tmp/gpg-with-passphrase
+          # Configure git to use the script that passes the passphrase
+          git config gpg.program "/tmp/gpg-with-passphrase"
+          # Configure git to sign the commits and tags
+          git config commit.gpgsign true
+          # Configure git to use your GPG key
+          git config --global user.signingkey ${{ secrets.GPG_KEY_ID }}
+
+      - name: Release
+        run: |
+          npm run distribute
+          npx semantic-release

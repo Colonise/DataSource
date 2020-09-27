@@ -1,24 +1,32 @@
-import { NextObserver, PartialObserver, Unsubscribable } from './rxjs';
+import { isFunction } from '@colonise/utilities';
 import { Subscription } from './subscription';
+import type {
+    PartialObserver,
+    Unsubscribable
+} from './rxjs';
 
 /**
  * The public API of a BehaviourSubject.
  */
 export interface BehaviourSubjectApi<TData> {
+
     /**
      * The current value.
      */
     value: TData;
+
     /**
      * Returns the current value.
      */
     getValue(): TData;
+
     /**
      * Subscribes to change events of the dat.
      *
      * @param observer The data observer.
      */
     subscribe(observer: PartialObserver<TData>): Unsubscribable;
+
     /**
      * Subscribes to change events of the data.
      *
@@ -28,10 +36,11 @@ export interface BehaviourSubjectApi<TData> {
      */
     subscribe(
         next: ((value: TData) => void) | undefined,
-        // tslint:disable-next-line:no-any
-        error?: (error: any) => void,
+
+        error?: (error: unknown) => void,
         complete?: () => void
     ): Unsubscribable;
+
     /**
      * Unsubscribes the supplied subscription from change events of the data.
      *
@@ -75,6 +84,7 @@ export abstract class BehaviourSubject<TData> {
      * @param observer The data observer.
      */
     public subscribe(observer: PartialObserver<TData>): Unsubscribable;
+
     /**
      * Subscribes to change events of the data.
      *
@@ -84,33 +94,33 @@ export abstract class BehaviourSubject<TData> {
      */
     public subscribe(
         next: ((value: TData) => void) | undefined,
-        // tslint:disable-next-line:no-any
-        error?: (error: any) => void,
+        error?: (error: unknown) => void,
         complete?: () => void
     ): Unsubscribable;
     public subscribe(
         observerOrNext: PartialObserver<TData> | ((value: TData) => void) | undefined,
-        // tslint:disable-next-line:no-any
-        error?: (error: any) => void,
+        error?: (error: unknown) => void,
         complete?: () => void
     ): Unsubscribable {
-        const observer =
-            typeof observerOrNext === 'object'
+        const observer: PartialObserver<TData>
+            = typeof observerOrNext === 'object'
                 ? observerOrNext
-                : <NextObserver<TData>>{
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                : <PartialObserver<TData>>{
                     next: observerOrNext,
                     error,
                     complete
                 };
 
-        const subscriptionHolder = <{ subscription: Subscription<TData> }>{};
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const subscriptionHolder = <{ subscription: Subscription<TData>; }>{};
 
         subscriptionHolder.subscription = new Subscription(observer, () => {
             this.unsubscribe(subscriptionHolder.subscription);
         });
 
         // Call the observer's next once
-        if (subscriptionHolder.subscription.observer.next) {
+        if (isFunction(subscriptionHolder.subscription.observer.next)) {
             subscriptionHolder.subscription.observer.next(this.lastOutput);
         }
 
@@ -125,7 +135,7 @@ export abstract class BehaviourSubject<TData> {
      * @param subscription The subscription that will be unsubscribed.
      */
     public unsubscribe(subscription: Unsubscribable): void;
-    public unsubscribe(oldSubscription: Unsubscribable) {
+    public unsubscribe(oldSubscription: Unsubscribable): void {
         const originalSubscriptions = this.subscriptions;
         this.subscriptions = [];
 
