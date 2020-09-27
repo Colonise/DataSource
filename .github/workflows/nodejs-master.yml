@@ -22,12 +22,12 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2.3.3
 
     - name: Setup Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2.1.1
       with:
-        node-version: 12
+        node-version: 14
 
     - name: Install dependencies
       run: |
@@ -44,14 +44,18 @@ jobs:
     needs: [lint]
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [12.x, 13.x, 14.x]
+
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2.3.3
 
     - name: Setup Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2.1.1
       with:
-        node-version: 12
+        node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
       run: |
@@ -70,14 +74,14 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 11.x, 12.x]
+        node-version: [12.x, 13.x, 14.x]
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2.3.3
 
     - name: Setup Node.js with ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2.1.1
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -98,12 +102,12 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2.3.3
 
     - name: Setup Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2.1.1
       with:
-        node-version: 12
+        node-version: 14
 
     - name: Install dependencies
       run: |
@@ -111,7 +115,7 @@ jobs:
         npm ci
 
     - name: Run Test Coverage and Code Climate
-      uses: paambaati/codeclimate-action@v2.3.0
+      uses: paambaati/codeclimate-action@v2.7.1
       with:
         coverageCommand: npm run coverage
         debug: true
@@ -123,36 +127,21 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2.3.3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2.1.1
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Set Git Signing Key
-        run: |
-          # Decrypt the git_gpg_keys.asc.enc key into git_gpg_keys.asc
-          gpg --output /tmp/git_gpg_keys.asc --decrypt --batch --passphrase ${{ secrets.GPG_DECRYPT_PASSPHRASE }} git_gpg_keys.asc.enc
-          # Make sure only the current user can read the keys
-          chmod 600 /tmp/git_gpg_keys.asc
-          # Import the gpg key
-          gpg --batch --yes --import /tmp/git_gpg_keys.asc
-          # Create a script that will pass the passphrase to the gpg CLI called by git
-          echo '/usr/bin/gpg2 --passphrase ${{ secrets.GPG_PASSPHRASE }} --batch --no-tty "$@"' > /tmp/gpg-with-passphrase
-          # Make the script executable
-          chmod +x /tmp/gpg-with-passphrase
-          # Configure git to use the script that passes the passphrase
-          git config gpg.program "/tmp/gpg-with-passphrase"
-          # Configure git to sign the commits and tags
-          git config commit.gpgsign true
-          # Configure git to use your GPG key
-          git config --global user.signingkey ${{ secrets.GPG_KEY_ID }}
+      - name: Run Build
+        run: npm run distribute
 
-      - name: Release
-        run: |
-          npm run distribute
-          npx semantic-release
+      - name: Zip Build
+        run: zip -r build.zip ./distribute/
+
+      - name: Run Semantic Release
+        run: npx semantic-release
