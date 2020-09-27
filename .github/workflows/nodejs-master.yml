@@ -111,7 +111,7 @@ jobs:
         npm ci
 
     - name: Run Test Coverage and Code Climate
-      uses: paambaati/codeclimate-action@v2.3.0
+      uses: paambaati/codeclimate-action@v2.7.1
       with:
         coverageCommand: npm run coverage
         debug: true
