@@ -1,4 +1,5 @@
-import { ArrayProcessor, ArrayProcessorApi } from './array';
+import { ArrayProcessor } from './array';
+import type { ArrayProcessorApi } from './array';
 
 /**
  * Paginates an array with the given page size.
@@ -9,10 +10,12 @@ export type Pager<TEntry> = (pageSize: number, array: TEntry[]) => TEntry[][];
  * The public API of a PagerProcessor.
  */
 export interface PagerProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
+
     /**
      * The current page.
      */
     page: number;
+
     /**
      * The number of entries to show per page.
      */
@@ -25,42 +28,41 @@ export interface PagerProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
 export class PagerProcessor<TEntry> extends ArrayProcessor<TEntry> implements PagerProcessorApi<TEntry> {
     protected pager: Pager<TEntry>;
 
-    // tslint:disable-next-line:variable-name
-    protected _page = 1;
+    protected currentPage = 1;
 
     /**
      * The current page.
      */
     public get page(): number {
-        return this._page;
+        return this.currentPage;
     }
     public set page(page: number) {
         if (page <= 0) {
-            throw TypeError(`pageSize must be a positive whole number, got ${page}`);
+            throw new TypeError(`pageSize must be a positive whole number, got ${page}`);
         }
 
-        this._page = page;
+        this.currentPage = page;
 
         if (this.shouldProcess()) {
             this.next(this.currentPageEntries());
         }
     }
 
-    // tslint:disable-next-line:variable-name
-    protected _pageSize = 20;
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    protected currentPageSize = 20;
 
     /**
      * The number of entries to show per page.
      */
     public get pageSize(): number {
-        return this._pageSize;
+        return this.currentPageSize;
     }
     public set pageSize(pageSize: number) {
         if (pageSize <= 0) {
-            throw TypeError(`pageSize must be a positive whole number, got ${pageSize}`);
+            throw new TypeError(`pageSize must be a positive whole number, got ${pageSize}`);
         }
 
-        this._pageSize = pageSize;
+        this.currentPageSize = pageSize;
 
         this.reprocess();
     }
@@ -78,14 +80,14 @@ export class PagerProcessor<TEntry> extends ArrayProcessor<TEntry> implements Pa
         this.pager = this.defaultPager;
     }
 
-    protected processor(array: TEntry[]) {
+    protected processor(array: TEntry[]): TEntry[] {
         this.pages = this.pager(this.pageSize, array);
 
         return this.currentPageEntries();
     }
 
-    protected currentPageEntries() {
-        return this.pages[this._page - 1] || [];
+    protected currentPageEntries(): TEntry[] {
+        return this.pages[this.currentPage - 1] ?? [];
     }
 
     protected defaultPager: Pager<TEntry> = (pageSize, array) => {
@@ -100,5 +102,5 @@ export class PagerProcessor<TEntry> extends ArrayProcessor<TEntry> implements Pa
         }
 
         return pages;
-    }
+    };
 }

@@ -1,12 +1,14 @@
+import { ArrayDataSource } from './array-data-source';
 import {
     FilterProcessor,
-    FilterProcessorApi,
     PagerProcessor,
+    SorterProcessor
+} from '../processors';
+import type {
+    FilterProcessorApi,
     PagerProcessorApi,
-    SorterProcessor,
     SorterProcessorApi
 } from '../processors';
-import { ArrayDataSource } from './array-data-source';
 
 /**
  * A class to handle temporal changes in a table's array while not mutating the array.

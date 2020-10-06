@@ -61,10 +61,8 @@ typings/
 .next
 
 # Build
-build
-
-# Test
-coverage
+generated/
+build/
 
 # Distribute
-distribute
+distribute/
