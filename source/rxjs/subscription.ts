@@ -1,4 +1,6 @@
-import { PartialObserver, Unsubscribable } from './rxjs';
+import type {
+    PartialObserver, Unsubscribable
+} from './rxjs';
 
 /**
  * A subscription to a subscriable.

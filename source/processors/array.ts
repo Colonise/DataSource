@@ -1,14 +1,16 @@
-import { ComplexProcessor, ComplexProcessorApi } from './complex';
+import { ComplexProcessor } from './complex';
+import type { ComplexProcessorApi } from './complex';
 
 /**
  * The public API of an ArrayProcessor.
  */
 export interface ArrayProcessorApi<TEntry>
-  extends ComplexProcessorApi<TEntry[]> {
-  /**
-   * The number of entries after processing.
-   */
-  readonly length: number;
+    extends ComplexProcessorApi<TEntry[]> {
+
+    /**
+     * The number of entries after processing.
+     */
+    readonly length: number;
 }
 
 /**
@@ -16,22 +18,20 @@ export interface ArrayProcessorApi<TEntry>
  *
  * Designed for complex proessing of arrays.
  */
-export abstract class ArrayProcessor<TEntry> extends ComplexProcessor<
-  TEntry[]
-> {
-  /**
-   * The number of entries after processing.
-   */
-  public get length(): number {
-    return this.value.length;
-  }
+export abstract class ArrayProcessor<TEntry> extends ComplexProcessor<TEntry[]> {
+    /**
+     * The number of entries after processing.
+     */
+    public get length(): number {
+        return this.value.length;
+    }
 
-  /**
-   * Creates a new ArrayProcessor.
-   *
-   * @param active Whether the ArrayProcessor should start active.
-   */
-  public constructor(active: boolean = true) {
-    super([], active);
-  }
+    /**
+     * Creates a new ArrayProcessor.
+     *
+     * @param active Whether the ArrayProcessor should start active.
+     */
+    public constructor(active: boolean = true) {
+        super([], active);
+    }
 }

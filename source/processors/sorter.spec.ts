@@ -1,123 +1,155 @@
-import { Any, Expect, SpyOn, Test, TestCase, TestFixture } from 'alsatian';
-import { BooleanSorter, FunctionSorter, MultiSorter, PropertySorter, Sorter, SorterProcessor } from './sorter';
+import { expect } from 'chai';
+import { SorterProcessor } from './sorter';
 
-@TestFixture('SorterProcessor')
-export class SorterProcessorTests {
-    @Test('should be created')
-    public construct1<T>() {
-        const sorterProcessor = new SorterProcessor<T>();
+describe('SorterProcessor Tests', () => {
+    it('should be created', () => {
+        const sorterProcessor = new SorterProcessor<unknown>();
 
-        Expect(sorterProcessor).toBeDefined();
-        Expect(sorterProcessor instanceof SorterProcessor).toBe(true);
-    }
+        expect(sorterProcessor).to.exist;
+        expect(sorterProcessor instanceof SorterProcessor).to.be.true;
+    });
 
-    @TestCase(['a', 'e', 'b', 'd', 'c'], ['a', 'b', 'c', 'd', 'e'], true)
-    @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5], true)
-    @TestCase(['a', 'e', 'b', 'd', 'c'], ['e', 'd', 'c', 'b', 'a'], false)
-    @TestCase([1, 2, 3, 4, 5], [5, 4, 3, 2, 1], false)
-    @Test('BooleanSorter should work')
-    public BooleanSorter1<T>(data: T[], expected: T[], processor: BooleanSorter) {
-        const sorterProcessor = new SorterProcessor<T>();
-        sorterProcessor.process(data);
-        sorterProcessor.sorter = processor;
+    it('BooleanSorter should work', () => {
+        const testCases = [
+            {
+                data: ['a', 'e', 'b', 'd', 'c'],
+                processor: true,
+                expected: ['a', 'b', 'c', 'd', 'e']
+            },
+            {
+                data: [5, 4, 3, 2, 1],
+                processor: true,
+                expected: [1, 2, 3, 4, 5]
+            },
+            {
+                data: ['a', 'e', 'b', 'd', 'c'],
+                processor: false,
+                expected: ['e', 'd', 'c', 'b', 'a']
+            },
+            {
+                data: [1, 2, 3, 4, 5],
+                processor: false,
+                expected: [5, 4, 3, 2, 1]
+            }
+        ];
 
-        const actual = sorterProcessor.value;
+        for (const { data, processor, expected } of testCases) {
+            const sorterProcessor = new SorterProcessor<unknown>();
+            sorterProcessor.process(data);
+            sorterProcessor.sorter = processor;
 
-        Expect(actual).toEqual(expected);
-    }
+            const actual = sorterProcessor.value;
 
-    @TestCase(
-        [{ a: 4 }, { a: 2 }, { a: 3 }, { a: 1 }, { a: 5 }],
-        [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }, { a: 5 }],
-        'a'
-    )
-    @TestCase(
-        [{ a: 5 }, { a: 4 }, { a: 3 }, { a: 2 }, { a: 1 }],
-        [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }, { a: 5 }],
-        'a'
-    )
-    @Test('PropertySorter should work')
-    public PropertySorter1<T>(data: T[], expected: T[], sorter: PropertySorter<T>) {
-        const sorterProcessor = new SorterProcessor<T>();
-        sorterProcessor.process(data);
-        sorterProcessor.sorter = sorter;
+            expect(actual).to.eql(expected);
+        }
+    });
 
-        const actual = sorterProcessor.value;
+    it('PropertySorter should work', () => {
+        const testCases = [
+            {
+                data: [{ a: 4 }, { a: 2 }, { a: 3 }, { a: 1 }, { a: 5 }],
+                processor: <keyof { a: number }>'a',
+                expected: [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }, { a: 5 }]
+            },
+            {
+                data: [{ a: 5 }, { a: 4 }, { a: 3 }, { a: 2 }, { a: 1 }],
+                processor: <keyof { a: number }>'a',
+                expected: [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }, { a: 5 }]
+            }
+        ];
 
-        Expect(actual).toEqual(expected);
-    }
+        for (const { data, processor, expected } of testCases) {
+            const sorterProcessor = new SorterProcessor<{ a: number }>();
+            sorterProcessor.process(data);
+            sorterProcessor.sorter = processor;
 
-    @TestCase(
-        ['a', 'e', 'b', 'd', 'c'],
-        ['a', 'b', 'c', 'd', 'e'],
-        (a: string, b: string) => (a === b ? 0 : a > b ? 1 : -1)
-    )
-    @TestCase([5, 4, 3, 2, 1], [1, 2, 3, 4, 5], (a: number, b: number) => (a === b ? 0 : a > b ? 1 : -1))
-    @Test('FunctionSorter should work')
-    public FunctionSorter1<T>(data: T[], expected: T[], sorter: FunctionSorter<T>) {
-        const sorterProcessor = new SorterProcessor<T>();
-        sorterProcessor.process(data);
-        sorterProcessor.sorter = sorter;
-        const sorterSpy = SpyOn(sorterProcessor, 'sorter');
+            const actual = sorterProcessor.value;
 
-        const actual = sorterProcessor.value;
+            expect(actual).to.eql(expected);
+        }
+    });
 
-        sorterSpy.restore();
+    it('FunctionSorter should work', () => {
+        const testCases = [
+            {
+                data: ['a', 'e', 'b', 'd', 'c'],
+                processor: (a: string, b: string) => (a === b ? 0 : a > b ? 1 : -1),
+                expected: ['a', 'b', 'c', 'd', 'e']
+            }
+        ];
 
-        Expect(sorterProcessor.sorter).toBe(sorter);
-        Expect(sorterSpy).toHaveBeenCalledWith(Any, Any);
-        Expect(actual).toEqual(expected);
-    }
+        for (const { data, processor, expected } of testCases) {
+            const sorterProcessor = new SorterProcessor<string>();
+            sorterProcessor.process(data);
+            sorterProcessor.sorter = processor;
 
-    @TestCase(
-        [{ a: 2, b: 3 }, { a: 2, b: 2 }, { a: 2, b: 1 }, { a: 1, b: 2 }, { a: 1, b: 1 }],
-        [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }],
-        [
-            <T extends { a: number; b: number }>(a: T, b: T) => (a.a === b.a ? 0 : a.a > b.a ? 1 : -1),
-            <T extends { a: number; b: number }>(a: T, b: T) => (a.b === b.b ? 0 : a.b > b.b ? 1 : -1)
-        ]
-    )
-    @TestCase(
-        [{ a: 2, b: 3 }, { a: 2, b: 2 }, { a: 2, b: 1 }, { a: 1, b: 2 }, { a: 1, b: 1 }],
-        [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }],
-        ['a', 'b']
-    )
-    @TestCase(
-        [{ a: 2, b: 3 }, { a: 2, b: 2 }, { a: 2, b: 1 }, { a: 1, b: 2 }, { a: 1, b: 1 }],
-        [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }],
-        ['a', <T extends { a: number; b: number }>(a: T, b: T) => (a.b === b.b ? 0 : a.b > b.b ? 1 : -1)]
-    )
-    @TestCase(
-        [{ a: 2, b: 3 }, { a: 2, b: 2 }, { a: 2, b: 1 }, { a: 1, b: 2 }, { a: 1, b: 1 }],
-        [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }],
-        [<T extends { a: number; b: number }>(a: T, b: T) => (a.a === b.a ? 0 : a.a > b.a ? 1 : -1), 'b']
-    )
-    @Test('MultiSorter should work')
-    public MultiSorter1<T>(data: T[], expected: T[], sorter: MultiSorter<T>) {
-        const sorterProcessor = new SorterProcessor<T>();
-        sorterProcessor.process(data);
-        sorterProcessor.sorter = sorter;
+            const actual = sorterProcessor.value;
 
-        const actual = sorterProcessor.value;
+            expect(actual).to.eql(expected);
+        }
+    });
 
-        Expect(actual).toEqual(expected);
-    }
+    it('MultiSorter should work', () => {
+        const testCases = [
+            {
+                data: [{ a: 2, b: 3 }, { a: 2, b: 2 }, { a: 2, b: 1 }, { a: 1, b: 2 }, { a: 1, b: 1 }],
+                processor: [
+                    <T extends { a: number; b: number }>(a: T, b: T) => (a.a === b.a ? 0 : a.a > b.a ? 1 : -1),
+                    <T extends { a: number; b: number }>(a: T, b: T) => (a.b === b.b ? 0 : a.b > b.b ? 1 : -1)
+                ],
+                expected: [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }]
+            },
+            {
+                data: [{ a: 2, b: 3 }, { a: 2, b: 2 }, { a: 2, b: 1 }, { a: 1, b: 2 }, { a: 1, b: 1 }],
+                processor: [<keyof { a: number, b: number }>'a', <keyof { a: number, b: number }>'b'],
+                expected: [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }]
+            },
+            {
+                data: [{ a: 2, b: 3 }, { a: 2, b: 2 }, { a: 2, b: 1 }, { a: 1, b: 2 }, { a: 1, b: 1 }],
+                processor: [<keyof { a: number, b: number }>'a', <T extends { a: number; b: number }>(a: T, b: T) => (a.b === b.b ? 0 : a.b > b.b ? 1 : -1)],
+                expected: [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }]
+            },
+            {
+                data: [{ a: 2, b: 3 }, { a: 2, b: 2 }, { a: 2, b: 1 }, { a: 1, b: 2 }, { a: 1, b: 1 }],
+                processor: [<T extends { a: number; b: number }>(a: T, b: T) => (a.a === b.a ? 0 : a.a > b.a ? 1 : -1), <keyof { a: number, b: number }>'b'],
+                expected: [{ a: 1, b: 1 }, { a: 1, b: 2 }, { a: 2, b: 1 }, { a: 2, b: 2 }, { a: 2, b: 3 }]
+            }
+        ];
 
-    @TestCase([1, 2, 3, 4, 5], [1, 2, 3, 4, 5], true)
-    @Test('setting the direction should reprocess the data in the supplied direction')
-    public direction1<T>(data: T[], expected: T[], sorter: Sorter<T>) {
-        const sorterProcessor = new SorterProcessor<T>();
-        sorterProcessor.process(data);
-        sorterProcessor.sorter = sorter;
+        for (const { data, processor, expected } of testCases) {
+            const sorterProcessor = new SorterProcessor<{ a: number, b: number }>();
+            sorterProcessor.process(data);
+            sorterProcessor.sorter = processor;
 
-        const actual = sorterProcessor.value;
-        sorterProcessor.direction = false;
-        const actualDescending = sorterProcessor.value;
-        sorterProcessor.direction = true;
-        const actualAscending = sorterProcessor.value;
+            const actual = sorterProcessor.value;
 
-        Expect(actual).toEqual(expected);
-        Expect(actualDescending).toEqual(expected.slice().reverse());
-        Expect(actualAscending).toEqual(expected);
-    }
-}
+            expect(actual).to.eql(expected);
+        }
+    });
+
+    it('setting the direction should reprocess the data in the supplied direction', () => {
+        const testCases = [
+            {
+                data: [1, 2, 3, 4, 5],
+                sorter: true,
+                expected: [1, 2, 3, 4, 5]
+            }
+        ];
+
+        for (const { data, sorter, expected } of testCases) {
+            const sorterProcessor = new SorterProcessor<number>();
+            sorterProcessor.process(data);
+            sorterProcessor.sorter = sorter;
+
+            const actual = sorterProcessor.value;
+            sorterProcessor.direction = false;
+            const actualDescending = sorterProcessor.value;
+            sorterProcessor.direction = true;
+            const actualAscending = sorterProcessor.value;
+
+            expect(actual).to.eql(expected);
+            expect(actualDescending).to.eql(expected.slice().reverse());
+            expect(actualAscending).to.eql(expected);
+        }
+    });
+});

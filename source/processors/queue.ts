@@ -1,7 +1,11 @@
-import { findIndexBy, insert, removeAt } from '@colonise/utilities';
-import { Unsubscribable } from '../rxjs';
 import { ComplexProcessor } from './complex';
-import { Processor } from './processor';
+import type { Processor } from './processor';
+import type { Unsubscribable } from '../rxjs';
+import {
+    findIndexBy,
+    insert,
+    removeAt
+} from '@colonise/utilities';
 
 export type ProcessorTuple<TData> = [Processor<TData>, Unsubscribable | undefined];
 
@@ -27,7 +31,9 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
     public constructor(value: TData, processors: Processor<TData>[] = []) {
         super(value);
 
-        processors.forEach(processor => this.addProcessor(processor));
+        processors.forEach(processor => {
+            this.addProcessor(processor);
+        });
     }
 
     /**
@@ -37,7 +43,10 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
      * @param index The index to insert the processor at.
      */
     public addProcessor(processor: Processor<TData>, index?: number): TData {
-        const processorTuple: ProcessorTuple<TData> = [processor, undefined];
+        const processorTuple: ProcessorTuple<TData> = [
+            processor,
+            undefined
+        ];
 
         if (processor instanceof ComplexProcessor) {
             processorTuple[1] = processor.subscribe(() => {
@@ -49,11 +58,10 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
             this.processorTuples.push(processorTuple);
 
             return this.reprocessFromIndex(this.processorTuples.length - 1);
-        } else {
-            insert(this.processorTuples, index, processorTuple);
-
-            return this.reprocessFromIndex(index - 1);
         }
+        insert(this.processorTuples, index, processorTuple);
+
+        return this.reprocessFromIndex(index - 1);
     }
 
     /**
@@ -73,24 +81,25 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
         return this.lastOutput;
     }
 
-    protected runProcessor(data: TData, processor: Processor<TData>) {
+    protected runProcessor(data: TData, processor: Processor<TData>): TData {
         if (processor instanceof ComplexProcessor) {
             return processor.process(data);
-        } else {
-            return processor(data);
         }
+        return processor(data);
     }
 
     protected getInputForIndex(index: number): TData {
         for (let i = index; i >= 0; i--) {
-            if (!this.processorTuples[i]) {
-                continue;
-            }
+            const processorTuple: ProcessorTuple<TData> | undefined = <ProcessorTuple<TData> | undefined>this.processorTuples[i];
 
-            const processor = this.processorTuples[i][0];
+            if (processorTuple !== undefined) {
+                const [
+                    processor
+                ] = processorTuple;
 
-            if (processor instanceof ComplexProcessor) {
-                return processor.getValue();
+                if (processor instanceof ComplexProcessor) {
+                    return processor.getValue();
+                }
             }
         }
 
@@ -112,7 +121,7 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
         return processedData;
     }
 
-    protected reprocessFromIndex(index: number, force: boolean = false) {
+    protected reprocessFromIndex(index: number, force: boolean = false): TData {
         if (!this.shouldProcess(force)) {
             return this.lastOutput;
         }
