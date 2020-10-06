@@ -1,14 +1,18 @@
-import { isBoolean, isFunction, isVoid } from '@colonise/utilities';
-import { ArrayProcessor, ArrayProcessorApi } from './array';
+import { ArrayProcessor } from './array';
+import type { ArrayProcessorApi } from './array';
+import {
+    isBoolean, isFunction, isVoid
+} from '@colonise/utilities';
 
 /**
  * Sorts an array using truthiness and strict equality.
  */
-export type BooleanSorter = void;
+export type BooleanSorter = boolean;
 
 /**
  * Sorts an array by a property using truthiness and strict equality.
  */
+// eslint-disable-next-line @typescript-eslint/no-type-alias
 export type PropertySorter<TEntry> = keyof TEntry;
 
 /**
@@ -29,12 +33,13 @@ export type MultiSorter<TEntry> = SingleSorter<TEntry>[];
 /**
  * Union Type of VoidSorter | SingleSorter<TEntry> | MultiSorter<TEntry>
  */
-export type Sorter<TEntry> = BooleanSorter | SingleSorter<TEntry> | MultiSorter<TEntry> | void;
+export type Sorter<TEntry> = BooleanSorter | SingleSorter<TEntry> | MultiSorter<TEntry>;
 
 /**
  * The public API of a SorterProcessor.
  */
 export interface SorterProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
+
     /**
      * Sets the sorting direction.
      *
@@ -43,6 +48,7 @@ export interface SorterProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
      * Descending = false;
      */
     direction: boolean;
+
     /**
      * Sorts the array.
      *
@@ -51,19 +57,18 @@ export interface SorterProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
      * Boolean: (entryA, entryB) => entryA < entryB ? -1 : entryA > entryB ? 1 : 0;
      * String:  (entryA, entryB) => entryA[sorter] < entryB[sorter] ? -1 : entryA[sorter] > entryB[sorter] ? 1 : 0;
      */
-    sorter: Sorter<TEntry>;
+    sorter?: Sorter<TEntry>;
 }
 
 /**
  * An array processor to automatically sort an array using the supplied sorter.
  */
 export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements SorterProcessorApi<TEntry> {
-    protected inputSorter: Sorter<TEntry> = undefined;
+    protected inputSorter?: Sorter<TEntry> = undefined;
 
-    protected currentSorter: FunctionSorter<TEntry> | void = undefined;
+    protected currentSorter?: FunctionSorter<TEntry> = undefined;
 
-    // tslint:disable-next-line:variable-name
-    protected _direction = true;
+    protected currentDirection = true;
 
     /**
      * Sets the sorting direction.
@@ -73,11 +78,11 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
      * Descending = false;
      */
     public get direction(): boolean {
-        return this._direction;
+        return this.currentDirection;
     }
     public set direction(ascending: boolean) {
-        if (this._direction !== ascending) {
-            this._direction = ascending;
+        if (this.currentDirection !== ascending) {
+            this.currentDirection = ascending;
 
             this.reprocess();
         }
@@ -99,10 +104,15 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
 
         if (isVoid(sorter)) {
             this.currentSorter = sorter;
-        } else if (!Array.isArray(sorter)) {
-            this.currentSorter = this.sorterToDirectionalSorter(this.singleSorterToFunctionSorter(sorter));
-        } else {
+        }
+        else if (isBoolean(sorter)) {
+            this.currentSorter = this.sorterToDirectionalSorter(this.booleanSorterToFunctionSorter(sorter));
+        }
+        else if (Array.isArray(sorter)) {
             this.currentSorter = this.sorterToDirectionalSorter(this.multiSorterToFunctionSorter(sorter));
+        }
+        else {
+            this.currentSorter = this.sorterToDirectionalSorter(this.singleSorterToFunctionSorter(sorter));
         }
 
         this.reprocess();
@@ -117,46 +127,46 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
         super(active);
     }
 
-    protected processor(array: TEntry[]) {
+    protected processor(array: TEntry[]): TEntry[] {
         return this.currentSorter ? array.sort(this.currentSorter) : array;
     }
 
     protected booleanSorterToFunctionSorter(ascending: boolean): FunctionSorter<TEntry> {
         this.direction = ascending;
 
-        return (entryA, entryB) => {
-            return entryA < entryB ? -1 : entryA > entryB ? 1 : 0;
-        };
+        return (entryA, entryB) => this.compare(entryA, entryB);
     }
 
     protected propertySorterToFunctionSorter(property: PropertySorter<TEntry>): FunctionSorter<TEntry> {
         return (entryA: TEntry, entryB: TEntry) => {
-            if (entryA == null || entryB == null) {
-                return entryA == null && entryB == null ? 0 : entryA == null ? -1 : 1;
-            } else {
-                return entryA[property] < entryB[property] ? -1 : entryA[property] > entryB[property] ? 1 : 0;
+            if (entryA === undefined || entryA === null || entryB === undefined || entryB === null) {
+                return this.compareNullOrUndefined(entryA, entryB);
             }
+
+            return this.compare(entryA[property], entryB[property]);
         };
     }
 
     protected singleSorterToFunctionSorter(sorter: SingleSorter<TEntry>): FunctionSorter<TEntry> {
         if (isFunction(sorter)) {
             return sorter;
-        } else if (isBoolean(sorter)) {
-            return this.booleanSorterToFunctionSorter(sorter);
-        } else {
-            return this.propertySorterToFunctionSorter(sorter);
         }
+
+        if (isBoolean(sorter)) {
+            return this.booleanSorterToFunctionSorter(sorter);
+        }
+
+        return this.propertySorterToFunctionSorter(sorter);
     }
 
     protected multiSorterToFunctionSorter(sorters: MultiSorter<TEntry>): FunctionSorter<TEntry> {
         const customSorters = sorters.map(sorter => this.singleSorterToFunctionSorter(sorter));
 
         return (entryA, entryB) => {
-            for (let i = 0; i < customSorters.length; i++) {
-                const sorterResult = customSorters[i](entryA, entryB);
+            for (const customSorter of customSorters) {
+                const sorterResult = customSorter(entryA, entryB);
 
-                if (sorterResult) {
+                if (sorterResult !== 0) {
                     return sorterResult;
                 }
             }
@@ -167,9 +177,35 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
 
     protected sorterToDirectionalSorter(sorter: FunctionSorter<TEntry>): FunctionSorter<TEntry> {
         return (entryA, entryB) => {
-            const result = sorter(entryA, entryB);
+            const comparerWrapperResult = sorter(entryA, entryB);
 
-            return this.direction ? result : result * -1;
+            return this.direction ? comparerWrapperResult : -comparerWrapperResult;
         };
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private compare(valueA: any, valueB: any): number {
+        if (valueA < valueB) {
+            return -1;
+        }
+
+        if (valueA > valueB) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    private compareNullOrUndefined(entryA: TEntry | null | undefined, entryB: TEntry | null | undefined): number {
+        if ((entryA === undefined || entryA === null) && (entryB !== undefined && entryB !== null)) {
+            return 1;
+        }
+
+        if ((entryA !== undefined && entryA !== null) && (entryB === undefined || entryB === null)) {
+            return -1;
+        }
+
+        return 0;
     }
 }

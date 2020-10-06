@@ -1,10 +1,12 @@
+import { BehaviourSubject } from '../rxjs';
+import type { BehaviourSubjectApi } from '../rxjs';
 import { clone } from '@colonise/utilities';
-import { BehaviourSubject, BehaviourSubjectApi } from '../rxjs';
 
 /**
  * The public API of a ComplexProcessor.
  */
 export interface ComplexProcessorApi<TData> extends BehaviourSubjectApi<TData> {
+
     /**
      * Whether this processor is active.
      *
@@ -21,17 +23,16 @@ export interface ComplexProcessorApi<TData> extends BehaviourSubjectApi<TData> {
 export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> implements ComplexProcessorApi<TData> {
     protected processing = false;
 
-    // tslint:disable-next-line:variable-name
-    protected _lastInput = clone(this.lastOutput);
+    // eslint-disable-next-line @typescript-eslint/no-invalid-this
+    protected currentLastInput = clone(this.lastOutput);
     protected get lastInput(): TData {
-        return clone(this._lastInput);
+        return clone(this.currentLastInput);
     }
     protected set lastInput(data: TData) {
-        this._lastInput = data;
+        this.currentLastInput = data;
     }
 
-    // tslint:disable-next-line:variable-name
-    protected _active = true;
+    protected isActive = true;
 
     /**
      * Whether this processor is active.
@@ -39,18 +40,18 @@ export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> im
      * An inactive processor returns the data it is supplied.
      */
     public get active(): boolean {
-        return this._active;
+        return this.isActive;
     }
     public set active(active: boolean) {
-        this._active = active;
+        this.isActive = active;
 
         this.reprocess(active);
     }
 
-    public constructor(data: TData, active: boolean = true) {
-        super(data);
+    public constructor(value: TData, active: boolean = true) {
+        super(value);
 
-        this._active = active;
+        this.isActive = active;
     }
 
     /**
@@ -80,9 +81,9 @@ export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> im
         return this.process(this.lastInput, force);
     }
 
+    protected abstract processor(data: TData): TData;
+
     protected shouldProcess(force: boolean = false): boolean {
         return !this.processing && (this.active || force);
     }
-
-    protected abstract processor(data: TData): TData;
 }
