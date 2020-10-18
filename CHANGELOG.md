@@ -1,5 +1,13 @@
 Changelog
 
+## [3.1.1](https://github.com/Colonise/DataSource/compare/v3.1.0...v3.1.1) (2020-10-18)
+
+
+### Bug Fixes
+
+* install @colonise/config@3.10.10 ([02f1c76](https://github.com/Colonise/DataSource/commit/02f1c7693e4ec6f5f3d42bfb7fa47343c2d1bd05))
+* update to @colonise/config@3.10.9 ([02d1c43](https://github.com/Colonise/DataSource/commit/02d1c43c2c2cd4740fbd3fd28a9dd67b4b65ea12))
+
 ## [3.0.1](https://github.com/Colonise/DataSource/compare/v3.0.0...v3.0.1) (2019-03-24)
 
 
