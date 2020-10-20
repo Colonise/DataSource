@@ -1,5 +1,12 @@
 Changelog
 
+# [3.2.0](https://github.com/Colonise/DataSource/compare/v3.1.2...v3.2.0) (2020-10-20)
+
+
+### Features
+
+* **DebugProcessor:** add DebugProcessor ([e059b97](https://github.com/Colonise/DataSource/commit/e059b97c6c071cecf879c249546c9ccd8b9cc225)), closes [#99](https://github.com/Colonise/DataSource/issues/99)
+
 ## [3.1.1](https://github.com/Colonise/DataSource/compare/v3.1.0...v3.1.1) (2020-10-18)
 
 
