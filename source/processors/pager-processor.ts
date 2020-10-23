@@ -1,5 +1,5 @@
-import { ArrayProcessor } from './array';
-import type { ArrayProcessorApi } from './array';
+import { ArrayProcessor } from './array-processor';
+import type { ArrayProcessorApi } from './array-processor';
 
 /**
  * Paginates an array with the given page size.

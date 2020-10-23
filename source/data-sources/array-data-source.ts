@@ -11,7 +11,7 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      * The total number of entries in the table before processing.
      */
     public get length(): number {
-        return this.data.length;
+        return this.lastInput.length;
     }
 
     /**
@@ -19,8 +19,8 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      *
      * @param array The array.
      */
-    public constructor(array: TEntry[] = []) {
-        super(array);
+    public constructor (array: TEntry[] = []) {
+        super(array, array);
     }
 
     /**
@@ -30,9 +30,9 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      * @returns The newly processed table.
      */
     public push(...entries: TEntry[]): TEntry[] {
-        this.data.push(...entries);
+        this.lastInput.push(...entries);
 
-        return this.process();
+        return this.reprocess();
     }
 
     /**
@@ -51,9 +51,9 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      */
     public insert(index: number, entries: TEntry[]): TEntry[];
     public insert(index: number, entryOrEntries: TEntry | TEntry[]): TEntry[] {
-        insert(this.data, index, entryOrEntries);
+        insert(this.lastInput, index, entryOrEntries);
 
-        return this.process();
+        return this.reprocess();
     }
 
     /**
@@ -82,16 +82,16 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
     public remove(index: number, count?: number): TEntry[];
     public remove(indexOrEntryOrEntries: number | TEntry | TEntry[], count: number = 1): TEntry[] {
         if (typeof indexOrEntryOrEntries === 'number') {
-            removeAt(this.data, indexOrEntryOrEntries, count);
+            removeAt(this.lastInput, indexOrEntryOrEntries, count);
         }
         else if (Array.isArray(indexOrEntryOrEntries)) {
-            removeMany(this.data, indexOrEntryOrEntries);
+            removeMany(this.lastInput, indexOrEntryOrEntries);
         }
         else {
-            remove(this.data, indexOrEntryOrEntries);
+            remove(this.lastInput, indexOrEntryOrEntries);
         }
 
-        return this.process();
+        return this.reprocess();
     }
 
     /**
@@ -102,8 +102,8 @@ export class ArrayDataSource<TEntry> extends DataSource<TEntry[]> {
      * @returns The newly processed table.
      */
     public assign(index: number, entry: TEntry): TEntry[] {
-        this.data[index] = entry;
+        this.lastInput[index] = entry;
 
-        return this.process();
+        return this.reprocess();
     }
 }

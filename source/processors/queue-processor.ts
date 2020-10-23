@@ -1,4 +1,4 @@
-import { ComplexProcessor } from './complex';
+import { ComplexProcessor } from './complex-processor';
 import type { Processor } from './processor';
 import type { Unsubscribable } from '../rxjs';
 import {
@@ -25,11 +25,12 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
     /**
      * Creates a new QueueProcessor.
      *
-     * @param value The initial value for subscribers.
+     * @param lastInput The initial input value.
+     * @param lastOutput The initial output value.
      * @param processors The initial processors.
      */
-    public constructor(value: TData, processors: Processor<TData>[] = []) {
-        super(value);
+    public constructor (lastInput: TData, lastOutput: TData, processors: Processor<TData>[] = []) {
+        super(lastInput, lastOutput);
 
         processors.forEach(processor => {
             this.addProcessor(processor);
@@ -59,6 +60,7 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
 
             return this.reprocessFromIndex(this.processorTuples.length - 1);
         }
+
         insert(this.processorTuples, index, processorTuple);
 
         return this.reprocessFromIndex(index - 1);
@@ -85,6 +87,7 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
         if (processor instanceof ComplexProcessor) {
             return processor.process(data);
         }
+
         return processor(data);
     }
 
@@ -110,13 +113,13 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
         this.lastInput = data;
         let processedData = data;
 
-        this.processing = true;
+        this._processing = true;
 
         this.processorTuples.forEach(processorTuple => {
             processedData = this.runProcessor(processedData, processorTuple[0]);
         });
 
-        this.processing = false;
+        this._processing = false;
 
         return processedData;
     }

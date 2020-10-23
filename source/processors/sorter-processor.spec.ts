@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SorterProcessor } from './sorter';
+import { SorterProcessor } from './sorter-processor';
 
 describe('SorterProcessor Tests', () => {
     it('should be created', () => {

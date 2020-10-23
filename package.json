@@ -30,7 +30,8 @@
     },
     "homepage": "https://github.com/Colonise/DataSource#readme",
     "devDependencies": {
-        "@colonise/config": "latest"
+        "@colonise/config": "latest",
+        "rxjs": "^6.6.3"
     },
     "dependencies": {
         "@colonise/utilities": "latest",

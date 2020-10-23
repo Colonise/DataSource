@@ -1,3 +1,3 @@
 export * from './rxjs';
-export * from './behaviour-subject';
+export * from './subject';
 export * from './subscription';

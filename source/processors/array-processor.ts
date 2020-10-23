@@ -1,11 +1,10 @@
-import { ComplexProcessor } from './complex';
-import type { ComplexProcessorApi } from './complex';
+import { ComplexProcessor } from './complex-processor';
+import type { ComplexProcessorApi } from './complex-processor';
 
 /**
  * The public API of an ArrayProcessor.
  */
-export interface ArrayProcessorApi<TEntry>
-    extends ComplexProcessorApi<TEntry[]> {
+export interface ArrayProcessorApi<TEntry> extends ComplexProcessorApi<TEntry[]> {
 
     /**
      * The number of entries after processing.
@@ -31,7 +30,7 @@ export abstract class ArrayProcessor<TEntry> extends ComplexProcessor<TEntry[]> 
      *
      * @param active Whether the ArrayProcessor should start active.
      */
-    public constructor(active: boolean = true) {
-        super([], active);
+    public constructor (active: boolean = true) {
+        super([], [], active);
     }
 }

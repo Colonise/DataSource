@@ -1,11 +1,10 @@
-import { BehaviourSubject } from '../rxjs';
-import type { BehaviourSubjectApi } from '../rxjs';
-import { clone } from '@colonise/utilities';
+import { Subject } from '../rxjs';
+import type { SubjectApi } from '../rxjs';
 
 /**
  * The public API of a ComplexProcessor.
  */
-export interface ComplexProcessorApi<TData> extends BehaviourSubjectApi<TData> {
+export interface ComplexProcessorApi<TData> extends SubjectApi<TData> {
 
     /**
      * Whether this processor is active.
@@ -20,19 +19,13 @@ export interface ComplexProcessorApi<TData> extends BehaviourSubjectApi<TData> {
  *
  * Designed for complex proessing.
  */
-export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> implements ComplexProcessorApi<TData> {
-    protected processing = false;
+export abstract class ComplexProcessor<TData> extends Subject<TData> implements ComplexProcessorApi<TData> {
+    protected _processing: boolean = false;
+    protected _active: boolean = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-invalid-this
-    protected currentLastInput = clone(this.lastOutput);
-    protected get lastInput(): TData {
-        return clone(this.currentLastInput);
+    public get processing(): boolean {
+        return this._active;
     }
-    protected set lastInput(data: TData) {
-        this.currentLastInput = data;
-    }
-
-    protected isActive = true;
 
     /**
      * Whether this processor is active.
@@ -40,19 +33,21 @@ export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> im
      * An inactive processor returns the data it is supplied.
      */
     public get active(): boolean {
-        return this.isActive;
+        return this._active;
     }
     public set active(active: boolean) {
-        this.isActive = active;
+        this._active = active;
 
         this.reprocess(active);
     }
 
-    public constructor(value: TData, active: boolean = true) {
-        super(value);
+    public constructor (lastInput: TData, lastOutput: TData, active: boolean = true) {
+        super(lastInput, lastOutput);
 
-        this.isActive = active;
+        this._active = active;
     }
+
+    protected abstract processor(data: TData): TData;
 
     /**
      * Processes some data.
@@ -81,9 +76,7 @@ export abstract class ComplexProcessor<TData> extends BehaviourSubject<TData> im
         return this.process(this.lastInput, force);
     }
 
-    protected abstract processor(data: TData): TData;
-
     protected shouldProcess(force: boolean = false): boolean {
-        return !this.processing && (this.active || force);
+        return !this._processing && (this.active || force);
     }
 }

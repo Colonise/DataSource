@@ -1,21 +1,14 @@
-import { BehaviourSubject } from '../rxjs';
-import { clone } from '@colonise/utilities';
-import type { Processor } from '../processors';
+import { ComplexProcessor, Processor } from '../processors';
 import { QueueProcessor } from '../processors';
 
 /**
  * A class to handle temporal changes in data while not mutating the original data itself.
  */
-export class DataSource<TData> extends BehaviourSubject<TData> {
-    // eslint-disable-next-line @typescript-eslint/no-invalid-this
-    protected preprocessors = new QueueProcessor<TData>(this.data);
-    // eslint-disable-next-line @typescript-eslint/no-invalid-this
-    protected processors = new QueueProcessor<TData>(this.data);
-    // eslint-disable-next-line @typescript-eslint/no-invalid-this
-    protected queue = new QueueProcessor<TData>(this.data, [
-        // eslint-disable-next-line @typescript-eslint/no-invalid-this
+export class DataSource<TData> extends ComplexProcessor<TData> {
+    protected preprocessors = new QueueProcessor<TData>(this.lastInput, this.lastOutput);
+    protected processors = new QueueProcessor<TData>(this.lastInput, this.lastOutput);
+    protected queue = new QueueProcessor<TData>(this.lastInput, this.lastOutput, [
         this.preprocessors,
-        // eslint-disable-next-line @typescript-eslint/no-invalid-this
         this.processors
     ]);
 
@@ -23,14 +16,11 @@ export class DataSource<TData> extends BehaviourSubject<TData> {
      * Creates a new DataSource with the supplied data.
      *
      * @param data The data.
-     * @param preprocessors The preprocessors that have precedence over the processors.
      */
-    public constructor(protected data: TData) {
-        super(clone(data));
+    public constructor (lastInput: TData, lastOutput: TData) {
+        super(lastInput, lastOutput);
 
         this.queue.subscribe(newData => this.next(newData));
-
-        this.process();
     }
 
     /**
@@ -39,9 +29,9 @@ export class DataSource<TData> extends BehaviourSubject<TData> {
      * @param data The new data to replace the current data with.
      */
     public set(data: TData): TData {
-        this.data = data;
+        this.lastInput = data;
 
-        return this.process();
+        return this.process(this.lastInput);
     }
 
     /**
@@ -66,10 +56,7 @@ export class DataSource<TData> extends BehaviourSubject<TData> {
         return this.processors.removeProcessor(processor);
     }
 
-    protected process(): TData {
-        const clonedData = clone(this.data);
-        const processedData = this.queue.process(clonedData);
-
-        return processedData;
+    protected processor(data: TData): TData {
+        return this.queue.process(data);
     }
 }

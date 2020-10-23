@@ -1,4 +1,4 @@
-import { ComplexProcessor } from './complex';
+import { ComplexProcessor } from './complex-processor';
 
 export interface Loggers<TData> {
     before(debugProcessor: DebugProcessor<TData>, input: TData): void;
@@ -6,7 +6,7 @@ export interface Loggers<TData> {
 }
 
 export class DebugProcessor<TData> extends ComplexProcessor<TData> {
-    public constructor(
+    public constructor (
         public readonly name: string,
         public readonly wrapperProcessor: ComplexProcessor<TData>,
         public readonly loggers: Loggers<TData> = {
@@ -20,7 +20,7 @@ export class DebugProcessor<TData> extends ComplexProcessor<TData> {
             }
         }
     ) {
-        super(wrapperProcessor.value);
+        super(wrapperProcessor.original, wrapperProcessor.value);
     }
 
     protected processor(input: TData): TData {
