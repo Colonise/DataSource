@@ -1,5 +1,19 @@
 Changelog
 
+# [3.3.0](https://github.com/Colonise/DataSource/compare/v3.2.0...v3.3.0) (2020-10-23)
+
+
+### Bug Fixes
+
+* **build:** actually use correct property on id-denylist ([d508500](https://github.com/Colonise/DataSource/commit/d5085005eba0b8c60645b12037e302cf20710e77))
+* **build:** check if id-denylist is defined ([5af2657](https://github.com/Colonise/DataSource/commit/5af2657d047c7c8af34ed9f61230deda1dcb550f))
+* **build:** use correct id-denylist property ([1e483c3](https://github.com/Colonise/DataSource/commit/1e483c3dc4b6c41b08e6cbd70f8e3f32a376e960))
+
+
+### Features
+
+* add public .original property and .reprocess() method ([7554804](https://github.com/Colonise/DataSource/commit/7554804aa499aaf30e2b259bf2e0e35227fd3325)), closes [#97](https://github.com/Colonise/DataSource/issues/97) [#98](https://github.com/Colonise/DataSource/issues/98)
+
 # [3.2.0](https://github.com/Colonise/DataSource/compare/v3.1.2...v3.2.0) (2020-10-20)
 
 
