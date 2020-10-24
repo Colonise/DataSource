@@ -35,6 +35,6 @@
     },
     "dependencies": {
         "@colonise/utilities": "latest",
-        "tslib": "^2.0.1"
+        "tslib": "^2.0.3"
     }
 }
