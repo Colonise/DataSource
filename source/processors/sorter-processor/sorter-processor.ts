@@ -1,5 +1,6 @@
-import { ArrayProcessor } from './array-processor';
-import type { ArrayProcessorApi } from './array-processor';
+import { ArrayProcessor } from '../array-processor';
+import type { ArrayProcessorApi } from '../array-processor';
+import { SorterDirection } from './sorter-direction';
 import {
     isBoolean, isFunction, isVoid
 } from '@colonise/utilities';
@@ -42,12 +43,8 @@ export interface SorterProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
 
     /**
      * Sets the sorting direction.
-     *
-     * Ascending = true;
-     *
-     * Descending = false;
      */
-    direction: boolean;
+    direction: SorterDirection;
 
     /**
      * Sorts the array.
@@ -68,19 +65,16 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
 
     protected currentSorter?: FunctionSorter<TEntry> = undefined;
 
-    protected currentDirection = true;
+    protected currentDirection: SorterDirection = SorterDirection.Ascending;
 
     /**
      * Sets the sorting direction.
-     *
-     * Ascending = true;
-     *
-     * Descending = false;
      */
-    public get direction(): boolean {
+    public get direction(): SorterDirection {
         return this.currentDirection;
     }
-    public set direction(ascending: boolean) {
+
+    public set direction(ascending: SorterDirection) {
         if (this.currentDirection !== ascending) {
             this.currentDirection = ascending;
 
@@ -99,6 +93,7 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     public get sorter(): Sorter<TEntry> | undefined {
         return this.inputSorter;
     }
+
     public set sorter(sorter: Sorter<TEntry> | undefined) {
         this.inputSorter = sorter;
 
@@ -132,7 +127,7 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     }
 
     protected booleanSorterToFunctionSorter(ascending: boolean): FunctionSorter<TEntry> {
-        this.direction = ascending;
+        this.direction = ascending ? SorterDirection.Ascending : SorterDirection.Descending;
 
         return (entryA, entryB) => this.compare(entryA, entryB);
     }
@@ -179,7 +174,7 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
         return (entryA, entryB) => {
             const comparerWrapperResult = sorter(entryA, entryB);
 
-            return this.direction ? comparerWrapperResult : -comparerWrapperResult;
+            return this.direction === SorterDirection.Ascending ? comparerWrapperResult : -comparerWrapperResult;
         };
     }
 

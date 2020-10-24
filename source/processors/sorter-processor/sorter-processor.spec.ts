@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { SorterDirection } from './sorter-direction';
 import { SorterProcessor } from './sorter-processor';
 
 describe('SorterProcessor Tests', () => {
@@ -142,9 +143,9 @@ describe('SorterProcessor Tests', () => {
             sorterProcessor.sorter = sorter;
 
             const actual = sorterProcessor.value;
-            sorterProcessor.direction = false;
+            sorterProcessor.direction = SorterDirection.Descending;
             const actualDescending = sorterProcessor.value;
-            sorterProcessor.direction = true;
+            sorterProcessor.direction = SorterDirection.Ascending;
             const actualAscending = sorterProcessor.value;
 
             expect(actual).to.eql(expected);
