@@ -1,5 +1,17 @@
 Changelog
 
+# [4.0.0](https://github.com/Colonise/DataSource/compare/v3.3.0...v4.0.0) (2020-10-25)
+
+
+### Features
+
+* **SorterProcessor:** change direction to an enum ([f03d184](https://github.com/Colonise/DataSource/commit/f03d184f639a65be1e388ef64910c9e0a3acb604))
+
+
+### BREAKING CHANGES
+
+* **SorterProcessor:** change SorterProcessor direction to an enum
+
 # [3.3.0](https://github.com/Colonise/DataSource/compare/v3.2.0...v3.3.0) (2020-10-23)
 
 
