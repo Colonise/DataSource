@@ -1,6 +1,6 @@
 # DataSource
 
-[![Travis CI Build][travis-ci-badge]][travis-ci-url]
+[![Build][build-badge]][build-url]
 [![Code Climate Test Coverage][code-climate-coverage-badge]][code-climate-coverage-url]
 [![Code Climate Maintainability][code-climate-maintainability-badge]][code-climate-maintainability-url]
 [![License][license-badge]][license-url]
@@ -42,8 +42,8 @@ DataSource is part of Colonise's Open Source Software, and is made with love by 
 [colonise-logo]: /documentation/assets/colonise256.png
 [colonise-url]: https://colonise.org/
 
-[travis-ci-badge]: https://img.shields.io/travis/Colonise/DataSource.svg
-[travis-ci-url]: https://travis-ci.com/Colonise/DataSource
+[build-badge]: https://img.shields.io/github/workflow/status/colonise/datasource/Node.js%20CI
+[build-url]: https://github.com/Colonise/DataSource/actions?query=workflow%3A%22Node.js+CI%22
 
 [code-climate-coverage-badge]: https://img.shields.io/codeclimate/coverage/Colonise/DataSource.svg
 [code-climate-coverage-url]: https://codeclimate.com/github/Colonise/DataSource
