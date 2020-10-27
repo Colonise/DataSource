@@ -1,5 +1,12 @@
 Changelog
 
+## [4.0.1](https://github.com/Colonise/DataSource/compare/v4.0.0...v4.0.1) (2020-10-27)
+
+
+### Bug Fixes
+
+* Subject lost initial subscription call on subscribe ([1446eda](https://github.com/Colonise/DataSource/commit/1446eda069d28065821338b331635289d3cafda5))
+
 # [4.0.0](https://github.com/Colonise/DataSource/compare/v3.3.0...v4.0.0) (2020-10-25)
 
 
