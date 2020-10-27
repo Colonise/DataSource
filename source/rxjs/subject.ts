@@ -115,6 +115,11 @@ export abstract class Subject<TData> implements Subscribable<TData>, SubjectApi<
             this.unsubscribe(subscriptionHolder.subscription);
         });
 
+        // Call the observer's next once
+        if (isFunction(subscriptionHolder.subscription.observer.next)) {
+            subscriptionHolder.subscription.observer.next(this.lastOutput);
+        }
+
         this.subscriptions.push(subscriptionHolder.subscription);
 
         return subscriptionHolder.subscription;
