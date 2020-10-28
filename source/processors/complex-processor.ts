@@ -61,8 +61,12 @@ export abstract class ComplexProcessor<TData> extends Subject<TData> implements 
         if (!this.shouldProcess(force)) {
             return data;
         }
+        
+        this._processing = true;
 
         const processedData = this.processor(data);
+        
+        this._processing = false;
 
         return this.next(processedData);
     }
