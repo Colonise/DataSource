@@ -1,5 +1,12 @@
 Changelog
 
+## [4.0.4](https://github.com/Colonise/DataSource/compare/v4.0.3...v4.0.4) (2020-10-28)
+
+
+### Bug Fixes
+
+* properly handle _processing flag ([e033a6f](https://github.com/Colonise/DataSource/commit/e033a6f478ef4d84a352a2990b4b554cee76e9db))
+
 ## [4.0.3](https://github.com/Colonise/DataSource/compare/v4.0.2...v4.0.3) (2020-10-28)
 
 
