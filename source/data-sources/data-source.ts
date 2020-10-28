@@ -20,7 +20,11 @@ export class DataSource<TData> extends ComplexProcessor<TData> {
     public constructor (lastInput: TData, lastOutput: TData) {
         super(lastInput, lastOutput);
 
-        this.queue.subscribe(newData => this.next(newData));
+        this.queue.subscribe(newData => {
+            if (!this.processing) {
+                this.next(newData)
+            }
+        });
     }
 
     /**
