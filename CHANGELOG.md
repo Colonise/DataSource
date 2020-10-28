@@ -1,5 +1,12 @@
 Changelog
 
+## [4.0.3](https://github.com/Colonise/DataSource/compare/v4.0.2...v4.0.3) (2020-10-28)
+
+
+### Bug Fixes
+
+* **DataSource:** outputs twice ([2c03843](https://github.com/Colonise/DataSource/commit/2c03843525859b8165141d72f5673ab13a7294af))
+
 ## [4.0.2](https://github.com/Colonise/DataSource/compare/v4.0.1...v4.0.2) (2020-10-28)
 
 
