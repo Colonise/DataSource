@@ -113,13 +113,9 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
         this.lastInput = data;
         let processedData = data;
 
-        this._processing = true;
-
         this.processorTuples.forEach(processorTuple => {
             processedData = this.runProcessor(processedData, processorTuple[0]);
         });
-
-        this._processing = false;
 
         return processedData;
     }
