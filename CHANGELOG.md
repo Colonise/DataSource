@@ -1,5 +1,12 @@
 Changelog
 
+## [4.0.2](https://github.com/Colonise/DataSource/compare/v4.0.1...v4.0.2) (2020-10-28)
+
+
+### Bug Fixes
+
+* **ComplexProcessor:** processing getter returns active ([65f6787](https://github.com/Colonise/DataSource/commit/65f6787e9d7812bbc78df7e7cd3aa5d7da6a4dea))
+
 ## [4.0.1](https://github.com/Colonise/DataSource/compare/v4.0.0...v4.0.1) (2020-10-27)
 
 
