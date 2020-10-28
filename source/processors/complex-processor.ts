@@ -24,7 +24,7 @@ export abstract class ComplexProcessor<TData> extends Subject<TData> implements 
     protected _active: boolean = true;
 
     public get processing(): boolean {
-        return this._active;
+        return this._processing;
     }
 
     /**
