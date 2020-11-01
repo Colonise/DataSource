@@ -2,6 +2,7 @@ import { ArrayProcessor } from '../array-processor';
 import type { ArrayProcessorApi } from '../array-processor';
 import { SorterDirection } from './sorter-direction';
 import {
+    compareNumbers,
     isBoolean, isFunction, isVoid
 } from '@colonise/utilities';
 
@@ -123,7 +124,27 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     }
 
     protected processor(array: TEntry[]): TEntry[] {
-        return this.currentSorter ? array.sort(this.currentSorter) : array;
+        if (this.currentSorter) {
+            const currentSorter = this.currentSorter;
+
+            return array
+                .map((item, index) => ({
+                    value: item,
+                    index
+                }))
+                .sort((entryA, entryB) => {
+                    const result = currentSorter(entryA.value, entryB.value);
+
+                    if (result === 0) {
+                        return compareNumbers(entryA.index, entryB.index);
+                    }
+
+                    return result;
+                })
+                .map(entry => entry.value);
+        }
+
+        return array;
     }
 
     protected booleanSorterToFunctionSorter(ascending: boolean): FunctionSorter<TEntry> {
