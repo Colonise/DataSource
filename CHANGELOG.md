@@ -1,5 +1,13 @@
 Changelog
 
+## [4.0.5](https://github.com/Colonise/DataSource/compare/v4.0.4...v4.0.5) (2020-11-01)
+
+
+### Bug Fixes
+
+* **SorterProcessor:** make sorting stable ([e940046](https://github.com/Colonise/DataSource/commit/e940046635121376b23b80eb292881bbdd8efaae))
+* use compareNullOrUndefined from utilities ([be0b579](https://github.com/Colonise/DataSource/commit/be0b57975b2d4e6962850022c1a5e2cf750fa91b))
+
 ## [4.0.4](https://github.com/Colonise/DataSource/compare/v4.0.3...v4.0.4) (2020-10-28)
 
 
