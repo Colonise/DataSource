@@ -2,6 +2,7 @@ import { ArrayProcessor } from '../array-processor';
 import type { ArrayProcessorApi } from '../array-processor';
 import { SorterDirection } from './sorter-direction';
 import {
+    compareNullOrUndefined,
     compareNumbers,
     isBoolean, isFunction, isVoid
 } from '@colonise/utilities';
@@ -156,7 +157,7 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     protected propertySorterToFunctionSorter(property: PropertySorter<TEntry>): FunctionSorter<TEntry> {
         return (entryA: TEntry, entryB: TEntry) => {
             if (entryA === undefined || entryA === null || entryB === undefined || entryB === null) {
-                return this.compareNullOrUndefined(entryA, entryB);
+                return compareNullOrUndefined(entryA, entryB);
             }
 
             return this.compare(entryA[property], entryB[property]);
@@ -207,19 +208,6 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
 
         if (valueA > valueB) {
             return 1;
-        }
-
-        return 0;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    private compareNullOrUndefined(entryA: TEntry | null | undefined, entryB: TEntry | null | undefined): number {
-        if ((entryA === undefined || entryA === null) && (entryB !== undefined && entryB !== null)) {
-            return 1;
-        }
-
-        if ((entryA !== undefined && entryA !== null) && (entryB === undefined || entryB === null)) {
-            return -1;
         }
 
         return 0;
