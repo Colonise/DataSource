@@ -1,5 +1,12 @@
 Changelog
 
+## [4.0.6](https://github.com/Colonise/DataSource/compare/v4.0.5...v4.0.6) (2020-11-03)
+
+
+### Bug Fixes
+
+* **DebugProcessor:** actually export DebugProcessor ([c6676c5](https://github.com/Colonise/DataSource/commit/c6676c53dd7ed253757f905fb78a1a9b7867eb02))
+
 ## [4.0.5](https://github.com/Colonise/DataSource/compare/v4.0.4...v4.0.5) (2020-11-01)
 
 
