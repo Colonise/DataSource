@@ -1,3 +1,4 @@
+export * from './array-processor';
 export * from './complex-processor';
 export * from './debug-processor';
 export * from './filter-processor';
