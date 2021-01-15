@@ -1,5 +1,12 @@
 Changelog
 
+## [4.0.7](https://github.com/Colonise/DataSource/compare/v4.0.6...v4.0.7) (2021-01-15)
+
+
+### Bug Fixes
+
+* export ArrayProcessor ([a348514](https://github.com/Colonise/DataSource/commit/a3485148368420f92a4f551e3b67149b2a497b55))
+
 ## [4.0.6](https://github.com/Colonise/DataSource/compare/v4.0.5...v4.0.6) (2020-11-03)
 
 
