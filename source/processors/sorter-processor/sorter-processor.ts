@@ -4,7 +4,9 @@ import { SorterDirection } from './sorter-direction';
 import {
     compareNullOrUndefined,
     compareNumbers,
-    isBoolean, isFunction, isVoid
+    isBoolean,
+    isFunction,
+    isVoid
 } from '@colonise/utilities';
 
 /**
@@ -59,13 +61,19 @@ export interface SorterProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
     sorter?: Sorter<TEntry>;
 }
 
+export interface SorterProcessorOptions<TEntry> {
+    sorter?: Sorter<TEntry>;
+    direction?: SorterDirection;
+    active?: boolean;
+}
+
 /**
  * An array processor to automatically sort an array using the supplied sorter.
  */
 export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements SorterProcessorApi<TEntry> {
-    protected inputSorter?: Sorter<TEntry> = undefined;
+    protected inputSorter: Sorter<TEntry> | undefined;
 
-    protected currentSorter?: FunctionSorter<TEntry> = undefined;
+    protected currentSorter: FunctionSorter<TEntry> | undefined;
 
     protected currentDirection: SorterDirection = SorterDirection.Ascending;
 
@@ -76,9 +84,9 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
         return this.currentDirection;
     }
 
-    public set direction(ascending: SorterDirection) {
-        if (this.currentDirection !== ascending) {
-            this.currentDirection = ascending;
+    public set direction(direction: SorterDirection) {
+        if (this.currentDirection !== direction) {
+            this.currentDirection = direction;
 
             this.reprocess();
         }
@@ -99,18 +107,7 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     public set sorter(sorter: Sorter<TEntry> | undefined) {
         this.inputSorter = sorter;
 
-        if (isVoid(sorter)) {
-            this.currentSorter = sorter;
-        }
-        else if (isBoolean(sorter)) {
-            this.currentSorter = this.sorterToDirectionalSorter(this.booleanSorterToFunctionSorter(sorter));
-        }
-        else if (Array.isArray(sorter)) {
-            this.currentSorter = this.sorterToDirectionalSorter(this.multiSorterToFunctionSorter(sorter));
-        }
-        else {
-            this.currentSorter = this.sorterToDirectionalSorter(this.singleSorterToFunctionSorter(sorter));
-        }
+        this.currentSorter = this.convertSorterToFunctionSorter(sorter);
 
         this.reprocess();
     }
@@ -118,10 +115,18 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
     /**
      * Creates a new SorterProcessor.
      *
+     * @param sorter The sorter that will sort the array.
+     * @param direction Sets the sorting direction.
      * @param active Whether the SorterProcessor should start active.
      */
-    public constructor(active: boolean = true) {
-        super(active);
+    public constructor(options?: SorterProcessorOptions<TEntry>) {
+        super(options?.active ?? true);
+
+        const sorter = options?.sorter ?? undefined;
+
+        this.inputSorter = sorter;
+        this.currentSorter = this.convertSorterToFunctionSorter(sorter);
+        this.currentDirection = options?.direction ?? SorterDirection.Ascending;
     }
 
     protected processor(array: TEntry[]): TEntry[] {
@@ -211,5 +216,21 @@ export class SorterProcessor<TEntry> extends ArrayProcessor<TEntry> implements S
         }
 
         return 0;
+    }
+
+    private convertSorterToFunctionSorter(sorter: Sorter<TEntry> | undefined): FunctionSorter<TEntry> | undefined {
+        if (isVoid(sorter)) {
+            return sorter;
+        }
+
+        if (isBoolean(sorter)) {
+            return this.sorterToDirectionalSorter(this.booleanSorterToFunctionSorter(sorter));
+        }
+
+        if (Array.isArray(sorter)) {
+            return this.sorterToDirectionalSorter(this.multiSorterToFunctionSorter(sorter));
+        }
+
+        return this.sorterToDirectionalSorter(this.singleSorterToFunctionSorter(sorter));
     }
 }

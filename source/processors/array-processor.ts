@@ -30,7 +30,7 @@ export abstract class ArrayProcessor<TEntry> extends ComplexProcessor<TEntry[]> 
      *
      * @param active Whether the ArrayProcessor should start active.
      */
-    public constructor (active: boolean = true) {
+    public constructor(active: boolean = true) {
         super([], [], active);
     }
 }

@@ -57,13 +57,33 @@ export interface FilterProcessorApi<TEntry> extends ArrayProcessorApi<TEntry> {
     filter?: Filter<TEntry>;
 }
 
+export interface FilterProcessorOptions<TEntry> {
+
+    /**
+     * Filters the array.
+     *
+     * True:   (entry) => !!entry;
+     * False:  (entry) => !entry;
+     * Object: (entry) => entry[filter.property] === filter.value;
+     * String: (entry) => !!entry[filter];
+     */
+    filter?: Filter<TEntry>;
+
+    /**
+     * Whether this processor is active.
+     *
+     * An inactive processor returns the data it is supplied.
+     */
+    active?: boolean;
+}
+
 /**
  * An array processor to automatically sort an array using the supplied filter.
  */
 export class FilterProcessor<TEntry> extends ArrayProcessor<TEntry> implements FilterProcessorApi<TEntry> {
-    protected inputFilter?: Filter<TEntry> = undefined;
+    protected inputFilter: Filter<TEntry> | undefined;
 
-    protected currentFilter?: FunctionFilter<TEntry> = undefined;
+    protected currentFilter: FunctionFilter<TEntry> | undefined;
 
     /**
      * Filters the array.
@@ -79,21 +99,7 @@ export class FilterProcessor<TEntry> extends ArrayProcessor<TEntry> implements F
     public set filter(filter: Filter<TEntry> | undefined) {
         this.inputFilter = filter;
 
-        if (isVoid(filter)) {
-            this.currentFilter = filter;
-        }
-        else if (isBoolean(filter)) {
-            this.currentFilter = this.booleanFilterToFunctionFilter(filter);
-        }
-        else if (isFunction(filter)) {
-            this.currentFilter = filter;
-        }
-        else if (isObject(filter)) {
-            this.currentFilter = this.propertyAndValueFilterToFunctionFilter(filter);
-        }
-        else {
-            this.currentFilter = this.propertyFilterToFunctionFilter(filter);
-        }
+        this.currentFilter = this.convertFilterToFunctionFilter(filter);
 
         this.reprocess();
     }
@@ -101,27 +107,52 @@ export class FilterProcessor<TEntry> extends ArrayProcessor<TEntry> implements F
     /**
      * Creates a new FilterProcessor.
      *
-     * @param active Whether the FilterProcessor should start active.
+     * @param options The FilterProcessor options.
      */
-    public constructor(active: boolean = true) {
-        super(active);
+    public constructor(options?: FilterProcessorOptions<TEntry>) {
+        super(options?.active ?? true);
+
+        const filter = options?.filter ?? undefined;
+
+        this.inputFilter = filter;
+        this.currentFilter = this.convertFilterToFunctionFilter(filter);
     }
 
     protected processor(array: TEntry[]): TEntry[] {
         return this.currentFilter ? array.filter(this.currentFilter) : array;
     }
 
-    protected booleanFilterToFunctionFilter(filter: boolean): FunctionFilter<TEntry> {
+    protected convertBooleanFilterToFunctionFilter(filter: boolean): FunctionFilter<TEntry> {
         return filter ? entry => toBoolean(entry) : entry => !toBoolean(entry);
     }
 
-    protected propertyFilterToFunctionFilter(property: PropertyFilter<TEntry>): FunctionFilter<TEntry> {
+    protected convertPropertyFilterToFunctionFilter(property: PropertyFilter<TEntry>): FunctionFilter<TEntry> {
         return entry => Boolean(entry[property]);
     }
 
-    protected propertyAndValueFilterToFunctionFilter(
+    protected convertPropertyAndValueFilterToFunctionFilter(
         propertyAndValue: PropertyAndValueFilter<TEntry>
     ): FunctionFilter<TEntry> {
         return entry => entry[propertyAndValue.property] === propertyAndValue.value;
+    }
+
+    private convertFilterToFunctionFilter(filter: Filter<TEntry> | undefined): FunctionFilter<TEntry> | undefined {
+        if (isVoid(filter)) {
+            return undefined;
+        }
+
+        if (isBoolean(filter)) {
+            return this.convertBooleanFilterToFunctionFilter(filter);
+        }
+
+        if (isFunction(filter)) {
+            return filter;
+        }
+
+        if (isObject(filter)) {
+            return this.convertPropertyAndValueFilterToFunctionFilter(filter);
+        }
+
+        return this.convertPropertyFilterToFunctionFilter(filter);
     }
 }

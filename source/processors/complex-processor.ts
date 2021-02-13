@@ -41,7 +41,7 @@ export abstract class ComplexProcessor<TData> extends Subject<TData> implements 
         this.reprocess(active);
     }
 
-    public constructor (lastInput: TData, lastOutput: TData, active: boolean = true) {
+    public constructor(lastInput: TData, lastOutput: TData, active: boolean = true) {
         super(lastInput, lastOutput);
 
         this._active = active;
@@ -61,11 +61,11 @@ export abstract class ComplexProcessor<TData> extends Subject<TData> implements 
         if (!this.shouldProcess(force)) {
             return this.lastOutput;
         }
-        
+
         this._processing = true;
 
         const processedData = this.processor(data);
-        
+
         this._processing = false;
 
         return this.next(processedData);

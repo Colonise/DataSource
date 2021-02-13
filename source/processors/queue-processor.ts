@@ -28,9 +28,10 @@ export class QueueProcessor<TData> extends ComplexProcessor<TData> {
      * @param lastInput The initial input value.
      * @param lastOutput The initial output value.
      * @param processors The initial processors.
+     * @param active Whether the QueueProcessor should start active.
      */
-    public constructor (lastInput: TData, lastOutput: TData, processors: Processor<TData>[] = []) {
-        super(lastInput, lastOutput);
+    public constructor(lastInput: TData, lastOutput: TData, processors: Processor<TData>[] = [], active: boolean = true) {
+        super(lastInput, lastOutput, active);
 
         processors.forEach(processor => {
             this.addProcessor(processor);
