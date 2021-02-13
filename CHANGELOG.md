@@ -1,5 +1,17 @@
 Changelog
 
+# [5.0.0](https://github.com/Colonise/DataSource/compare/v4.0.7...v5.0.0) (2021-02-13)
+
+
+### Features
+
+* Improve some processor constructors ([b52cc6c](https://github.com/Colonise/DataSource/commit/b52cc6cbc56e63b769e460f28a64f30bf2143814))
+
+
+### BREAKING CHANGES
+
+* FilterProcessor and SorterProcessor constructors change
+
 ## [4.0.7](https://github.com/Colonise/DataSource/compare/v4.0.6...v4.0.7) (2021-01-15)
 
 
