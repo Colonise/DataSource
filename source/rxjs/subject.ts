@@ -1,5 +1,8 @@
-import { clone, isFunction } from '@colonise/utilities';
 import { Subscription } from './subscription';
+import {
+    clone,
+    isFunction
+} from '@colonise/utilities';
 import type {
     PartialObserver,
     Subscribable,
@@ -54,7 +57,7 @@ export interface SubjectApi<TValue> {
  * A Subject like Subscribable.
  */
 export abstract class Subject<TData> implements Subscribable<TData>, SubjectApi<TData> {
-    public get original(): TData  {
+    public get original(): TData {
         return this.lastInput;
     }
 
@@ -74,7 +77,7 @@ export abstract class Subject<TData> implements Subscribable<TData>, SubjectApi<
      *
      * @param lastOutput The current output value of the subject.
      */
-    public constructor (lastInput: TData, lastOutput: TData) {
+    public constructor(lastInput: TData, lastOutput: TData) {
         this.lastInput = lastInput;
         this.lastOutput = lastOutput;
     }
@@ -153,4 +156,43 @@ export abstract class Subject<TData> implements Subscribable<TData>, SubjectApi<
 
         return this.lastOutput;
     }
+}
+
+function observableInterop(this: Subject<unknown>): Subject<unknown> {
+    return this;
+}
+
+if (typeof Symbol === 'function' && typeof Symbol.observable === 'symbol') {
+    Object.defineProperty(
+        Subject.prototype,
+        Symbol.observable,
+        {
+            configurable: true,
+            enumerable: false,
+            value: observableInterop
+        }
+    );
+}
+else {
+    import('rxjs').then(({ observable }) => {
+        Object.defineProperty(
+            Subject.prototype,
+            observable,
+            {
+                configurable: true,
+                enumerable: false,
+                value: observableInterop
+            }
+        );
+    }, () => {
+        Object.defineProperty(
+            Subject.prototype,
+            '@@observable',
+            {
+                configurable: true,
+                enumerable: false,
+                value: observableInterop
+            }
+        );
+    });
 }
