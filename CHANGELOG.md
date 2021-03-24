@@ -1,5 +1,12 @@
 Changelog
 
+# [5.1.0](https://github.com/Colonise/DataSource/compare/v5.0.0...v5.1.0) (2021-03-24)
+
+
+### Features
+
+* add RxJS observable interop ([0554168](https://github.com/Colonise/DataSource/commit/0554168d7191b69ed7e275a45d465db90f68b229))
+
 # [5.0.0](https://github.com/Colonise/DataSource/compare/v4.0.7...v5.0.0) (2021-02-13)
 
 
