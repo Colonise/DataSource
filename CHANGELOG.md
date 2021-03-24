@@ -1,5 +1,12 @@
 Changelog
 
+## [5.1.1](https://github.com/Colonise/DataSource/compare/v5.1.0...v5.1.1) (2021-03-24)
+
+
+### Bug Fixes
+
+* rename typescript declaration files ([31160de](https://github.com/Colonise/DataSource/commit/31160de6db3ff4c8343b081381e4723a2e8d1c14))
+
 # [5.1.0](https://github.com/Colonise/DataSource/compare/v5.0.0...v5.1.0) (2021-03-24)
 
 
