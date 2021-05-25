@@ -1,5 +1,12 @@
 Changelog
 
+## [5.1.2](https://github.com/Colonise/DataSource/compare/v5.1.1...v5.1.2) (2021-05-25)
+
+
+### Bug Fixes
+
+* Fix typo in SorterDirection.Ascending ([52a6dee](https://github.com/Colonise/DataSource/commit/52a6dee1bca3dfe69244f8d18e9c716cf0499d98))
+
 ## [5.1.1](https://github.com/Colonise/DataSource/compare/v5.1.0...v5.1.1) (2021-03-24)
 
 
