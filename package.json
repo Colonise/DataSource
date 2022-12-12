@@ -34,7 +34,7 @@
         "rxjs": "^6.6.3"
     },
     "dependencies": {
-        "@colonise/utilities": "^6.3.2",
+        "@colonise/utilities": "^6.6.1",
         "tslib": "^2.0.3"
     }
 }
