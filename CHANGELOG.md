@@ -1,5 +1,12 @@
 Changelog
 
+# [5.2.0](https://github.com/Colonise/DataSource/compare/v5.1.2...v5.2.0) (2023-04-20)
+
+
+### Features
+
+* add .reprocessAfter() method ([725629a](https://github.com/Colonise/DataSource/commit/725629a40ddccf86dc3099d45f1278728e0bbd08))
+
 ## [5.1.2](https://github.com/Colonise/DataSource/compare/v5.1.1...v5.1.2) (2021-05-25)
 
 
