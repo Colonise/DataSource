@@ -21,6 +21,7 @@ export interface ComplexProcessorApi<TData> extends SubjectApi<TData> {
  */
 export abstract class ComplexProcessor<TData> extends Subject<TData> implements ComplexProcessorApi<TData> {
     protected _processing: boolean = false;
+    protected _willReprocessAfter: boolean = false;
     protected _active: boolean = true;
 
     public get processing(): boolean {
@@ -80,7 +81,20 @@ export abstract class ComplexProcessor<TData> extends Subject<TData> implements 
         return this.process(this.lastInput, force);
     }
 
+    /**
+     * Disables automatic reprocessing within the provided method.
+     */
+    public reprocessAfter(method: () => void, force?: boolean): TData {
+        this._willReprocessAfter = true;
+
+        method();
+
+        this._willReprocessAfter = false;
+
+        return this.reprocess(force);
+    }
+
     protected shouldProcess(force: boolean = false): boolean {
-        return !this._processing && (this.active || force);
+        return !this._willReprocessAfter && !this._processing && (this.active || force);
     }
 }
