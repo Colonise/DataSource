@@ -6,7 +6,7 @@ export interface Loggers<TData> {
 }
 
 export class DebugProcessor<TData> extends ComplexProcessor<TData> {
-    public constructor (
+    public constructor(
         public readonly name: string,
         public readonly wrapperProcessor: ComplexProcessor<TData>,
         public readonly loggers: Loggers<TData> = {

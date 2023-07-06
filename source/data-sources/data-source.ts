@@ -1,5 +1,7 @@
-import { ComplexProcessor, Processor } from '../processors';
-import { QueueProcessor } from '../processors';
+import type { Processor } from '../processors';
+import {
+    ComplexProcessor, QueueProcessor
+} from '../processors';
 
 /**
  * A class to handle temporal changes in data while not mutating the original data itself.
@@ -17,12 +19,12 @@ export class DataSource<TData> extends ComplexProcessor<TData> {
      *
      * @param data The data.
      */
-    public constructor (lastInput: TData, lastOutput: TData) {
+    public constructor(lastInput: TData, lastOutput: TData) {
         super(lastInput, lastOutput);
 
         this.queue.subscribe(newData => {
             if (!this.processing) {
-                this.next(newData)
+                this.next(newData);
             }
         });
     }
