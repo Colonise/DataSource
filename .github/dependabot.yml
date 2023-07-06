@@ -10,10 +10,6 @@ updates:
     pull-request-branch-name:
       separator: "-"
     versioning-strategy: "increase"
-    reviewers:
-      - "pathurs"
-    assignees:
-      - "pathurs"
     labels:
       - "dependencies"
     commit-message:
@@ -29,10 +25,6 @@ updates:
     open-pull-requests-limit: 10
     pull-request-branch-name:
       separator: "-"
-    reviewers:
-      - "pathurs"
-    assignees:
-      - "pathurs"
     labels:
       - "github-actions"
     commit-message:

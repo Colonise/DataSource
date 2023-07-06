@@ -42,8 +42,8 @@ DataSource is part of Colonise's Open Source Software, and is made with love by 
 [colonise-logo]: /documentation/assets/colonise256.png
 [colonise-url]: https://colonise.org/
 
-[build-badge]: https://img.shields.io/github/workflow/status/colonise/datasource/Node.js%20CI
-[build-url]: https://github.com/Colonise/DataSource/actions?query=workflow%3A%22Node.js+CI%22
+[build-badge]: https://img.shields.io/github/actions/workflow/status/colonise/datasource/nodejs-master.yml?branch=master
+[build-url]: https://github.com/Colonise/DataSource/actions/workflows/nodejs-master.yml?query=workflow%3A%22Node.js+CI%22
 
 [code-climate-coverage-badge]: https://img.shields.io/codeclimate/coverage/Colonise/DataSource.svg
 [code-climate-coverage-url]: https://codeclimate.com/github/Colonise/DataSource
